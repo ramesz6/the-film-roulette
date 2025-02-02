@@ -34,50 +34,45 @@ function App() {
 
   return (
     <>
-      {movieDatas ? (
-        <>
-          <div className='flex flex-col justify-center items-center'>
-          <div className="card bg-base-100 w-96 shadow-xl">
-            <figure className="px-10 pt-10">
-              <img
-                src={`https://image.tmdb.org/t/p/w500${movieDatas.poster_path}`}
-                alt="Movie Poster"
-                className="rounded-xl" />
-            </figure>
-            <div className="card-body items-center text-center">
-              <h2 className="card-title">{movieDatas.original_title}</h2>
-              <p>{`${movieDatas.release_date?.split("-").join(".")}.`}</p>
-              <>
-                <div className="flex flex-row flex-wrap gap-2">
-                  {movieDatas.genres && movieDatas.genres.length > 0 ? (
-                    movieDatas.genres.map(genre => (
-                      <p key={genre.id} className="px-2 py-1 rounded">
-                        {genre.name}
-                      </p>
-                    ))
-                  ) : (
-                    <p>No genres available</p>
-                  )}
-                </div>
-              </>
-              <div className="card-actions">
-                <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    getMovie(generateRandomNumber());
-                  }}
-                >
-                  Randomized
-                </button>
-              </div>
-            </div>
+  {movieDatas ? (
+    <div className="flex flex-col justify-center items-center min-h-screen">
+      <div className="card bg-base-100 w-96 shadow-xl">
+        <figure className="px-10 pt-10">
+          <img
+            src={`https://image.tmdb.org/t/p/w500${movieDatas.poster_path}`}
+            alt="Movie Poster"
+            className="rounded-xl"
+          />
+        </figure>
+        <div className="card-body items-center text-center">
+          <h2 className="card-title">{movieDatas.original_title}</h2>
+          <p>{`${movieDatas.release_date?.split("-").join(".")}.`}</p>
+          <div className="flex flex-row flex-wrap gap-2">
+            {movieDatas.genres && movieDatas.genres.length > 0 ? (
+              movieDatas.genres.map(genre => (
+                <p key={genre.id} className="px-2 py-1 rounded">{genre.name}</p>
+              ))
+            ) : (
+              <p>No genres available</p>
+            )}
           </div>
+          <div className="card-actions">
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                getMovie(generateRandomNumber());
+              }}
+            >
+              Randomized
+            </button>
           </div>
-        </>
-      ) : (
-        <p>Loading...</p>
-      )}
-    </>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <p>Loading...</p>
+  )}
+</>
   );
 
 }
