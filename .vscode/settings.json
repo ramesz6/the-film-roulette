@@ -6,7 +6,7 @@
             "port": 5432,
             "driver": "PostgreSQL",
             "name": "backend_db",
-            "database": "db",
+            "database": "postgres",
             "username": "postgres",
             "password": "postgres"
         }
