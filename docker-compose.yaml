@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  # PostgreSQL adatbázis
+  # PostgreSQL adatbázis 
   db:
     image: postgres:15
     environment:
