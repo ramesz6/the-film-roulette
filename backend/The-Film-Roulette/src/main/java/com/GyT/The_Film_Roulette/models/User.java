@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -19,7 +18,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class User {
 
-    @Getter
     @Id
     @GeneratedValue
     private Long id;

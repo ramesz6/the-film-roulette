@@ -13,6 +13,6 @@ public class UserServiceImpl implements UserService {
 
 
     public void deleteProfileByName(String name) {
-        userRepository.deleteByUsername(name);
+        // userRepository.deleteByUsername(name);
     }
 }
