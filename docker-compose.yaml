@@ -1,0 +1,36 @@
+services:
+  # PostgreSQL adatbázis 
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: filmroulette
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - backend-net
+
+  # Spring Boot backend
+  backend:
+    build:
+      context: ./backend/The-Film-Roulette
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/filmroulette
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - backend-net
+
+volumes:
+  db_data:
+
+networks:
+  backend-net:
