@@ -1,10 +1,13 @@
 package com.GyT.The_Film_Roulette.services;
 
+import org.springframework.stereotype.Service;
+
 import com.GyT.The_Film_Roulette.dtos.login.LoginRequest;
 import com.GyT.The_Film_Roulette.dtos.login.LoginResponse;
 import com.GyT.The_Film_Roulette.dtos.register.RegisterRequest;
 import com.GyT.The_Film_Roulette.dtos.register.RegisterResponse;
 
+@Service
 class AuthServiceImpl implements AuthService {
 
     @Override
