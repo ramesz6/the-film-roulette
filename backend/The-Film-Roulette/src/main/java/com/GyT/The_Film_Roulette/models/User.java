@@ -1,11 +1,15 @@
 package com.GyT.The_Film_Roulette.models;
 
-import lombok.*;
-import jakarta.persistence.*;
+import org.hibernate.annotations.NaturalId;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import lombok.Data;
 
 @Entity
-@Getter
-@Setter
+@Data
 public class User {
 
     @Id
@@ -13,7 +17,9 @@ public class User {
     private Long id;
 
     @Column(unique = true)
+    @NaturalId(mutable = true)
     private String email;
+    private String username;
     private String password;
 
 }
