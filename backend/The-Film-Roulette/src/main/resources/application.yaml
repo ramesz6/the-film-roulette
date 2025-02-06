@@ -18,4 +18,4 @@ spring:
     database: postgresql
 
 jwt:
-  secret: "filmroulette"
+  secret: "f1lmr0ul3tt3"

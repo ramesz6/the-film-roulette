@@ -1,5 +1,7 @@
-package com.GyT.The_Film_Roulette.services;
+package com.GyT.The_Film_Roulette.services.auth;
 
+import org.apache.el.stream.Optional;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -7,8 +9,11 @@ import com.GyT.The_Film_Roulette.dtos.login.LoginRequest;
 import com.GyT.The_Film_Roulette.dtos.login.LoginResponse;
 import com.GyT.The_Film_Roulette.dtos.register.RegisterRequest;
 import com.GyT.The_Film_Roulette.dtos.register.RegisterResponse;
+import com.GyT.The_Film_Roulette.exceptions.PasswordIsInvalidException;
+import com.GyT.The_Film_Roulette.exceptions.UserNotFoundException;
 import com.GyT.The_Film_Roulette.models.User;
 import com.GyT.The_Film_Roulette.repositories.UserRepository;
+import com.GyT.The_Film_Roulette.services.auth.jwt.JwtService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +23,7 @@ class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
     public RegisterResponse register(RegisterRequest registerRequest) {
@@ -33,7 +39,13 @@ class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
-        
+        User user = userRepository
+                        .findByEmail(loginRequest.email())
+                        .orElseThrow(() -> new UserNotFoundException("User not found by e-mail"));
+        if (!BCrypt.checkpw(loginRequest.password(), user.getPassword())) {
+            throw new PasswordIsInvalidException("Wrong password!");
+        }
+        return new LoginResponse(jwtService.generateToken(user));
     }
 
     

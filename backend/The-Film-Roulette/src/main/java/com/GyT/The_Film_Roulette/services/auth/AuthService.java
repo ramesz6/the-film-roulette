@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette.services;
+package com.GyT.The_Film_Roulette.services.auth;
 
 import com.GyT.The_Film_Roulette.dtos.login.LoginRequest;
 import com.GyT.The_Film_Roulette.dtos.register.RegisterRequest;

@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.GyT.The_Film_Roulette.dtos.login.LoginRequest;
 import com.GyT.The_Film_Roulette.dtos.register.RegisterRequest;
-import com.GyT.The_Film_Roulette.services.AuthService;
+import com.GyT.The_Film_Roulette.services.auth.AuthService;
 
 import lombok.RequiredArgsConstructor;
 
