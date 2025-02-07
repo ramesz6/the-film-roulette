@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.GyT.The_Film_Roulette.configurations.JwtConfiguration;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,5 @@
 package com.GyT.The_Film_Roulette.services.auth;
 
-import org.apache.el.stream.Optional;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
