@@ -3,7 +3,9 @@
 @tailwind utilities;
 
 /* --- Reset --- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -21,7 +23,10 @@ body {
   min-height: 100vh;
 }
 
-img, picture, svg, video {
+img,
+picture,
+svg,
+video {
   display: block;
   max-width: 100%;
 }
@@ -31,6 +36,5 @@ img, picture, svg, video {
 :root {
   --bg-img-layer: -10;
   --nav-layer: 10;
-  
 }
 /* --- Variables --- */
