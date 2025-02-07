@@ -38,7 +38,6 @@ class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateToken(UserDetails userDetails, Map<String, Objects> additional) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'generateToken'");
     }
 
