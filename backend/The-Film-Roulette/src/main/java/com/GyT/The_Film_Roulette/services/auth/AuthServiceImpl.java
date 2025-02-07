@@ -8,8 +8,7 @@ import com.GyT.The_Film_Roulette.dtos.login.LoginRequest;
 import com.GyT.The_Film_Roulette.dtos.login.LoginResponse;
 import com.GyT.The_Film_Roulette.dtos.register.RegisterRequest;
 import com.GyT.The_Film_Roulette.dtos.register.RegisterResponse;
-import com.GyT.The_Film_Roulette.exceptions.PasswordIsInvalidException;
-import com.GyT.The_Film_Roulette.exceptions.UserNotFoundException;
+import com.GyT.The_Film_Roulette.exceptions.AuthenticationException;
 import com.GyT.The_Film_Roulette.models.User;
 import com.GyT.The_Film_Roulette.repositories.UserRepository;
 import com.GyT.The_Film_Roulette.services.auth.jwt.JwtService;
@@ -38,14 +37,14 @@ class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
-        User user = userRepository
-                        .findByEmail(loginRequest.email())
-                        .orElseThrow(() -> new UserNotFoundException("User not found by e-mail"));
-        if (!BCrypt.checkpw(loginRequest.password(), user.getPassword())) {
-            throw new PasswordIsInvalidException("Wrong password!");
+        User user = userRepository.findByEmail(loginRequest.email())
+                                  .orElse(null);
+        if (user == null || !BCrypt.checkpw(loginRequest.password(), user.getPassword())) {
+            throw new AuthenticationException("Invalid email or password");
         }
         return new LoginResponse(jwtService.generateToken(user));
     }
+    
 
     
 }
