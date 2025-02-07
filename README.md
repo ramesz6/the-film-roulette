@@ -81,12 +81,12 @@ The backend provides a Swagger UI for API documentation and testing.
 ---
 
 ## Endpoints
-| Method | Endpoint | Description |
-|--------|---------|-------------|
-| `GET` | `/api/movies` | Fetch all available movies |
-| `GET` | `/api/movies/{id}` | Get details of a specific movie |
-| `POST` | `/api/auth/login` | Authenticate a user and return a JWT |
-| `POST` | `/api/auth/register` | Register a new user |
+| Method | Endpoint             | Description                          |
+| ------ | -------------------- | ------------------------------------ |
+| `GET`  | `/api/movies`        | Fetch all available movies           |
+| `GET`  | `/api/movies/{id}`   | Get details of a specific movie      |
+| `POST` | `/api/auth/login`    | Authenticate a user and return a JWT |
+| `POST` | `/api/auth/register` | Register a new user                  |
 
 ---
 

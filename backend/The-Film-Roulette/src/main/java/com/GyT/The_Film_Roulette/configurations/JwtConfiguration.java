@@ -8,5 +8,5 @@ public class JwtConfiguration {
 
     @Value("${jwt.secret}")
     public String jwtSecret;
-    
+
 }

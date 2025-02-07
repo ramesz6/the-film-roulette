@@ -4,5 +4,4 @@ public class PasswordIsInvalidException extends RuntimeException {
     public PasswordIsInvalidException(String message) {
         super(message);
     }
-
 }
