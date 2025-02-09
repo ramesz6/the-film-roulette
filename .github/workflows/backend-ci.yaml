@@ -1,0 +1,56 @@
+# Setup an action to run the backend CI for PRs
+
+# name of the action
+name: Backend CI
+
+# when should it run
+on:
+  pull_request:
+    branches:
+      - main
+
+# what should it do
+jobs:
+  # name of the job
+  build:
+    # what should it run on
+    runs-on: ubuntu-latest
+    # default values for all the steps
+    defaults:
+      run:
+        working-directory: backend
+    permissions:
+      contents: read
+      packages: read
+      # To report GitHub Actions status checks
+      statuses: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Run Maven build
+        run: mvn install -DskipTests -q
+      - name: Run tests
+        run: mvn test -q
+
+      - name: Run check style
+        uses: nikitasavinov/checkstyle-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: 'github-pr-check'
+          tool_name: 'testtool'
+          fail_on_error: true
+          level: warning,error
+          workdir: backend
