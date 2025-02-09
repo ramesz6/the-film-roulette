@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - '**.java'
 
 jobs:
   checkstyle:
@@ -24,12 +26,16 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '23'
+          cache: 'maven'
+
+      - name: Setup Maven
+        run: mvn validate -q
 
       - name: Run Checkstyle
         uses: nikitasavinov/checkstyle-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: 'github-pr-check'
+          reporter: 'github-check'
           tool_name: 'Checkstyle'
           fail_on_error: true
           level: warning,error
