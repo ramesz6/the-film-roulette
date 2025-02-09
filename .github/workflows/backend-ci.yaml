@@ -18,7 +18,7 @@ jobs:
     # default values for all the steps
     defaults:
       run:
-        working-directory: backend
+      working-directory: backend/The-Film-Roulette
     permissions:
       contents: read
       packages: read
@@ -31,8 +31,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: "temurin"
+          java-version: "21"
       - name: Cache local Maven repository
         uses: actions/cache@v3
         with:
@@ -49,8 +49,8 @@ jobs:
         uses: nikitasavinov/checkstyle-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: 'github-pr-check'
-          tool_name: 'testtool'
+          reporter: "github-pr-check"
+          tool_name: "testtool"
           fail_on_error: true
           level: warning,error
           workdir: backend
