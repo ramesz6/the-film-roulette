@@ -1,4 +1,4 @@
-name: Backend Checkstyle
+name: Backend Build and Test
 
 on:
   pull_request:
@@ -8,11 +8,11 @@ on:
       - '**.java'
 
 jobs:
-  checkstyle:
+  build_and_test:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: backend
+        working-directory: backend/The-Film-Roulette
     permissions:
       contents: read
       statuses: write
@@ -29,7 +29,10 @@ jobs:
           cache: 'maven'
 
       - name: Setup Maven
-        run: mvn validate -q
+        run: mvn clean install -q
+
+      - name: Run Tests
+        run: mvn test -q
 
       - name: Run Checkstyle
         uses: nikitasavinov/checkstyle-action@master
