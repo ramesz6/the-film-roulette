@@ -16,46 +16,45 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class AuthenticationControllerTest {
 
-    ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @Test
-    public void AuthControllerShouldSuccesfullyRegister() throws Exception {
+        @Test
+        public void AuthControllerShouldSuccesfullyRegister() throws Exception {
 
-        RegisterRequest registerRequest = new RegisterRequest(
-                "ramesz",
-                "ramesz@email.com",
-                "password");
+                RegisterRequest registerRequest = new RegisterRequest(
+                                "ramesz",
+                                "ramesz@email.com",
+                                "password");
 
-        String stringified = objectMapper.writeValueAsString(registerRequest);
+                String stringified = objectMapper.writeValueAsString(registerRequest);
 
-        mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(String.valueOf(stringified)))
-                .andExpect(status().isOk());
-    }
+                mockMvc.perform(post("/api/v1/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(String.valueOf(stringified)))
+                                .andExpect(status().isOk());
+        }
 
-    @Test
-public void AuthControllerShouldUnsuccesfullyRegister() throws Exception {
+        @Test
+        public void AuthControllerShouldUnsuccesfullyRegister() throws Exception {
 
-    RegisterRequest registerRequest = new RegisterRequest(
-            "ramesz",
-            "ramesz@email.com",
-            "password");
+                RegisterRequest registerRequest = new RegisterRequest(
+                                "ramesz",
+                                "ramesz@email.com",
+                                "password");
 
-    String stringified = objectMapper.writeValueAsString(registerRequest);
+                String stringified = objectMapper.writeValueAsString(registerRequest);
 
-    
-    mockMvc.perform(post("/api/v1/auth/register")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(stringified))
-            .andExpect(status().isOk());
+                mockMvc.perform(post("/api/v1/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(stringified))
+                                .andExpect(status().isOk());
 
-    mockMvc.perform(post("/api/v1/auth/register")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(stringified))
-            .andExpect(status().isUnauthorized()); 
-}
+                mockMvc.perform(post("/api/v1/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(stringified))
+                                .andExpect(status().isBadRequest());
+        }
 }
