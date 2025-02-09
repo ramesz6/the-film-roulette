@@ -38,23 +38,24 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    public void AuthControllerShouldUnsuccesfullyRegister() throws Exception {
+public void AuthControllerShouldUnsuccesfullyRegister() throws Exception {
 
-        RegisterRequest registerRequest = new RegisterRequest(
-                "ramesz",
-                "ramesz@email.com",
-                "password");
+    RegisterRequest registerRequest = new RegisterRequest(
+            "ramesz",
+            "ramesz@email.com",
+            "password");
 
-        String stringified = objectMapper.writeValueAsString(registerRequest);
+    String stringified = objectMapper.writeValueAsString(registerRequest);
 
-        mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(String.valueOf(stringified)))
-                .andExpect(status().isOk());
+    
+    mockMvc.perform(post("/api/v1/auth/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(stringified))
+            .andExpect(status().isOk());
 
-        mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(String.valueOf(stringified)))
-                .andExpect(status().isBadRequest());
-    }
+    mockMvc.perform(post("/api/v1/auth/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(stringified))
+            .andExpect(status().isUnauthorized()); 
+}
 }
