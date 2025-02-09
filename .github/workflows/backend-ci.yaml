@@ -5,8 +5,7 @@ on:
     branches:
       - main
     paths:
-      - '**.java'
-
+      - 'backend/**'
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
