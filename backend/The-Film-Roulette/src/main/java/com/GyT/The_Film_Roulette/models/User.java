@@ -7,7 +7,6 @@ import org.hibernate.annotations.NaturalId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,6 +16,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a user entity in the system.
+ * Implements {@link UserDetails} interface to be used for authentication and
+ * authorization purposes.
+ * This class contains user credentials, such as email, username, and password.
+ */
 @Entity(name = "_user")
 @Data
 @Builder
@@ -24,41 +29,78 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class User implements UserDetails {
 
-    @Id
-    @GeneratedValue
-    private Long id;
+  /**
+   * Unique identifier for the user.
+   */
+  @Id
+  @GeneratedValue
+  private Long id;
 
-    @Column(unique = true)
-    @NaturalId(mutable = true)
-    private String email;
+  /**
+   * Unique email of the user. This is also used for authentication.
+   */
+  @Column(unique = true)
+  @NaturalId(mutable = true)
+  private String email;
 
-    @Column(unique = true)
-    private String username;
-    private String password;
+  /**
+   * Unique username of the user.
+   */
+  @Column(unique = true)
+  private String username;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("USER"));
-    }
+  /**
+   * Password for the user account.
+   */
+  private String password;
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+  /**
+   * Grants authorities (roles) to the user.
+   *
+   * @return a collection of granted authorities
+   */
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of(new SimpleGrantedAuthority("USER"));
+  }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+  /**
+   * Indicates whether the account has expired.
+   *
+   * @return true if the account is non-expired, otherwise false
+   */
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+  /**
+   * Indicates whether the account is locked.
+   *
+   * @return true if the account is non-locked, otherwise false
+   */
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+  /**
+   * Indicates whether the user's credentials have expired.
+   *
+   * @return true if the credentials are non-expired, otherwise false
+   */
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
 
+  /**
+   * Indicates whether the user is enabled.
+   *
+   * @return true if the user is enabled, otherwise false
+   */
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 }

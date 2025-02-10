@@ -1,0 +1,44 @@
+name: Backend Build and Test
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/The-Film-Roulette
+    permissions:
+      contents: read
+      statuses: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '23'
+          cache: 'maven'
+
+      - name: Setup Maven
+        run: mvn clean install -q
+
+      - name: Run Tests
+        run: mvn test -q
+
+      - name: Run Checkstyle
+        uses: nikitasavinov/checkstyle-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: 'github-check'
+          tool_name: 'Checkstyle'
+          fail_on_error: true
+          level: warning,error
+          workdir: backend
