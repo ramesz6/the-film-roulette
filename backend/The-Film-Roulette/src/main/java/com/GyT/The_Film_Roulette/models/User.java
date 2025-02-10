@@ -56,7 +56,7 @@ public class User implements UserDetails {
 
   /**
    * Grants authorities (roles) to the user.
-   * 
+   *
    * @return a collection of granted authorities
    */
   @Override
@@ -66,7 +66,7 @@ public class User implements UserDetails {
 
   /**
    * Indicates whether the account has expired.
-   * 
+   *
    * @return true if the account is non-expired, otherwise false
    */
   @Override
@@ -76,7 +76,7 @@ public class User implements UserDetails {
 
   /**
    * Indicates whether the account is locked.
-   * 
+   *
    * @return true if the account is non-locked, otherwise false
    */
   @Override
@@ -86,7 +86,7 @@ public class User implements UserDetails {
 
   /**
    * Indicates whether the user's credentials have expired.
-   * 
+   *
    * @return true if the credentials are non-expired, otherwise false
    */
   @Override
@@ -96,7 +96,7 @@ public class User implements UserDetails {
 
   /**
    * Indicates whether the user is enabled.
-   * 
+   *
    * @return true if the user is enabled, otherwise false
    */
   @Override
