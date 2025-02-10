@@ -6,10 +6,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.GyT.The_Film_Roulette.dtos.login.LoginRequest;
 import com.GyT.The_Film_Roulette.dtos.register.RegisterRequest;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.transaction.Transactional;
 
