@@ -14,15 +14,15 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class ApplicationSecurity {
 
-    private static String[] ALLOW_LIST = { "/api/v1/auth/**" };
+  private static String[] ALLOW_LIST = { "/api/v1/auth/**" };
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req -> req.requestMatchers(ALLOW_LIST)
-                        .permitAll())
-                .httpBasic(Customizer.withDefaults())
-                .formLogin(Customizer.withDefaults());
-        return http.build();
-    }
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(req -> req.requestMatchers(ALLOW_LIST)
+            .permitAll())
+        .httpBasic(Customizer.withDefaults())
+        .formLogin(Customizer.withDefaults());
+    return http.build();
+  }
 }

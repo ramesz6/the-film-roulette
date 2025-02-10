@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+  private final UserService userService;
 
-    @GetMapping("/users")
-    public ResponseEntity<List<User>> getStudents() {
-        return new ResponseEntity<>(userService.getUsers(), HttpStatus.FOUND);
-    }
+  @GetMapping("/users")
+  public ResponseEntity<List<User>> getStudents() {
+    return new ResponseEntity<>(userService.getUsers(), HttpStatus.FOUND);
+  }
 
 }

@@ -20,23 +20,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-    private final AuthService authService;
+  private final AuthService authService;
 
-    @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody RegisterRequest registerRequest) {
-        try {
-            return ResponseEntity.ok(authService.register(registerRequest)); 
-        } catch (EmailAlreadyTakenException e) { 
-            return ResponseEntity.badRequest().body("User already exists"); 
-        }
+  @PostMapping("/register")
+  public ResponseEntity<Object> register(@RequestBody RegisterRequest registerRequest) {
+    try {
+      return ResponseEntity.ok(authService.register(registerRequest));
+    } catch (EmailAlreadyTakenException e) {
+      return ResponseEntity.badRequest().body("User already exists");
     }
+  }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        try {
-            return ResponseEntity.ok(authService.login(loginRequest)); 
-        } catch (InvalidCredentialsException e) { 
-            return ResponseEntity.badRequest().body("Invalid credentials"); 
-        }
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    try {
+      return ResponseEntity.ok(authService.login(loginRequest));
+    } catch (InvalidCredentialsException e) {
+      return ResponseEntity.badRequest().body("Invalid credentials");
     }
+  }
 }
