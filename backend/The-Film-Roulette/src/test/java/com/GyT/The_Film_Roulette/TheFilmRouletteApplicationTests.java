@@ -13,7 +13,7 @@ class TheFilmRouletteApplicationTests {
 	/**
 	 * Tests whether the Spring application context loads successfully.
 	 * This helps verify that the application's configuration is correct
-	 * and that all necessary beans can be initialized.
+	 * * and that all necessary beans can be initialized.
 	 */
 	@Test
 	void contextLoads() {
