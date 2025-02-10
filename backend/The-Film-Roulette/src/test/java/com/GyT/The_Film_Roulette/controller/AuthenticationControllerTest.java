@@ -6,12 +6,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.GyT.The_Film_Roulette.dtos.login.LoginRequest;
 import com.GyT.The_Film_Roulette.dtos.register.RegisterRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.transaction.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -84,5 +87,39 @@ public class AuthenticationControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(stringified))
         .andExpect(status().isBadRequest());
+  }
+
+  /**
+   * Tests that after succesfully registered, user can successfully
+   * login through the /api/v1/auth/login endpoint.
+   *
+   * @throws Exception if there is an error in performing the test
+   */
+  @Test
+  public void AuthControllerShouldSuccesfullyLoginAndReturnWithToken() throws Exception {
+
+    RegisterRequest registerRequest = new RegisterRequest(
+        "ramesz",
+        "ramesz@email.com",
+        "password");
+
+    String stringifiedRegister = objectMapper.writeValueAsString(registerRequest);
+
+    mockMvc.perform(post("/api/v1/auth/register")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(stringifiedRegister))
+        .andExpect(status().isOk());
+
+    LoginRequest loginRequest = new LoginRequest(
+        "ramesz@email.com",
+        "password");
+
+    String stringifiedLogin = objectMapper.writeValueAsString(loginRequest);
+
+    mockMvc.perform(post("/api/v1/auth/login")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(stringifiedLogin))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.token").isString());
   }
 }
