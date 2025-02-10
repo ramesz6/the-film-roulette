@@ -26,7 +26,7 @@ public class ApplicationConfiguration {
    * from the database using the username.
    *
    * @return a {@link UserDetailsService} implementation.
-   * 
+   *
    * @throws UserNotFoundException if the user is not found in the repository.
    */
   @Bean

@@ -45,6 +45,7 @@ public class AuthenticationController {
    * Authenticates a user and provides a token upon successful login.
    *
    * @param loginRequest The login request containing user credentials.
+   *
    * @return ResponseEntity with a success message and token, or an error if
    *         credentials are invalid.
    */

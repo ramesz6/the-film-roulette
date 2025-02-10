@@ -39,7 +39,7 @@ public class AuthenticationControllerTest {
   /**
    * Tests that a user can successfully register through the /api/v1/auth/register
    * endpoint.
-   * 
+   *
    * @throws Exception if there is an error in performing the test
    */
   @Test
@@ -61,7 +61,7 @@ public class AuthenticationControllerTest {
   /**
    * Tests that trying to register the same user twice results in a bad request
    * response.
-   * 
+   *
    * @throws Exception if there is an error in performing the test
    */
   @Test

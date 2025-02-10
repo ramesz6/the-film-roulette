@@ -27,9 +27,11 @@ public class ApplicationSecurity {
 
   /**
    * Configures the security filter chain for HTTP requests.
-   * 
+   *
    * @param http the {@link HttpSecurity} instance to configure
+   *
    * @return the configured {@link SecurityFilterChain}
+   *
    * @throws Exception if an error occurs during the configuration
    */
   @Bean
