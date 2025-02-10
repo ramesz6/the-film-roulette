@@ -44,7 +44,7 @@ public class AuthenticationControllerTest {
    * @throws Exception if there is an error in performing the test
    */
   @Test
-  public void AuthControllerShouldSuccessfullyRegister() throws Exception {
+  public void authControllerShouldSuccessfullyRegister() throws Exception {
 
     RegisterRequest registerRequest = new RegisterRequest(
         "ramesz",
@@ -66,7 +66,7 @@ public class AuthenticationControllerTest {
    * @throws Exception if there is an error in performing the test
    */
   @Test
-  public void AuthControllerShouldNotRegister() throws Exception {
+  public void authControllerShouldNotRegister() throws Exception {
 
     RegisterRequest registerRequest = new RegisterRequest(
         "ramesz",
@@ -94,7 +94,7 @@ public class AuthenticationControllerTest {
    * @throws Exception if there is an error in performing the test
    */
   @Test
-  public void AuthControllerShouldSuccessfullyLoginAndReturnWithToken() throws Exception {
+  public void authControllerShouldSuccessfullyLoginAndReturnWithToken() throws Exception {
 
     RegisterRequest registerRequest = new RegisterRequest(
         "ramesz",
