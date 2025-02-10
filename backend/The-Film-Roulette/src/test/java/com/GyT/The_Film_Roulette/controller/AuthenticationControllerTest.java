@@ -1,16 +1,15 @@
 package com.GyT.The_Film_Roulette.controller;
 
+import com.GyT.The_Film_Roulette.dtos.login.LoginRequest;
+import com.GyT.The_Film_Roulette.dtos.register.RegisterRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.GyT.The_Film_Roulette.dtos.login.LoginRequest;
-import com.GyT.The_Film_Roulette.dtos.register.RegisterRequest;
-
-import jakarta.transaction.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,7 +44,7 @@ public class AuthenticationControllerTest {
    * @throws Exception if there is an error in performing the test
    */
   @Test
-  public void AuthControllerShouldSuccesfullyRegister() throws Exception {
+  public void AuthControllerShouldSuccessfullyRegister() throws Exception {
 
     RegisterRequest registerRequest = new RegisterRequest(
         "ramesz",
@@ -67,7 +66,7 @@ public class AuthenticationControllerTest {
    * @throws Exception if there is an error in performing the test
    */
   @Test
-  public void AuthControllerShouldUnsuccesfullyRegister() throws Exception {
+  public void AuthControllerShouldNotRegister() throws Exception {
 
     RegisterRequest registerRequest = new RegisterRequest(
         "ramesz",
@@ -95,7 +94,7 @@ public class AuthenticationControllerTest {
    * @throws Exception if there is an error in performing the test
    */
   @Test
-  public void AuthControllerShouldSuccesfullyLoginAndReturnWithToken() throws Exception {
+  public void AuthControllerShouldSuccessfullyLoginAndReturnWithToken() throws Exception {
 
     RegisterRequest registerRequest = new RegisterRequest(
         "ramesz",
