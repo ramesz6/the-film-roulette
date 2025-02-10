@@ -9,11 +9,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.GyT.The_Film_Roulette.dtos.register.RegisterRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.transaction.Transactional;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class AuthenticationControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -33,7 +37,7 @@ public class AuthenticationControllerTest {
 
                 mockMvc.perform(post("/api/v1/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(String.valueOf(stringified)))
+                                .content(stringified))
                                 .andExpect(status().isOk());
         }
 
