@@ -91,7 +91,7 @@ public class AuthenticationControllerTest {
 
   /**
    * Tests that after succesfully registered, user can successfully
-   * login through the /api/v1/auth/login endpoint.
+   * login through the /api/v1/auth/login endpoint and return with a token.
    *
    * @throws Exception if there is an error in performing the test
    */
