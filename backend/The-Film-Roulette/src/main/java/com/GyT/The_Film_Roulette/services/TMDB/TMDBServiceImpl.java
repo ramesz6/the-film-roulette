@@ -1,7 +1,6 @@
 package com.GyT.The_Film_Roulette.services.TMDB;
 
 import com.GyT.The_Film_Roulette.configurations.RetrofitConfig;
-import com.GyT.The_Film_Roulette.dtos.ApiToken;
 import com.GyT.The_Film_Roulette.dtos.DiscoveryResponse;
 import org.springframework.stereotype.Service;
 import retrofit2.Retrofit;
@@ -15,16 +14,6 @@ public class TMDBServiceImpl implements TMDBService {
   public TMDBServiceImpl(RetrofitConfig retrofitConfig) {
     this.retrofit = retrofitConfig.retrofit();
     this.tmdbApi = retrofit.create(TMDBApi.class);
-  }
-
-  @Override
-  public ApiToken getToken() {
-    try {
-      return tmdbApi.getToken().execute().body();
-    } catch (Exception e) {
-      System.err.println(e);
-      return null;
-    }
   }
 
   @Override
