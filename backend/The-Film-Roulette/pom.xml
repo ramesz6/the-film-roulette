@@ -95,6 +95,37 @@
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-gson</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-gson</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>adapter-java8</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
