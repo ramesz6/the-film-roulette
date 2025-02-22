@@ -10,7 +10,7 @@ import retrofit2.http.GET;
  *
  * @return A {@link Call} object containing a {@link DiscoveryResponse}.
  */
-public interface TmdbApi {
+public interface TMDBApi {
 
   @GET("discover/movie")
   public Call<DiscoveryResponse> getResult();

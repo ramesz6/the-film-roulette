@@ -8,7 +8,7 @@ import com.GyT.The_Film_Roulette.dtos.DiscoveryResponse;
  *
  * @return A {@link DiscoveryResponse} containing the movie data.
  */
-public interface TmdbService {
+public interface TMDBService {
 
   public DiscoveryResponse getResult();
 }
