@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'backend/**'
+
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
@@ -27,11 +28,20 @@ jobs:
           java-version: '23'
           cache: 'maven'
 
+      - name: Check Java Version
+        run: java -version
+
+      - name: Check Maven Version
+        run: mvn -v
+
+      - name: Clear Maven cache
+        run: mvn dependency:purge-local-repository
+
       - name: Setup Maven
-        run: mvn clean install -q
+        run: mvn clean install
 
       - name: Run Tests
-        run: mvn test -q
+        run: mvn test
 
       - name: Run Checkstyle
         uses: nikitasavinov/checkstyle-action@master
@@ -41,4 +51,4 @@ jobs:
           tool_name: 'Checkstyle'
           fail_on_error: true
           level: warning,error
-          workdir: backend
+          workdir: backend/The-Film-Roulette
