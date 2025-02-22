@@ -2,7 +2,6 @@ package com.GyT.The_Film_Roulette.models;
 
 import java.util.Collection;
 import java.util.List;
-
 import org.hibernate.annotations.NaturalId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,11 +11,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 /**
  * Represents a user entity in the system.
@@ -26,9 +23,7 @@ import lombok.experimental.SuperBuilder;
  */
 @Entity(name = "_user")
 @Data
-@SuperBuilder
-@Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
