@@ -103,4 +103,22 @@ public class User implements UserDetails {
     return true;
   }
 
+  /**
+   * Retrieves the username for authentication purposes.
+   *
+   * @return the username of the user
+   */
+  @Override
+  public String getUsername() {
+    return this.username;
+  }
+
+  /**
+   * Retrieves the email address for authentication purposes.
+   *
+   * @return the email of the user
+   */
+  public String getEmail() {
+    return this.email;
+  }
 }
