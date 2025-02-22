@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette.services.TMDB;
+package com.GyT.The_Film_Roulette.services.Tmdb;
 
 import com.GyT.The_Film_Roulette.configurations.RetrofitConfig;
 import com.GyT.The_Film_Roulette.dtos.DiscoveryResponse;
@@ -11,14 +11,14 @@ import retrofit2.Retrofit;
  * Uses Retrofit to communicate with the API and retrieve movie data.
  */
 @Service
-public class TMDBServiceImpl implements TMDBService {
+public class TmdbServiceImpl implements TmdbService {
 
   private Retrofit retrofit;
-  private TMDBApi tmdbApi;
+  private TmdbApi tmdbApi;
 
-  public TMDBServiceImpl(RetrofitConfig retrofitConfig) {
+  public TmdbServiceImpl(RetrofitConfig retrofitConfig) {
     this.retrofit = retrofitConfig.retrofit();
-    this.tmdbApi = retrofit.create(TMDBApi.class);
+    this.tmdbApi = retrofit.create(TmdbApi.class);
   }
 
   @Override
