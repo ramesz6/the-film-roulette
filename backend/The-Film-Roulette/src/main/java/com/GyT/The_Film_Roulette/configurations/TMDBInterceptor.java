@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * before forwarding the request.
  */
 @Component
-public class TmdbInterceptor implements Interceptor {
+public class TMDBInterceptor implements Interceptor {
 
   @Value("${tmdb.api.key}")
   private String apiKey;
