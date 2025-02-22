@@ -7,6 +7,11 @@ import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * Interceptor for adding the TMDB API key to every request.
+ * This interceptor injects the API key into the Authorization header
+ * before forwarding the request.
+ */
 @Component
 public class TMDBInterceptor implements Interceptor {
 

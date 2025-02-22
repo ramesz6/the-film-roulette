@@ -5,6 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Model class representing a movie retrieved from the TMDB API.
+ * Contains metadata about the movie, including its title, overview, popularity,
+ * and more.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

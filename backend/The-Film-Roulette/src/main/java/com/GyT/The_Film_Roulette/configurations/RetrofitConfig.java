@@ -1,13 +1,17 @@
 package com.GyT.The_Film_Roulette.configurations;
 
+import lombok.AllArgsConstructor;
 import okhttp3.OkHttpClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import lombok.AllArgsConstructor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Configuration class for setting up the Retrofit instance.
+ * This class initializes a Retrofit client with a base URL and an OkHttpClient,
+ * which includes an interceptor for handling API requests.
+ */
 @Configuration
 @AllArgsConstructor
 public class RetrofitConfig {

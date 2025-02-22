@@ -5,6 +5,11 @@ import com.GyT.The_Film_Roulette.dtos.DiscoveryResponse;
 import org.springframework.stereotype.Service;
 import retrofit2.Retrofit;
 
+/**
+ * Service implementation for fetching movie discovery results from the TMDB
+ * API.
+ * Uses Retrofit to communicate with the API and retrieve movie data.
+ */
 @Service
 public class TMDBServiceImpl implements TMDBService {
 
