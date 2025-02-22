@@ -17,7 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitConfig {
 
   private static final String BASE_URL = "https://api.themoviedb.org/3/";
-  private final TMDBInterceptor interceptor;
+  private final TmdbInterceptor interceptor;
 
   @Bean
   public Retrofit retrofit() {
