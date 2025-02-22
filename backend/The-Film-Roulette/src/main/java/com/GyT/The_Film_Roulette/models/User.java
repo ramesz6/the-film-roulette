@@ -12,9 +12,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 /**
  * Represents a user entity in the system.
@@ -24,7 +26,9 @@ import lombok.NoArgsConstructor;
  */
 @Entity(name = "_user")
 @Data
-@Builder
+@SuperBuilder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
