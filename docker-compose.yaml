@@ -28,6 +28,8 @@ services:
       - db
     networks:
       - backend-net
+    env_file:
+      - .env
 
 volumes:
   db_data:
