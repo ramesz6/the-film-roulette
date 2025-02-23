@@ -25,8 +25,7 @@ public class RetrofitConfig {
    * Configures and returns a Retrofit instance.
    * This method builds a Retrofit client using a base URL, a Gson converter for
    * JSON parsing, and an OkHttpClient with an interceptor for API requests.
-   * 
-   * 
+   *
    * @return the configured Retrofit instance
    */
   @Bean
