@@ -2,7 +2,6 @@ package com.gyt.thefilmroulette.controller;
 
 import com.gyt.thefilmroulette.dtos.DiscoveryResponse;
 import com.gyt.thefilmroulette.services.api.MovieApiService;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

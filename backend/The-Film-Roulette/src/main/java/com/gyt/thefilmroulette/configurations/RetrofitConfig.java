@@ -27,6 +27,7 @@ public class RetrofitConfig {
    * JSON parsing, and an OkHttpClient with an interceptor for API requests.
    * 
    * @return the configured Retrofit instance
+   * 
    */
   @Bean
   public Retrofit retrofit() {
