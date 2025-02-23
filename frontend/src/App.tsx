@@ -1,78 +1,55 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import { Movie } from "./api/getRandomMovie";
-import { loadMovies } from "./api/getRandomMovie";
+import { loadMovie } from "./api/getMovie";
+import { Movies } from "./api/getMovie";
+
 
 function App() {
-  const [movieDatas, setMovieDatas] = useState<Movie | null>(null);
 
-  function generateRandomNumber(): string {
-    let result = Math.floor(Math.random() * 996) + 1;
-    return "" + result;
-  }
+  const [error, setError] = useState("")
+  const [movieDatas, setMovieDatas] = useState<Movies[] | null>()
+  const [clientSearch, setClientSearch] = useState("")
+  const [waitingforData, setwaitingforData] = useState(false)
 
-  const getMovie = async (id: string) => {
-    try {
-      const response = await loadMovies(id);
-      if (response.success && response.data) {
-        setMovieDatas(response.data);
-      } else if (response.status === 404) {
-        getMovie(generateRandomNumber());
-      } else {
-        console.error("Failed to fetch movie data");
+
+  const getMovies = async () => {
+    const response = await loadMovie()
+    if (!response.success) {
+      setError("A szerver nem elérhető")
+    } else {
+      if (movieDatas == null) {
+        setwaitingforData(false)
       }
-    } catch (error) {
-      console.error("Error fetching movie:", error);
+      setwaitingforData(true)
+      setMovieDatas(response.data)
+      console.log(movieDatas)
     }
-  };
-
+  }
   useEffect(() => {
-    const randomId = generateRandomNumber();
-    getMovie(randomId);
+    getMovies();
   }, []);
 
   return (
     <>
-      {movieDatas ? (
-        <div className="flex flex-col justify-center items-center min-h-screen">
-          <div className="card bg-base-100 w-96 shadow-xl">
-            <figure className="px-10 pt-10">
-              <img
-                src={`https://image.tmdb.org/t/p/w500${movieDatas.poster_path}`}
-                alt="Movie Poster"
-                className="rounded-xl"
-              />
-            </figure>
-            <div className="card-body items-center text-center">
-              <h2 className="card-title">{movieDatas.original_title}</h2>
-              <p>{`${movieDatas.release_date?.split("-").join(".")}.`}</p>
-              <div className="flex flex-row flex-wrap gap-2">
-                {movieDatas.genres && movieDatas.genres.length > 0 ? (
-                  movieDatas.genres.map((genre) => (
-                    <p key={genre.id} className="px-2 py-1 rounded">
-                      {genre.name}
-                    </p>
-                  ))
-                ) : (
-                  <p>No genres available</p>
-                )}
-              </div>
-              <div className="card-actions">
-                <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    getMovie(generateRandomNumber());
-                  }}
-                >
-                  Randomized
-                </button>
-              </div>
+
+    {}
+
+      {waitingforData ?
+
+        <div className='flex flex-wrap flex-row justify-center items-center'>
+          {movieDatas?.map((movie) => (
+            <div className="card w-96 bg-base-100 shadow-xl m-5">
+              <h1 className="card-title">{movie.title}</h1>
+              <h1 className="card-title">{movie.posterPath}</h1>
             </div>
-          </div>
+          ))}
         </div>
-      ) : (
-        <p>Loading...</p>
-      )}
+
+        :
+
+
+        <p className="flex justify-center items-center text-center">Adatok betöltése...</p>
+      }
     </>
   );
 }
