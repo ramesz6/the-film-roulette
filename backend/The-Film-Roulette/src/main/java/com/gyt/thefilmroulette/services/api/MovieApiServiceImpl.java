@@ -17,8 +17,16 @@ public class MovieApiServiceImpl implements MovieApiService {
   private MovieDbApi tmdbApi;
 
   public MovieApiServiceImpl(RetrofitConfig retrofitConfig) {
-    this.retrofit = retrofitConfig.retrofit();
-    this.tmdbApi = retrofit.create(MovieDbApi.class);
+    if (retrofitConfig != null) {
+      this.retrofit = retrofitConfig.retrofit();
+      if (this.retrofit != null) {
+        this.tmdbApi = retrofit.create(MovieDbApi.class);
+      } else {
+        throw new IllegalArgumentException("Retrofit object is null");
+      }
+    } else {
+      throw new IllegalArgumentException("RetrofitConfig is null");
+    }
   }
 
   @Override
