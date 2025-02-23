@@ -1,6 +1,6 @@
-package com.GyT.The_Film_Roulette.dtos;
+package com.gyt.the_film_roulette.dtos;
 
-import com.GyT.The_Film_Roulette.models.Movie;
+import com.gyt.the_film_roulette.models.Movie;
 import java.util.List;
 
 /**
@@ -11,6 +11,7 @@ import java.util.List;
  * 
  * @param results The list of movies retrieved from the TMDB API.
  */
+
 public record DiscoveryResponse(
     int page,
     List<Movie> results) {

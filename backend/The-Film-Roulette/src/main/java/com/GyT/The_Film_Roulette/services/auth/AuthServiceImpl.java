@@ -1,18 +1,18 @@
-package com.GyT.The_Film_Roulette.services.auth;
+package com.gyt.the_film_roulette.services.auth;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.GyT.The_Film_Roulette.dtos.login.LoginRequest;
-import com.GyT.The_Film_Roulette.dtos.login.LoginResponse;
-import com.GyT.The_Film_Roulette.dtos.register.RegisterRequest;
-import com.GyT.The_Film_Roulette.dtos.register.RegisterResponse;
-import com.GyT.The_Film_Roulette.exceptions.AuthenticationException;
-import com.GyT.The_Film_Roulette.exceptions.EmailAlreadyTakenException;
-import com.GyT.The_Film_Roulette.models.User;
-import com.GyT.The_Film_Roulette.repositories.UserRepository;
-import com.GyT.The_Film_Roulette.services.auth.jwt.JwtService;
+import com.gyt.the_film_roulette.dtos.login.LoginRequest;
+import com.gyt.the_film_roulette.dtos.login.LoginResponse;
+import com.gyt.the_film_roulette.dtos.register.RegisterRequest;
+import com.gyt.the_film_roulette.dtos.register.RegisterResponse;
+import com.gyt.the_film_roulette.exceptions.AuthenticationException;
+import com.gyt.the_film_roulette.exceptions.EmailAlreadyTakenException;
+import com.gyt.the_film_roulette.models.User;
+import com.gyt.the_film_roulette.repositories.UserRepository;
+import com.gyt.the_film_roulette.services.auth.jwt.JwtService;
 
 import lombok.RequiredArgsConstructor;
 

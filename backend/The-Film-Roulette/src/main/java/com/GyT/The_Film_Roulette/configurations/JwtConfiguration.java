@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette.configurations;
+package com.gyt.the_film_roulette.configurations;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

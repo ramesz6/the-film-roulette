@@ -1,7 +1,7 @@
-package com.GyT.The_Film_Roulette.services.auth;
+package com.gyt.the_film_roulette.services.auth;
 
-import com.GyT.The_Film_Roulette.dtos.login.LoginRequest;
-import com.GyT.The_Film_Roulette.dtos.register.RegisterRequest;
+import com.gyt.the_film_roulette.dtos.login.LoginRequest;
+import com.gyt.the_film_roulette.dtos.register.RegisterRequest;
 
 /**
  * Service interface for handling user authentication operations.

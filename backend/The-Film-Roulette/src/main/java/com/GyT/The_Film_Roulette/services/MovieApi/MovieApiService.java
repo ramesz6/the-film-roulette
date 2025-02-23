@@ -1,6 +1,6 @@
-package com.GyT.The_Film_Roulette.services.MovieApi;
+package com.gyt.the_film_roulette.services.MovieApi;
 
-import com.GyT.The_Film_Roulette.dtos.DiscoveryResponse;
+import com.gyt.the_film_roulette.dtos.DiscoveryResponse;
 
 /**
  * Service interface for fetching movie discovery results from the TMDB API.

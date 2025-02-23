@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette.models;
+package com.gyt.the_film_roulette.models;
 
 import java.util.Collection;
 import java.util.List;

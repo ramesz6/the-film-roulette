@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette.services.auth.jwt;
+package com.gyt.the_film_roulette.services.auth.jwt;
 
 import java.security.Key;
 import java.util.Map;
@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.GyT.The_Film_Roulette.configurations.JwtConfiguration;
+import com.gyt.the_film_roulette.configurations.JwtConfiguration;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

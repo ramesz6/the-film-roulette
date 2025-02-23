@@ -1,6 +1,7 @@
-package com.GyT.The_Film_Roulette.services.MovieApi;
+package com.gyt.the_film_roulette.services.MovieApi;
 
-import com.GyT.The_Film_Roulette.dtos.DiscoveryResponse;
+import com.gyt.the_film_roulette.dtos.DiscoveryResponse;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 

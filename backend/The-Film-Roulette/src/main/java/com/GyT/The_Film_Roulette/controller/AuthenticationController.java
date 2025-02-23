@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette.controller;
+package com.gyt.the_film_roulette.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.GyT.The_Film_Roulette.dtos.login.LoginRequest;
-import com.GyT.The_Film_Roulette.dtos.register.RegisterRequest;
-import com.GyT.The_Film_Roulette.exceptions.EmailAlreadyTakenException;
-import com.GyT.The_Film_Roulette.exceptions.InvalidCredentialsException;
-import com.GyT.The_Film_Roulette.services.auth.AuthService;
+import com.gyt.the_film_roulette.dtos.login.LoginRequest;
+import com.gyt.the_film_roulette.dtos.register.RegisterRequest;
+import com.gyt.the_film_roulette.exceptions.EmailAlreadyTakenException;
+import com.gyt.the_film_roulette.exceptions.InvalidCredentialsException;
+import com.gyt.the_film_roulette.services.auth.AuthService;
 
 import lombok.RequiredArgsConstructor;
 

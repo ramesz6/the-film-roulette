@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette.security;
+package com.gyt.the_film_roulette.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

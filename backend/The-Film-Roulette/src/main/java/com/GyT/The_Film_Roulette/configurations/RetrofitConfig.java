@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette.configurations;
+package com.gyt.the_film_roulette.configurations;
 
 import lombok.AllArgsConstructor;
 import okhttp3.OkHttpClient;

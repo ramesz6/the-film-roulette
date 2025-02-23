@@ -1,12 +1,12 @@
-package com.GyT.The_Film_Roulette.controller;
-
-import com.GyT.The_Film_Roulette.dtos.DiscoveryResponse;
-import com.GyT.The_Film_Roulette.services.MovieApi.MovieApiService;
+package com.gyt.the_film_roulette.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.gyt.the_film_roulette.dtos.DiscoveryResponse;
+import com.gyt.the_film_roulette.services.MovieApi.MovieApiService;
 
 /**
  * REST controller for handling TMDB movie-related requests.

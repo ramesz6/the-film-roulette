@@ -1,8 +1,10 @@
-package com.GyT.The_Film_Roulette.services.MovieApi;
+package com.gyt.the_film_roulette.services.MovieApi;
 
-import com.GyT.The_Film_Roulette.configurations.RetrofitConfig;
-import com.GyT.The_Film_Roulette.dtos.DiscoveryResponse;
 import org.springframework.stereotype.Service;
+
+import com.gyt.the_film_roulette.configurations.RetrofitConfig;
+import com.gyt.the_film_roulette.dtos.DiscoveryResponse;
+
 import retrofit2.Retrofit;
 
 /**

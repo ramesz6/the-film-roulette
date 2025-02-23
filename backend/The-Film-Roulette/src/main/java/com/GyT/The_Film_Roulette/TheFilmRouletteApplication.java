@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette;
+package com.gyt.the_film_roulette;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

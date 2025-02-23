@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette.exceptions;
+package com.gyt.the_film_roulette.exceptions;
 
 /**
  * Exception thrown when a user is not found in the system.

@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette.services.auth.jwt;
+package com.gyt.the_film_roulette.services.auth.jwt;
 
 import java.util.Map;
 import java.util.Objects;

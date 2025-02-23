@@ -1,13 +1,13 @@
-package com.GyT.The_Film_Roulette.services;
+package com.gyt.the_film_roulette.services;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.GyT.The_Film_Roulette.exceptions.EmailAlreadyTakenException;
-import com.GyT.The_Film_Roulette.exceptions.UserNotFoundException;
-import com.GyT.The_Film_Roulette.models.User;
-import com.GyT.The_Film_Roulette.repositories.UserRepository;
+import com.gyt.the_film_roulette.exceptions.EmailAlreadyTakenException;
+import com.gyt.the_film_roulette.exceptions.UserNotFoundException;
+import com.gyt.the_film_roulette.models.User;
+import com.gyt.the_film_roulette.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
