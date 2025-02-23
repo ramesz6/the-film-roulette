@@ -2,7 +2,7 @@ package com.gyt.thefilmroulette.controller;
 
 import com.gyt.thefilmroulette.dtos.DiscoveryResponse;
 import com.gyt.thefilmroulette.services.api.MovieApiService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RequestMapping("api/v1/movie")
 @RestController
-@RequiredArgsConstructor
 public class MovieApiController {
+
+  @Autowired
   private MovieApiService tmdbService;
 
   @GetMapping("/discover")
