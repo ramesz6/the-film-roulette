@@ -6,7 +6,7 @@ package com.gyt.thefilmroulette.dtos.register;
  * such as username, email, and password.
  */
 public record RegisterRequest(
-                String username,
-                String email,
-                String password) {
+    String username,
+    String email,
+    String password) {
 }

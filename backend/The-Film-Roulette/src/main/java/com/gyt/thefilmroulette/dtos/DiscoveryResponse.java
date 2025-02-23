@@ -12,9 +12,8 @@ import com.gyt.thefilmroulette.models.Movie;
  * 
  * @param results The list of movies retrieved from the TMDB API.
  */
-
 public record DiscoveryResponse(
-        int page,
-        List<Movie> results) {
+    int page,
+    List<Movie> results) {
 
 }

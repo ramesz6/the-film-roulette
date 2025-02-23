@@ -1,18 +1,16 @@
 package com.gyt.thefilmroulette.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.gyt.thefilmroulette.dtos.login.LoginRequest;
 import com.gyt.thefilmroulette.dtos.register.RegisterRequest;
 import com.gyt.thefilmroulette.exceptions.EmailAlreadyTakenException;
 import com.gyt.thefilmroulette.exceptions.InvalidCredentialsException;
 import com.gyt.thefilmroulette.services.auth.AuthService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for handling authentication-related operations such as user

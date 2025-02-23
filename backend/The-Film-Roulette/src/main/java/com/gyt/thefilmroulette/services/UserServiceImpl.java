@@ -1,15 +1,12 @@
 package com.gyt.thefilmroulette.services;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.gyt.thefilmroulette.exceptions.EmailAlreadyTakenException;
 import com.gyt.thefilmroulette.exceptions.UserNotFoundException;
 import com.gyt.thefilmroulette.models.User;
 import com.gyt.thefilmroulette.repositories.UserRepository;
-
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 /**
  * Implementation of the UserService interface.

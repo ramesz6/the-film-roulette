@@ -2,7 +2,6 @@ package com.gyt.thefilmroulette.services.auth.jwt;
 
 import java.util.Map;
 import java.util.Objects;
-
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**

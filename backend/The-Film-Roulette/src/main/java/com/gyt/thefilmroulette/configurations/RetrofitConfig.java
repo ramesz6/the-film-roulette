@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import okhttp3.OkHttpClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.Retrofit;
 
 /**
  * Configuration class for setting up the Retrofit instance.

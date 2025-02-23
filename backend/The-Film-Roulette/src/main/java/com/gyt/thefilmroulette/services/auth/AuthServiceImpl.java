@@ -1,9 +1,5 @@
 package com.gyt.thefilmroulette.services.auth;
 
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.gyt.thefilmroulette.dtos.login.LoginRequest;
 import com.gyt.thefilmroulette.dtos.login.LoginResponse;
 import com.gyt.thefilmroulette.dtos.register.RegisterRequest;
@@ -13,8 +9,10 @@ import com.gyt.thefilmroulette.exceptions.EmailAlreadyTakenException;
 import com.gyt.thefilmroulette.models.User;
 import com.gyt.thefilmroulette.repositories.UserRepository;
 import com.gyt.thefilmroulette.services.auth.jwt.JwtService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 /**
  * Implementation of the {@link AuthService} interface that handles

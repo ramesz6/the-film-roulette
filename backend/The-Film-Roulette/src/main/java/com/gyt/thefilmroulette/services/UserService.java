@@ -1,8 +1,7 @@
 package com.gyt.thefilmroulette.services;
 
-import java.util.List;
-
 import com.gyt.thefilmroulette.models.User;
+import java.util.List;
 
 /**
  * Interface for user management services.

@@ -1,10 +1,8 @@
 package com.gyt.thefilmroulette.repositories;
 
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.gyt.thefilmroulette.models.User;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * Repository interface for performing CRUD operations on {@link User} entities.
