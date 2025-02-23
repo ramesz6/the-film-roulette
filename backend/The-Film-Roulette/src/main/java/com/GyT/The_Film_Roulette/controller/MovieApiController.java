@@ -1,7 +1,8 @@
 package com.GyT.The_Film_Roulette.controller;
 
 import com.GyT.The_Film_Roulette.dtos.DiscoveryResponse;
-import com.GyT.The_Film_Roulette.services.Tmdb.MovieApiService;
+import com.GyT.The_Film_Roulette.services.MovieApi.MovieApiService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette.services.Tmdb;
+package com.GyT.The_Film_Roulette.services.MovieApi;
 
 import com.GyT.The_Film_Roulette.dtos.DiscoveryResponse;
 
