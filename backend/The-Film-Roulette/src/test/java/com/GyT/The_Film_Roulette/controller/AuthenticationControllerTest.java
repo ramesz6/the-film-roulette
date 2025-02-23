@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette.controller;
+package com.gyt.the_film_roulette.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

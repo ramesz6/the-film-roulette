@@ -1,4 +1,4 @@
-package com.GyT.The_Film_Roulette;
+package com.gyt.the_film_roulette;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
