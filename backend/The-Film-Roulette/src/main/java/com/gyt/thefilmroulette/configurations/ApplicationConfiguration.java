@@ -2,8 +2,8 @@ package com.gyt.thefilmroulette.configurations;
 
 import com.gyt.thefilmroulette.exceptions.UserNotFoundException;
 import com.gyt.thefilmroulette.repositories.UserRepository;
-import org.springframework.context.annotation.Bean;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

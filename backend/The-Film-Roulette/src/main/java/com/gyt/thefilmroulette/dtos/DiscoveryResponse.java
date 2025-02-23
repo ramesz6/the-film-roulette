@@ -1,8 +1,7 @@
 package com.gyt.thefilmroulette.dtos;
 
-import java.util.List;
-
 import com.gyt.thefilmroulette.models.Movie;
+import java.util.List;
 
 /**
  * DTO (Data Transfer Object) for handling movie discovery responses.

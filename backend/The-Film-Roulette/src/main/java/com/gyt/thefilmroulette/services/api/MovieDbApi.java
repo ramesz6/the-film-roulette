@@ -1,4 +1,4 @@
-package com.gyt.thefilmroulette.services.MovieApi;
+package com.gyt.thefilmroulette.services.api;
 
 import com.gyt.thefilmroulette.dtos.DiscoveryResponse;
 import retrofit2.Call;
