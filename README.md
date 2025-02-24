@@ -62,7 +62,7 @@ cd backend
 ```
 OR with Docker:
 ```sh
-docker compose up -d
+cd 
 ```
 
 ### 2. Run the Frontend
