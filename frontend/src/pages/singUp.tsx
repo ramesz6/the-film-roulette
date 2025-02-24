@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { postRegister } from "../api/register";
 
 interface UserModel {
-    name: string;
+    username: string;
     email: string;
     password: string
 }
@@ -9,7 +10,7 @@ interface UserModel {
 const SingUp = () => {
 
     const [data, setData] = useState<UserModel>({
-        name: "",
+        username: "",
         email: "",
         password: ""
     })
@@ -22,11 +23,17 @@ const SingUp = () => {
 
     }
 
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const response = await postRegister(data.email, data.username, data.password);
+        console.log("Válasz:", response);
+      };
+
     return (
         <>
             <div className='flex justify-center items-center'>
 
-                <div className="card bg-base-100 w-96 shadow-xl">
+                <form onSubmit={handleSubmit}  className="card bg-base-100 w-96 shadow-xl">
                     <div className="card-body">
                         <h2 className="card-title justify-center">SingUp</h2>
                         <label className="input input-bordered flex items-center gap-2">
@@ -60,7 +67,7 @@ const SingUp = () => {
                                 className="grow"
                                 placeholder="Username"
                                 id="username"
-                                value={data.name}
+                                value={data.username}
                                 onChange={handleInputChange} />
                         </label>
                         <label className="input input-bordered flex items-center gap-2">
@@ -85,8 +92,7 @@ const SingUp = () => {
                             <button className="btn btn-primary">SingUp Now</button>
                         </div>
                     </div>
-                </div>
-
+                </form>
             </div>
         </>
     );

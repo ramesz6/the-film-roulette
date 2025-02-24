@@ -2,7 +2,6 @@ package com.GyT.The_Film_Roulette.models;
 
 import java.util.Collection;
 import java.util.List;
-
 import org.hibernate.annotations.NaturalId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -102,5 +101,24 @@ public class User implements UserDetails {
   @Override
   public boolean isEnabled() {
     return true;
+  }
+
+  /**
+   * Retrieves the username for authentication purposes.
+   *
+   * @return the username of the user
+   */
+  @Override
+  public String getUsername() {
+    return this.username;
+  }
+
+  /**
+   * Retrieves the email address for authentication purposes.
+   *
+   * @return the email of the user
+   */
+  public String getEmail() {
+    return this.email;
   }
 }
