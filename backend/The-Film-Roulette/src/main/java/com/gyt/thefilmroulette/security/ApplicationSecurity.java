@@ -54,6 +54,11 @@ public class ApplicationSecurity {
     return http.build();
   }
 
+  /**
+   * Configures the skibidibi CORS sources of the application.
+   *
+   * @return the CorsConfigurationSource for the whole application
+   */
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
