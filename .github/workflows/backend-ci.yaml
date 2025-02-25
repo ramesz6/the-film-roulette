@@ -1,44 +1,49 @@
 name: Backend Build and Test
 
+# This workflow runs when a pull request is made to the main branch
+# and the changes affect the 'backend/' directory.
 on:
   pull_request:
     branches:
       - main
     paths:
       - 'backend/**'
+
 jobs:
   build_and_test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Uses the latest Ubuntu version as the runner.
+
     defaults:
       run:
-        working-directory: backend/The-Film-Roulette
+        working-directory: backend/The-Film-Roulette  # Sets the working directory for commands.
+
     permissions:
-      contents: read
-      statuses: write
+      contents: read    # Grants read access to the repository contents.
+      statuses: write   # Allows the workflow to update commit statuses.
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # Checks out the repository's latest code.
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v4  # Sets up the Java environment.
         with:
-          distribution: 'temurin'
-          java-version: '23'
-          cache: 'maven'
+          distribution: 'temurin'  # Uses the Temurin OpenJDK distribution.
+          java-version: '23'       # Installs Java version 23.
+          cache: 'maven'           # Caches Maven dependencies to speed up builds.
 
       - name: Setup Maven
-        run: mvn clean install -q
+        run: mvn clean install -q  # Builds the Maven project and installs dependencies (-q = quiet mode).
 
       - name: Run Tests
-        run: mvn test -q
+        run: mvn test -q  # Executes unit tests using Maven.
 
       - name: Run Checkstyle
-        uses: nikitasavinov/checkstyle-action@master
+        uses: nikitasavinov/checkstyle-action@master  # Runs Checkstyle for code style validation.
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: 'github-check'
-          tool_name: 'Checkstyle'
-          fail_on_error: true
-          level: warning,error
-          workdir: backend
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # Provides GitHub API access for Checkstyle reports.
+          reporter: 'github-check'  # Displays results as GitHub Checks.
+          tool_name: 'Checkstyle'  # Specifies the tool name for reporting.
+          fail_on_error: true  # Fails the build if there are style errors.
+          level: warning,error  # Reports warnings and errors only.
+          workdir: backend  # Runs the Checkstyle validation in the 'backend' directory.
