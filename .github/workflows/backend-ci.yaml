@@ -33,7 +33,7 @@ jobs:
           cache: 'maven'           # Caches Maven dependencies to speed up builds.
 
       - name: Setup Maven
-        run: mvn clean install -q  # Builds the Maven project and installs dependencies (-q = quiet mode).
+        run: mvn clean install -q -DskipTests  # Builds the Maven project and installs dependencies (-q = quiet mode).
 
       - name: Run Tests
         run: mvn test -q  # Executes unit tests using Maven.

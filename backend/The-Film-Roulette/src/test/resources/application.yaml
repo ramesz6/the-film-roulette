@@ -12,11 +12,11 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: somestupidvaluenotrealyoloagainsomestupidvaluenotrealyolo
 
 tmdb:
   api:
-    key: ${TMDB_API_KEY}
+    key: NOT_REALLY_A_TMDB_API_KEY
 
 cors:
   urls: ${CORS_URLS:http://localhost:5173}
