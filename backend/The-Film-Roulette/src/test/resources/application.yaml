@@ -12,8 +12,11 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
 
 jwt:
-  secret: "ZjFsbnIwMWwxM3R0M0xvbmcyMDI0aGFzaGRmZGdoanNma2xhZGZqa2FzZGZqa3NkanM="
+  secret: somestupidvaluenotrealyoloagainsomestupidvaluenotrealyolo
 
 tmdb:
   api:
-    key: "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5OGM3Y2NmN2MxMmNhYzI4ZTMzYzFiNTA0ZTk1OGU4NSIsIm5iZiI6MTczNzMwNjkwNS43MDg5OTk5LCJzdWIiOiI2NzhkMzMxOWU0NTY2Mzk5YTI2ZGZiNDMiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.6wAeCSMBXlWYzTuqPTpmNBNf-uL4bAOBZFB8Y0pQt9g"
+    key: NOT_REALLY_A_TMDB_API_KEY
+
+cors:
+  urls: ${CORS_URLS:http://localhost:5173}
