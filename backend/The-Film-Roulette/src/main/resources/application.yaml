@@ -24,5 +24,4 @@ tmdb:
     key: ${TMDB_API_KEY}
 
 cors:
-  urls:
-    ${CORS_URLS}
+  urls: ${CORS_URLS}
