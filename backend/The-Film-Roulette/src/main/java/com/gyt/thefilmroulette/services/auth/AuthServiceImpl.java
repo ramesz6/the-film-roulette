@@ -9,7 +9,10 @@ import com.gyt.thefilmroulette.exceptions.EmailAlreadyTakenException;
 import com.gyt.thefilmroulette.models.User;
 import com.gyt.thefilmroulette.repositories.UserRepository;
 import com.gyt.thefilmroulette.services.auth.jwt.JwtService;
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
