@@ -25,4 +25,4 @@ tmdb:
 
 cors:
   urls:
-    ${CORS_URLS:http://localhost:5173}
+    ${CORS_URLS}
