@@ -7,7 +7,7 @@ function App() {
   const [movieDatas, setMovieDatas] = useState<Movie | null>(null);
 
   function generateRandomNumber(): string {
-    let result = Math.floor(Math.random() * 996) + 1;
+    const result = Math.floor(Math.random() * 996) + 1;
     return "" + result;
   }
 
