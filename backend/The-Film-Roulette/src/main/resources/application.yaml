@@ -22,3 +22,6 @@ jwt:
 tmdb:
   api:
     key: ${TMDB_API_KEY}
+
+cors:
+  urls: ${CORS_URLS:http://localhost:5173}
