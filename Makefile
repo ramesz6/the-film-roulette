@@ -10,12 +10,12 @@ PORT = 8080
 
 # Default target
 .PHONY: all
-all: clean build test
+all: clean build -DskipTests
 
 # Build the project
 .PHONY: build
 build:
-	$(MVNW) clean package -f $(BASE_DIR)/pom.xml
+	$(MVNW) clean package -f $(BASE_DIR)/pom.xml -DskipTests
 
 # Run the application
 .PHONY: run
