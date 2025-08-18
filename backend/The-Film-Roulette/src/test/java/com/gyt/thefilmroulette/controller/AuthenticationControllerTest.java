@@ -87,9 +87,9 @@ public class AuthenticationControllerTest {
     mockMvc.perform(post("/api/v1/auth/register")
         .contentType(MediaType.APPLICATION_JSON)
         .content(stringified))
-        .andExpect(status().isBadRequest());
-  }
+        .andExpect(status().isBadRequest())
         .andExpect(content().string("User already exists"));
+  }
 
   /**
    * Tests that after succesfully registered, user can successfully
