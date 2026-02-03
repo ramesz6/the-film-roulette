@@ -20,13 +20,6 @@ const SingUp = () => {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const id = event.target.id;
-    const value = event.target.value;
-
-    setData({ ...data, [id]: value });
-  };
-
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
@@ -69,8 +62,11 @@ const SingUp = () => {
                 className="grow"
                 placeholder="Email"
                 id="email"
+                autoComplete="email"
                 value={data.email}
-                onChange={handleInputChange}
+                onChange={(e) =>
+                  setData((prev) => ({ ...prev, email: e.target.value }))
+                }
               />
             </label>
             <label className="input input-bordered flex items-center gap-2">
@@ -87,8 +83,11 @@ const SingUp = () => {
                 className="grow"
                 placeholder="Username"
                 id="username"
+                autoComplete="username"
                 value={data.username}
-                onChange={handleInputChange}
+                onChange={(e) =>
+                  setData((prev) => ({ ...prev, username: e.target.value }))
+                }
               />
             </label>
             <label className="input input-bordered flex items-center gap-2">
@@ -109,8 +108,11 @@ const SingUp = () => {
                 className="grow"
                 placeholder="Password"
                 id="password"
+                autoComplete="new-password"
                 value={data.password}
-                onChange={handleInputChange}
+                onChange={(e) =>
+                  setData((prev) => ({ ...prev, password: e.target.value }))
+                }
               />
             </label>
             <div className="card-actions justify-center">
