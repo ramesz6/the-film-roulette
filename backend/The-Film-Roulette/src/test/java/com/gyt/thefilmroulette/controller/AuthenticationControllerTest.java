@@ -4,21 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content; // remove if unused
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gyt.thefilmroulette.dtos.login.LoginRequest;
 import com.gyt.thefilmroulette.dtos.register.RegisterRequest;
+import com.gyt.thefilmroulette.exceptions.AuthenticationException;
 import jakarta.transaction.Transactional;
 import java.util.Objects;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import com.gyt.thefilmroulette.exceptions.AuthenticationException;
 
 /**
  * Test class for the AuthenticationController.
@@ -36,28 +35,20 @@ public class AuthenticationControllerTest {
      */
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    /**
-     * MockMvc instance used for performing HTTP requests in tests.
-     */
+    /** MockMvc instance used for performing HTTP requests in tests. */
     @Autowired
     private MockMvc mockMvc;
 
-    /**
-     * Tests that a user can successfully register through the /api/v1/auth/register
-     * endpoint.
-     *
-     * @throws Exception if there is an error in performing the test
-     */
     @Test
     @DisplayName("Should successfully register a new user")
     public void authControllerShouldSuccessfullyRegister() throws Exception {
-
         RegisterRequest registerRequest = new RegisterRequest(
                 "ramesz",
                 "ramesz@email.com",
                 "password");
 
-        String stringified = Objects.requireNonNull(objectMapper.writeValueAsString(registerRequest));
+        String stringified = Objects.requireNonNull(
+                objectMapper.writeValueAsString(registerRequest));
 
         mockMvc.perform(post("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -65,22 +56,16 @@ public class AuthenticationControllerTest {
                 .andExpect(status().isOk());
     }
 
-    /**
-     * Tests that trying to register the same user twice results in a bad request
-     * response.
-     *
-     * @throws Exception if there is an error in performing the test
-     */
     @Test
     @DisplayName("Should not allow duplicate user registration")
     public void authControllerShouldNotRegister() throws Exception {
-
         RegisterRequest registerRequest = new RegisterRequest(
                 "ramesz",
                 "ramesz@email.com",
                 "password");
 
-        String stringified = Objects.requireNonNull(objectMapper.writeValueAsString(registerRequest));
+        String stringified = Objects.requireNonNull(
+                objectMapper.writeValueAsString(registerRequest));
 
         mockMvc.perform(post("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -93,22 +78,16 @@ public class AuthenticationControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    /**
-     * Tests that after succesfully registered, user can successfully
-     * login through the /api/v1/auth/login endpoint and return with a token.
-     *
-     * @throws Exception if there is an error in performing the test
-     */
     @Test
     @DisplayName("Should successfully login and return JWT token")
     public void authControllerShouldSuccessfullyLoginAndReturnWithToken() throws Exception {
-
         RegisterRequest registerRequest = new RegisterRequest(
                 "ramesz",
                 "ramesz@email.com",
                 "password");
 
-        String stringifiedRegister = Objects.requireNonNull(objectMapper.writeValueAsString(registerRequest));
+        String stringifiedRegister = Objects.requireNonNull(
+                objectMapper.writeValueAsString(registerRequest));
 
         mockMvc.perform(post("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -119,7 +98,8 @@ public class AuthenticationControllerTest {
                 "ramesz@email.com",
                 "password");
 
-        String stringifiedLogin = Objects.requireNonNull(objectMapper.writeValueAsString(loginRequest));
+        String stringifiedLogin = Objects.requireNonNull(
+                objectMapper.writeValueAsString(loginRequest));
 
         mockMvc.perform(post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -128,11 +108,6 @@ public class AuthenticationControllerTest {
                 .andExpect(jsonPath("$.token").isString());
     }
 
-    /**
-     * Tests that login fails with invalid credentials.
-     *
-     * @throws Exception if there is an error in performing the test
-     */
     @Test
     @DisplayName("Should fail login with invalid credentials")
     public void authControllerShouldFailLoginWithInvalidCredentials() throws Exception {
@@ -140,7 +115,8 @@ public class AuthenticationControllerTest {
                 "nonexistent@email.com",
                 "wrongpassword");
 
-        String stringifiedLogin = Objects.requireNonNull(objectMapper.writeValueAsString(loginRequest));
+        String stringifiedLogin = Objects.requireNonNull(
+                objectMapper.writeValueAsString(loginRequest));
 
         try {
             mockMvc.perform(post("/api/v1/auth/login")
@@ -154,11 +130,6 @@ public class AuthenticationControllerTest {
         }
     }
 
-    /**
-     * Tests that login fails with correct email but wrong password.
-     *
-     * @throws Exception if there is an error in performing the test
-     */
     @Test
     @DisplayName("Should fail login with wrong password")
     public void authControllerShouldFailLoginWithWrongPassword() throws Exception {
@@ -167,7 +138,8 @@ public class AuthenticationControllerTest {
                 "test@email.com",
                 "correctpassword");
 
-        String stringifiedRegister = Objects.requireNonNull(objectMapper.writeValueAsString(registerRequest));
+        String stringifiedRegister = Objects.requireNonNull(
+                objectMapper.writeValueAsString(registerRequest));
 
         mockMvc.perform(post("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -178,7 +150,8 @@ public class AuthenticationControllerTest {
                 "test@email.com",
                 "wrongpassword");
 
-        String stringifiedLogin = Objects.requireNonNull(objectMapper.writeValueAsString(loginRequest));
+        String stringifiedLogin = Objects.requireNonNull(
+                objectMapper.writeValueAsString(loginRequest));
 
         try {
             mockMvc.perform(post("/api/v1/auth/login")
@@ -200,15 +173,9 @@ public class AuthenticationControllerTest {
         return cur;
     }
 
-    /**
-     * Tests registration with invalid JSON format.
-     *
-     * @throws Exception if there is an error in performing the test
-     */
     @Test
     @DisplayName("Should handle malformed JSON in registration")
     public void authControllerShouldHandleMalformedJson() throws Exception {
-
         String malformedJson = "{ \"username\": \"test\", \"email\": }";
 
         mockMvc.perform(post("/api/v1/auth/register")
@@ -217,21 +184,16 @@ public class AuthenticationControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    /**
-     * Tests registration with missing content type.
-     *
-     * @throws Exception if there is an error in performing the test
-     */
     @Test
     @DisplayName("Should handle missing content type")
     public void authControllerShouldHandleMissingContentType() throws Exception {
-
         RegisterRequest registerRequest = new RegisterRequest(
                 "testuser",
                 "test@email.com",
                 "password");
 
-        String stringified = Objects.requireNonNull(objectMapper.writeValueAsString(registerRequest));
+        String stringified = Objects.requireNonNull(
+                objectMapper.writeValueAsString(registerRequest));
 
         mockMvc.perform(post("/api/v1/auth/register")
                 .content(stringified))
