@@ -4,20 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gyt.thefilmroulette.dtos.DiscoveryResponse;
-import com.gyt.thefilmroulette.services.api.MovieApiService;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -26,7 +21,6 @@ import okhttp3.mockwebserver.MockWebServer;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
 class MovieApiControllerTest {
 
   @Autowired
@@ -35,24 +29,20 @@ class MovieApiControllerTest {
   @Autowired
   private ObjectMapper objectMapper;
 
-  @Autowired
-  private MovieApiService movieApiService;
+  private static MockWebServer mockWebServer;
 
-  private MockWebServer mockWebServer;
-
-  @BeforeEach
-  void setUp() throws IOException {
+  @DynamicPropertySource
+  static void dynamicProperties(DynamicPropertyRegistry registry) throws Exception {
     mockWebServer = new MockWebServer();
     mockWebServer.start();
-
-    // 🔹 A MovieApiService-nek a MockWebServer URL-jét adjuk meg
-    String mockUrl = mockWebServer.url("/").toString();
-    ReflectionTestUtils.setField(movieApiService, "tmdbApiBaseUrl", mockUrl);
+    registry.add("tmdb.api.base-url", () -> mockWebServer.url("/").toString());
   }
 
-  @AfterEach
-  void tearDown() throws IOException {
-    mockWebServer.shutdown();
+  @AfterAll
+  static void tearDown() throws Exception {
+    if (mockWebServer != null) {
+      mockWebServer.shutdown();
+    }
   }
 
   @Test
