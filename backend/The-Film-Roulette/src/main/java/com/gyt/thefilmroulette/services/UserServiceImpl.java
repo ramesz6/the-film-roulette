@@ -5,6 +5,7 @@ import com.gyt.thefilmroulette.exceptions.UserNotFoundException;
 import com.gyt.thefilmroulette.models.User;
 import com.gyt.thefilmroulette.repositories.UserRepository;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,7 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public User addUsers(User user) {
+    Objects.requireNonNull(user, "user");
     if (userAlreadyExists(user.getEmail())) {
       throw new EmailAlreadyTakenException(user.getEmail() + " is already taken");
     }
@@ -74,6 +76,8 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public User updateUser(User user, Long id) {
+    Objects.requireNonNull(user, "user");
+    Objects.requireNonNull(id, "id");
     return userRepository.findById(id).map(us -> {
       us.setEmail(user.getEmail());
       us.setUsername(user.getUsername());
@@ -90,6 +94,7 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public User getUserById(Long id) {
+    Objects.requireNonNull(id, "id");
     return userRepository.findById(id)
         .orElseThrow(() -> new UserNotFoundException("Cannot find user with the Id :" + id));
   }
@@ -105,6 +110,7 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public void deleteUser(Long id) {
+    Objects.requireNonNull(id, "id");
     if (!userRepository.existsById(id)) {
       throw new UserNotFoundException("Cannot find user with the Id :" + id);
     }

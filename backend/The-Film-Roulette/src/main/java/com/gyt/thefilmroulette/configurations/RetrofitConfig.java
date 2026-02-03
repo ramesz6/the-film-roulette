@@ -1,7 +1,7 @@
 package com.gyt.thefilmroulette.configurations;
 
-import lombok.AllArgsConstructor;
 import okhttp3.OkHttpClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import retrofit2.Retrofit;
@@ -15,11 +15,18 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * the request headers as necessary.
  */
 @Configuration
-@AllArgsConstructor
 public class RetrofitConfig {
 
-  private static final String BASE_URL = "https://api.themoviedb.org/3/";
+  private static final String DEFAULT_BASE_URL = "https://api.themoviedb.org/3/";
   private final MovieApiInterceptor interceptor;
+  private final String baseUrl;
+
+  public RetrofitConfig(
+      MovieApiInterceptor interceptor,
+      @Value("${tmdb.api.base-url:" + DEFAULT_BASE_URL + "}") String baseUrl) {
+    this.interceptor = interceptor;
+    this.baseUrl = baseUrl;
+  }
 
   /**
    * Configures and returns a Retrofit instance.
@@ -35,7 +42,7 @@ public class RetrofitConfig {
         .build();
 
     return new Retrofit.Builder()
-        .baseUrl(BASE_URL) // Set the base URL for the API
+        .baseUrl(baseUrl) // Set the base URL for the API
         .addConverterFactory(GsonConverterFactory.create()) // Use Gson for JSON conversion
         .client(client) // Set the OkHttpClient with the interceptor
         .build(); // Build and return the Retrofit instance

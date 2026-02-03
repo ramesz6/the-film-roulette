@@ -9,8 +9,8 @@ import com.gyt.thefilmroulette.exceptions.EmailAlreadyTakenException;
 import com.gyt.thefilmroulette.models.User;
 import com.gyt.thefilmroulette.repositories.UserRepository;
 import com.gyt.thefilmroulette.services.auth.jwt.JwtService;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,16 +45,17 @@ class AuthServiceImpl implements AuthService {
    */
   @Override
   public RegisterResponse register(RegisterRequest registerRequest) {
+    Objects.requireNonNull(registerRequest, "registerRequest");
 
     if (userRepository.existsByEmail(registerRequest.email())) {
       throw new EmailAlreadyTakenException("E-mail is already taken.");
     }
 
-    User newRegisterUser = User.builder()
+    User newRegisterUser = Objects.requireNonNull(User.builder()
         .username(registerRequest.username())
         .email(registerRequest.email())
         .password(passwordEncoder.encode(registerRequest.password()))
-        .build();
+        .build(), "newRegisterUser");
     userRepository.save(newRegisterUser);
     return new RegisterResponse();
 
@@ -73,9 +74,12 @@ class AuthServiceImpl implements AuthService {
    */
   @Override
   public LoginResponse login(LoginRequest loginRequest) {
+    Objects.requireNonNull(loginRequest, "loginRequest");
+
     User user = userRepository.findByEmail(loginRequest.email())
-        .orElse(null);
-    if (user == null || !BCrypt.checkpw(loginRequest.password(), user.getPassword())) {
+        .orElseThrow(() -> new AuthenticationException("Invalid email or password"));
+
+    if (!passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
       throw new AuthenticationException("Invalid email or password");
     }
     return new LoginResponse(jwtService.generateToken(user));

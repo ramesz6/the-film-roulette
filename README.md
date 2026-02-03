@@ -29,12 +29,22 @@ The Film Roulette is a full-stack application built with a **React (Vite, TypeSc
 
 ### Prerequisites:
 - Node.js (for frontend development)
-- Java 17+ (for backend development)
+- Java 21+ (for backend development)
 - Docker & Docker Compose (for running services locally)
 - PostgreSQL (if running without Docker)
 
 ### Environment Variables
-To keep sensitive data secure, environment variables should be stored in `.env` files.
+To keep sensitive data secure, environment variables should be stored in `.env` files (and **must not** be committed).
+
+Create a local `.env` from the sample file:
+```sh
+cp .env.sample .env
+```
+
+By default the backend uses Spring profiles:
+- `dev` for running locally on your machine
+- `docker` when running via Docker Compose
+- `prod` for production-like settings (safer defaults)
 
 #### **Frontend `.env` Example:**
 ```
@@ -46,7 +56,8 @@ VITE_PUBLIC_MOVIE_API_KEY=your_public_api_key_here
 ```
 SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/filmroulette
 SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=postgres
+SPRING_DATASOURCE_PASSWORD=<your-password>
+POSTGRES_PASSWORD=<your-password>
 JWT_SECRET=your_jwt_secret_key_here
 EXTERNAL_MOVIE_API_KEY=your_movie_api_key_here
 ```
@@ -62,7 +73,8 @@ cd backend
 ```
 OR with Docker:
 ```sh
-cd 
+cp .env.sample .env
+docker compose -f docker-compose.yaml up --build
 ```
 
 ### 2. Run the Frontend
