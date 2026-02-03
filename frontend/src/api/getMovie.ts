@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { z } from "zod";
 
-const apiBaseUrl = (import.meta as any).env?.VITE_API_BASE_URL ?? "http://localhost:8080";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
 
 const Movie = axios.create({
   baseURL: apiBaseUrl,
@@ -10,7 +10,7 @@ const Movie = axios.create({
 const getMovie = async (): Promise<AxiosResponse | null> => {
   try {
     const response = await Movie.get("/api/v1/movie/discover");
-    console.log(response.data)
+    console.log(response.data);
     return response;
   } catch (error) {
     return (error as AxiosError).response || null;
@@ -18,25 +18,25 @@ const getMovie = async (): Promise<AxiosResponse | null> => {
 };
 
 const Moviechema = z.object({
-    adult: z.boolean(),
-    backdropPath: z.string(),
-    genreIds: z.array(z.number().int()),
-    id: z.number().int(),
-    originalLanguage: z.string(),
-    originalTitle: z.string(),
-    overview: z.string(),
-    popularity: z.number(),
-    posterPath: z.string(),
-    releaseDate: z.string(),
-    title: z.string(),
-    video: z.boolean(),
-    voteAverage: z.number(),
-    voteCount: z.number().int().array(),
+  adult: z.boolean(),
+  backdropPath: z.string(),
+  genreIds: z.array(z.number().int()),
+  id: z.number().int(),
+  originalLanguage: z.string(),
+  originalTitle: z.string(),
+  overview: z.string(),
+  popularity: z.number(),
+  posterPath: z.string(),
+  releaseDate: z.string(),
+  title: z.string(),
+  video: z.boolean(),
+  voteAverage: z.number(),
+  voteCount: z.number().int().array(),
 });
 
 export type Movies = z.infer<typeof Moviechema>;
 
-const validateMovie = (response: AxiosResponse): Movies [] | null => {
+const validateMovie = (response: AxiosResponse): Movies[] | null => {
   const result = Moviechema.array().safeParse(response.data);
   if (!result.success) {
     console.log(result.error.issues);
@@ -56,7 +56,7 @@ type Response<Type> =
       success: false;
     };
 
-export const loadMovie = async (): Promise<Response<Movies []>> => {
+export const loadMovie = async (): Promise<Response<Movies[]>> => {
   const response = await getMovie();
   if (!response) return { success: false, status: 0 };
   if (response.status !== 200)
