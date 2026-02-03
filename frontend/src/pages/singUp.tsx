@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { Link, useNavigate } from "react-router";
 
 interface UserModel {
@@ -10,6 +10,69 @@ interface UserModel {
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 8;
+
+type FieldErrors = Partial<Record<keyof UserModel, string>>;
+
+const validate = (data: UserModel): FieldErrors => {
+  const errors: FieldErrors = {};
+
+  const email = data.email.trim();
+  const username = data.username.trim();
+  const password = data.password;
+
+  if (!EMAIL_REGEX.test(email)) {
+    errors.email = "Érvénytelen email formátum";
+  }
+
+  if (username.length === 0) {
+    errors.username = "A felhasználónév kötelező";
+  } else if (EMAIL_REGEX.test(username) || username.includes("@")) {
+    errors.username = "A felhasználónév nem lehet email cím";
+  }
+
+  const missing: string[] = [];
+  if (password.length < MIN_PASSWORD_LENGTH)
+    missing.push(`legalább ${MIN_PASSWORD_LENGTH} karakter`);
+  if (!/[a-z]/.test(password)) missing.push("kisbetű");
+  if (!/[A-Z]/.test(password)) missing.push("nagybetű");
+  if (!/[0-9]/.test(password)) missing.push("szám");
+
+  if (missing.length > 0) {
+    errors.password = `Jelszó követelmények: ${missing.join(", ")}`;
+  }
+
+  return errors;
+};
+
+const errorMessageFromAxios = (err: unknown): string => {
+  if (!axios.isAxiosError(err)) return "A regisztráció sikertelen";
+
+  const axiosErr = err as AxiosError;
+  const status = axiosErr.response?.status;
+  const data = axiosErr.response?.data;
+
+  if (status === 400) {
+    if (typeof data === "string") {
+      if (data.toLowerCase().includes("already exists")) {
+        return "Az email már használatban van";
+      }
+      if (data.toLowerCase().includes("invalid")) {
+        return "Érvénytelen adatok";
+      }
+      return data;
+    }
+    return "Érvénytelen adatok";
+  }
+
+  if (status === 0 || status === undefined) return "A szerver nem elérhető";
+  if (status === 401 || status === 403) return "Nincs jogosultság";
+  if (status >= 500) return "Szerver hiba";
+
+  return "A regisztráció sikertelen";
+};
+
 const SingUp = () => {
   const navigate = useNavigate();
   const [data, setData] = useState<UserModel>({
@@ -18,23 +81,38 @@ const SingUp = () => {
     password: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [touched, setTouched] = useState<Record<keyof UserModel, boolean>>({
+    username: false,
+    email: false,
+    password: false,
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fieldErrors = validate(data);
+  const hasErrors = Object.keys(fieldErrors).length > 0;
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
+
+    setTouched({ username: true, email: true, password: true });
+    const currentErrors = validate(data);
+    if (Object.keys(currentErrors).length > 0) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       await axios.post(`${apiBaseUrl}/api/v1/auth/register`, {
-        username: data.username,
-        email: data.email,
+        username: data.username.trim(),
+        email: data.email.trim(),
         password: data.password,
       });
 
       navigate("/login", { replace: true });
-    } catch {
-      setError("Registration failed (email already in use?)");
+    } catch (err) {
+      setError(errorMessageFromAxios(err));
     } finally {
       setIsSubmitting(false);
     }
@@ -67,8 +145,12 @@ const SingUp = () => {
                 onChange={(e) =>
                   setData((prev) => ({ ...prev, email: e.target.value }))
                 }
+                onBlur={() => setTouched((p) => ({ ...p, email: true }))}
               />
             </label>
+            {touched.email && fieldErrors.email && (
+              <p className="text-sm text-red-500">{fieldErrors.email}</p>
+            )}
             <label className="input input-bordered flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -88,8 +170,15 @@ const SingUp = () => {
                 onChange={(e) =>
                   setData((prev) => ({ ...prev, username: e.target.value }))
                 }
+                onBlur={() => setTouched((p) => ({ ...p, username: true }))}
               />
             </label>
+            <p className="text-xs opacity-70">
+              A felhasználónév nem lehet email cím.
+            </p>
+            {touched.username && fieldErrors.username && (
+              <p className="text-sm text-red-500">{fieldErrors.username}</p>
+            )}
             <label className="input input-bordered flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -113,13 +202,21 @@ const SingUp = () => {
                 onChange={(e) =>
                   setData((prev) => ({ ...prev, password: e.target.value }))
                 }
+                onBlur={() => setTouched((p) => ({ ...p, password: true }))}
               />
             </label>
+            <p className="text-xs opacity-70">
+              Min. {MIN_PASSWORD_LENGTH} karakter, legyen benne kisbetű,
+              nagybetű és szám.
+            </p>
+            {touched.password && fieldErrors.password && (
+              <p className="text-sm text-red-500">{fieldErrors.password}</p>
+            )}
             <div className="card-actions justify-center">
               <button
                 className="btn btn-primary"
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || hasErrors}
               >
                 {isSubmitting ? "Signing up..." : "SingUp Now"}
               </button>
