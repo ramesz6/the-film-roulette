@@ -29,12 +29,17 @@ The Film Roulette is a full-stack application built with a **React (Vite, TypeSc
 
 ### Prerequisites:
 - Node.js (for frontend development)
-- Java 17+ (for backend development)
+- Java 21+ (for backend development)
 - Docker & Docker Compose (for running services locally)
 - PostgreSQL (if running without Docker)
 
 ### Environment Variables
-To keep sensitive data secure, environment variables should be stored in `.env` files.
+To keep sensitive data secure, environment variables should be stored in `.env` files (and **must not** be committed).
+
+Create a local `.env` from the sample file:
+```sh
+cp .env.sample .env
+```
 
 #### **Frontend `.env` Example:**
 ```
@@ -62,7 +67,7 @@ cd backend
 ```
 OR with Docker:
 ```sh
-cd 
+docker compose -f docker-compose.yaml up --build
 ```
 
 ### 2. Run the Frontend

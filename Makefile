@@ -1,6 +1,10 @@
-# Load environment variables from .env
-include .env
+# Load environment variables from .env (optional)
+-include .env
+
+# Export variables from .env if it exists
+ifneq (,$(wildcard .env))
 export $(shell sed 's/=.*//' .env)
+endif
 
 # Variables
 BASE_DIR = backend/The-Film-Roulette
@@ -10,7 +14,7 @@ PORT = 8080
 
 # Default target
 .PHONY: all
-all: clean build -DskipTests
+all: clean build
 
 # Build the project
 .PHONY: build
@@ -20,7 +24,7 @@ build:
 # Run the application
 .PHONY: run
 run: build
-	docker compose up db -d
+	docker compose -f docker-compose.yaml up db -d
 	java -jar $(JAR_FILE)
 
 # Run the application in the background

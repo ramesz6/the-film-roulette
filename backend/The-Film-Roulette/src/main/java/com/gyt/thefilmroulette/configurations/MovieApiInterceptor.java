@@ -24,7 +24,6 @@ public class MovieApiInterceptor implements Interceptor {
     Request newRequest = originalRequest.newBuilder()
         .addHeader("Authorization", "Bearer " + apiKey)
         .build();
-    System.out.println(apiKey);
     return chain.proceed(newRequest);
   }
 }
