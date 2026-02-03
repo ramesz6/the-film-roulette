@@ -38,7 +38,7 @@ public class JwtServiceImpl implements JwtService {
   @Override
   public String generateToken(UserDetails userDetails) {
     return Jwts.builder()
-        .subject(userDetails.getUsername()) // Subject of the token (usually the username)
+        .subject(userDetails.getUsername()) // Subject of the token (email in this app)
         .signWith(getSignInKey()) // Signing the token with a secret key
         .compact(); // Return the compact serialized JWT token
   }

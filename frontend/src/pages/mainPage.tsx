@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./App.css";
+import "../App.css";
 import { loadMovie } from "../api/getMovie";
 import { Movies } from "../api/getMovie";
 

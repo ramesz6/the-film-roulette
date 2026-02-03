@@ -37,7 +37,7 @@ public interface AuthService {
    * the login was successful or not.
    * </p>
    * 
-   * @param loginRequest The login credentials (username/email and password) to
+   * @param loginRequest The login credentials (email and password) to
    *                     authenticate the user.
    * @return An object representing the result of the login process, such as an
    *         authentication token
