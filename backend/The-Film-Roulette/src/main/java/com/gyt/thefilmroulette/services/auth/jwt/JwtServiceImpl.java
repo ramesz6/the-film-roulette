@@ -1,6 +1,7 @@
 package com.gyt.thefilmroulette.services.auth.jwt;
 
 import com.gyt.thefilmroulette.configurations.JwtConfiguration;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -41,6 +42,25 @@ public class JwtServiceImpl implements JwtService {
         .subject(userDetails.getUsername()) // Subject of the token (email in this app)
         .signWith(getSignInKey()) // Signing the token with a secret key
         .compact(); // Return the compact serialized JWT token
+  }
+
+  @Override
+  public String extractSubject(String token) {
+    return extractAllClaims(token).getSubject();
+  }
+
+  @Override
+  public boolean isTokenValid(String token, UserDetails userDetails) {
+    String subject = extractSubject(token);
+    return subject != null && subject.equals(userDetails.getUsername());
+  }
+
+  private Claims extractAllClaims(String token) {
+    return Jwts.parser()
+        .verifyWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtConfiguration.jwtSecret)))
+        .build()
+        .parseSignedClaims(token)
+        .getPayload();
   }
 
   /**

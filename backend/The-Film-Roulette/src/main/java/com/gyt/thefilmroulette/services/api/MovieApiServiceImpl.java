@@ -2,7 +2,12 @@ package com.gyt.thefilmroulette.services.api;
 
 import com.gyt.thefilmroulette.configurations.RetrofitConfig;
 import com.gyt.thefilmroulette.dtos.DiscoveryResponse;
+import com.gyt.thefilmroulette.dtos.GenreListResponse;
+import com.gyt.thefilmroulette.dtos.GenresResponse;
+import com.gyt.thefilmroulette.dtos.TitleDetails;
 import com.gyt.thefilmroulette.exceptions.MovieApiException;
+import java.util.List;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 import retrofit2.Retrofit;
 
@@ -11,7 +16,8 @@ import retrofit2.Retrofit;
  * API.
  * Uses Retrofit to communicate with the API and retrieve movie data.
  *
- * <p>This service class handles the interaction with the TMDB API to retrieve
+ * <p>
+ * This service class handles the interaction with the TMDB API to retrieve
  * movie discovery results.
  * It initializes the Retrofit client and calls the TMDB API endpoint to get the
  * movie data.
@@ -50,7 +56,8 @@ public class MovieApiServiceImpl implements MovieApiService {
   /**
    * Retrieves movie discovery results from the TMDB API.
    * 
-   * <p>Executes the TMDB API call and returns the {@link DiscoveryResponse} if
+   * <p>
+   * Executes the TMDB API call and returns the {@link DiscoveryResponse} if
    * successful.
    *
    * @return the discovery results as a {@link DiscoveryResponse}
@@ -71,6 +78,54 @@ public class MovieApiServiceImpl implements MovieApiService {
       return response.body();
     } catch (Exception e) {
       throw new MovieApiException("Error occurred while fetching data from TMDB API");
+    }
+  }
+
+  @Override
+  public GenresResponse getGenres() {
+    try {
+      var movieResponse = tmdbApi.getMovieGenres().execute();
+      if (!movieResponse.isSuccessful()) {
+        throw new MovieApiException("API Request failed with status code: " + movieResponse.code());
+      }
+
+      var tvResponse = tmdbApi.getTvGenres().execute();
+      if (!tvResponse.isSuccessful()) {
+        throw new MovieApiException("API Request failed with status code: " + tvResponse.code());
+      }
+
+      GenreListResponse movieGenres = Objects.requireNonNull(movieResponse.body(), "movieGenres");
+      GenreListResponse tvGenres = Objects.requireNonNull(tvResponse.body(), "tvGenres");
+
+      return new GenresResponse(
+          movieGenres.genres() == null ? List.of() : movieGenres.genres(),
+          tvGenres.genres() == null ? List.of() : tvGenres.genres());
+    } catch (Exception e) {
+      throw new MovieApiException("Error occurred while fetching genres from TMDB API");
+    }
+  }
+
+  @Override
+  public TitleDetails getDetails(String mediaType, int id) {
+    Objects.requireNonNull(mediaType, "mediaType");
+
+    String normalized = mediaType.trim().toLowerCase();
+    try {
+      var call = switch (normalized) {
+        case "movie" -> tmdbApi.getMovieDetails(id);
+        case "tv", "series" -> tmdbApi.getTvDetails(id);
+        default -> throw new IllegalArgumentException("Unsupported mediaType: " + mediaType);
+      };
+
+      var response = call.execute();
+      if (!response.isSuccessful()) {
+        throw new MovieApiException("API Request failed with status code: " + response.code());
+      }
+      return response.body();
+    } catch (IllegalArgumentException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new MovieApiException("Error occurred while fetching details from TMDB API");
     }
   }
 }

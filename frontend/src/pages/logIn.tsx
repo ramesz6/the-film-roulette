@@ -28,7 +28,7 @@ const LogIn = () => {
       }
 
       setAuthToken(token);
-      navigate("/", { replace: true });
+      navigate("/profile", { replace: true });
     } catch {
       setError("Invalid email or password");
     } finally {

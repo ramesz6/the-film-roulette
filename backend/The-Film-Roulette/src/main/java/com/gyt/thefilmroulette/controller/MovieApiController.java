@@ -1,9 +1,12 @@
 package com.gyt.thefilmroulette.controller;
 
 import com.gyt.thefilmroulette.dtos.DiscoveryResponse;
+import com.gyt.thefilmroulette.dtos.GenresResponse;
+import com.gyt.thefilmroulette.dtos.TitleDetails;
 import com.gyt.thefilmroulette.services.api.MovieApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +25,16 @@ public class MovieApiController {
   public DiscoveryResponse discover() {
 
     return tmdbService.getResult();
+  }
+
+  @GetMapping("/genres")
+  public GenresResponse genres() {
+    return tmdbService.getGenres();
+  }
+
+  @GetMapping("/details/{mediaType}/{id}")
+  public TitleDetails details(@PathVariable String mediaType, @PathVariable int id) {
+    return tmdbService.getDetails(mediaType, id);
   }
 
 }

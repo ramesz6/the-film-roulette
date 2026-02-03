@@ -32,4 +32,21 @@ public interface JwtService {
    * @return The generated JWT token.
    */
   String generateToken(UserDetails userDetails, Map<String, Objects> additional);
+
+  /**
+   * Extracts the token subject (principal identifier).
+   *
+   * @param token JWT token
+   * @return subject from token
+   */
+  String extractSubject(String token);
+
+  /**
+   * Validates the token against the given user details.
+   *
+   * @param token       JWT token
+   * @param userDetails expected user
+   * @return true if the token is valid for this user
+   */
+  boolean isTokenValid(String token, UserDetails userDetails);
 }

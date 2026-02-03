@@ -1,6 +1,8 @@
 package com.gyt.thefilmroulette.services.api;
 
 import com.gyt.thefilmroulette.dtos.DiscoveryResponse;
+import com.gyt.thefilmroulette.dtos.GenresResponse;
+import com.gyt.thefilmroulette.dtos.TitleDetails;
 
 /**
  * Service interface for fetching movie discovery results from the TMDB API.
@@ -11,4 +13,8 @@ import com.gyt.thefilmroulette.dtos.DiscoveryResponse;
 public interface MovieApiService {
 
   public DiscoveryResponse getResult();
+
+  public GenresResponse getGenres();
+
+  public TitleDetails getDetails(String mediaType, int id);
 }
