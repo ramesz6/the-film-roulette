@@ -56,7 +56,8 @@ VITE_PUBLIC_MOVIE_API_KEY=your_public_api_key_here
 ```
 SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/filmroulette
 SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=postgres
+SPRING_DATASOURCE_PASSWORD=<your-password>
+POSTGRES_PASSWORD=<your-password>
 JWT_SECRET=your_jwt_secret_key_here
 EXTERNAL_MOVIE_API_KEY=your_movie_api_key_here
 ```
