@@ -32,6 +32,18 @@ services:
     env_file:
       - .env
 
+  # Vite/React frontend (built + served by nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8080}
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
 volumes:
   db_data:
 
