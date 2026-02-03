@@ -41,6 +41,11 @@ Create a local `.env` from the sample file:
 cp .env.sample .env
 ```
 
+By default the backend uses Spring profiles:
+- `dev` for running locally on your machine
+- `docker` when running via Docker Compose
+- `prod` for production-like settings (safer defaults)
+
 #### **Frontend `.env` Example:**
 ```
 VITE_API_BASE_URL=http://localhost:8080/api
@@ -67,6 +72,7 @@ cd backend
 ```
 OR with Docker:
 ```sh
+cp .env.sample .env
 docker compose -f docker-compose.yaml up --build
 ```
 
