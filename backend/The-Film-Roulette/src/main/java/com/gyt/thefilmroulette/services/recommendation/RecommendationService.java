@@ -78,7 +78,7 @@ public class RecommendationService {
         continue;
       }
 
-        List<DiscoveryTitle> candidates = (resp.results() == null
+      List<DiscoveryTitle> candidates = (resp.results() == null
           ? List.<DiscoveryTitle>of()
           : resp.results())
           .stream()
@@ -91,7 +91,7 @@ public class RecommendationService {
       }
 
       DiscoveryTitle picked = candidates.get(random.nextInt(candidates.size()));
-        String title = picked.title() != null && !picked.title().isBlank()
+      String title = picked.title() != null && !picked.title().isBlank()
           ? picked.title()
           : picked.name();
       String date = picked.releaseDate() != null && !picked.releaseDate().isBlank()

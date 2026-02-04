@@ -85,9 +85,9 @@ public class UserProfileService {
     }
 
     prefs.setLikedGenreIds(
-      request.likedGenreIds() == null
-        ? new ArrayList<>()
-        : new ArrayList<>(request.likedGenreIds()));
+        request.likedGenreIds() == null
+            ? new ArrayList<>()
+            : new ArrayList<>(request.likedGenreIds()));
     prefs.setYearFrom(request.yearFrom());
     prefs.setYearTo(request.yearTo());
     prefs.setIncludeMovies(request.includeMovies());
@@ -108,12 +108,12 @@ public class UserProfileService {
     Objects.requireNonNull(status, "status");
 
     return userListEntryRepository
-      .findByUserIdAndStatus(user.getId(), status)
-      .stream()
-      .map(entry -> new ListEntryResponse(
-        entry.getTmdbId(),
-        entry.getMediaType(),
-        entry.getStatus()))
+        .findByUserIdAndStatus(user.getId(), status)
+        .stream()
+        .map(entry -> new ListEntryResponse(
+            entry.getTmdbId(),
+            entry.getMediaType(),
+            entry.getStatus()))
         .toList();
   }
 
