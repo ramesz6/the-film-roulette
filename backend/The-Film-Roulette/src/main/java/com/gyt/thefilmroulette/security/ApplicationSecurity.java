@@ -11,7 +11,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -29,6 +31,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class ApplicationSecurity {
 
   private final CorsConfig corsConfig;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   /**
    * A list of allowed paths that do not require authentication.
@@ -46,11 +49,15 @@ public class ApplicationSecurity {
    */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(req -> req.requestMatchers(ALLOW_LIST)
-            .permitAll())
-        .httpBasic(Customizer.withDefaults())
-        .formLogin(Customizer.withDefaults());
+    http
+        .csrf(AbstractHttpConfigurer::disable)
+        .cors(Customizer.withDefaults())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(req -> req
+            .requestMatchers(ALLOW_LIST).permitAll()
+            .anyRequest().authenticated())
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 
@@ -62,7 +69,21 @@ public class ApplicationSecurity {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.stream(corsConfig.getCorsUrls().split(",")).toList());
+
+    List<String> allowedOrigins = Arrays.stream(corsConfig.getCorsUrls().split(","))
+        .map(String::trim)
+        .filter(origin -> !origin.isBlank())
+        .toList();
+
+    if (allowedOrigins.isEmpty()) {
+      allowedOrigins = List.of(
+          "http://localhost:5173",
+          "http://localhost:5174",
+          "http://127.0.0.1:5173",
+          "http://127.0.0.1:5174");
+    }
+
+    configuration.setAllowedOrigins(allowedOrigins);
     configuration
         .setAllowedMethods(Arrays.asList(
             "GET",

@@ -45,7 +45,7 @@ public class User implements UserDetails {
   /**
    * Unique username of the user.
    */
-  @Column(unique = true)
+  @Column
   private String username;
 
   /**
@@ -104,13 +104,13 @@ public class User implements UserDetails {
   }
 
   /**
-   * Retrieves the username for authentication purposes.
+   * Retrieves the principal identifier for authentication purposes.
    *
-   * @return the username of the user
+   * @return the email of the user
    */
   @Override
   public String getUsername() {
-    return this.username;
+    return this.email;
   }
 
   /**

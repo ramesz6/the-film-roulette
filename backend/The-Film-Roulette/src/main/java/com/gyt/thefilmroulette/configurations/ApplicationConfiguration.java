@@ -21,7 +21,7 @@ public class ApplicationConfiguration {
 
   /**
    * Creates a {@link UserDetailsService} bean that fetches user details
-   * from the database using the username.
+   * from the database using the email.
    *
    * @return a {@link UserDetailsService} implementation.
    *
@@ -29,9 +29,9 @@ public class ApplicationConfiguration {
    */
   @Bean
   public UserDetailsService userDetailsService() {
-    return username -> userRepository
-        .findByUsername(username)
-        .orElseThrow(() -> new UserNotFoundException("User not found by name"));
+    return email -> userRepository
+        .findByEmail(email)
+        .orElseThrow(() -> new UserNotFoundException("User not found by email"));
   }
 
   /**

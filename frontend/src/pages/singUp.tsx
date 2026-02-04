@@ -1,95 +1,237 @@
 import { useState } from "react";
+import axios, { AxiosError } from "axios";
+import { Link, useNavigate } from "react-router";
 
 interface UserModel {
-    name: string;
-    email: string;
-    password: string
+  username: string;
+  email: string;
+  password: string;
 }
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 8;
+
+type FieldErrors = Partial<Record<keyof UserModel, string>>;
+
+const validate = (data: UserModel): FieldErrors => {
+  const errors: FieldErrors = {};
+
+  const email = data.email.trim();
+  const username = data.username.trim();
+  const password = data.password;
+
+  if (!EMAIL_REGEX.test(email)) {
+    errors.email = "Érvénytelen email formátum";
+  }
+
+  if (username.length === 0) {
+    errors.username = "A felhasználónév kötelező";
+  } else if (EMAIL_REGEX.test(username) || username.includes("@")) {
+    errors.username = "A felhasználónév nem lehet email cím";
+  }
+
+  const missing: string[] = [];
+  if (password.length < MIN_PASSWORD_LENGTH)
+    missing.push(`legalább ${MIN_PASSWORD_LENGTH} karakter`);
+  if (!/[a-z]/.test(password)) missing.push("kisbetű");
+  if (!/[A-Z]/.test(password)) missing.push("nagybetű");
+  if (!/[0-9]/.test(password)) missing.push("szám");
+
+  if (missing.length > 0) {
+    errors.password = `Jelszó követelmények: ${missing.join(", ")}`;
+  }
+
+  return errors;
+};
+
+const errorMessageFromAxios = (err: unknown): string => {
+  if (!axios.isAxiosError(err)) return "A regisztráció sikertelen";
+
+  const axiosErr = err as AxiosError;
+  const status = axiosErr.response?.status;
+  const data = axiosErr.response?.data;
+
+  if (status === 400) {
+    if (typeof data === "string") {
+      if (data.toLowerCase().includes("already exists")) {
+        return "Az email már használatban van";
+      }
+      if (data.toLowerCase().includes("invalid")) {
+        return "Érvénytelen adatok";
+      }
+      return data;
+    }
+    return "Érvénytelen adatok";
+  }
+
+  if (status === 0 || status === undefined) return "A szerver nem elérhető";
+  if (status === 401 || status === 403) return "Nincs jogosultság";
+  if (status >= 500) return "Szerver hiba";
+
+  return "A regisztráció sikertelen";
+};
 
 const SingUp = () => {
+  const navigate = useNavigate();
+  const [data, setData] = useState<UserModel>({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [touched, setTouched] = useState<Record<keyof UserModel, boolean>>({
+    username: false,
+    email: false,
+    password: false,
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [data, setData] = useState<UserModel>({
-        name: "",
-        email: "",
-        password: ""
-    })
+  const fieldErrors = validate(data);
+  const hasErrors = Object.keys(fieldErrors).length > 0;
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const id = event.target.id
-        const value = event.target.value
+  const onSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError(null);
 
-        setData({ ...data, [id]: value })
-
+    setTouched({ username: true, email: true, password: true });
+    const currentErrors = validate(data);
+    if (Object.keys(currentErrors).length > 0) {
+      return;
     }
 
-    return (
-        <>
-            <div className='flex justify-center items-center'>
+    setIsSubmitting(true);
 
-                <div className="card bg-base-100 w-96 shadow-xl">
-                    <div className="card-body">
-                        <h2 className="card-title justify-center">SingUp</h2>
-                        <label className="input input-bordered flex items-center gap-2">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 16 16"
-                                fill="currentColor"
-                                className="h-4 w-4 opacity-70">
-                                <path
-                                    d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-                                <path
-                                    d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
-                            </svg>
-                            <input type="text"
-                                className="grow"
-                                placeholder="Email"
-                                id="email"
-                                value={data.email}
-                                onChange={handleInputChange} />
-                        </label>
-                        <label className="input input-bordered flex items-center gap-2">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 16 16"
-                                fill="currentColor"
-                                className="h-4 w-4 opacity-70">
-                                <path
-                                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                            </svg>
-                            <input type="text"
-                                className="grow"
-                                placeholder="Username"
-                                id="username"
-                                value={data.name}
-                                onChange={handleInputChange} />
-                        </label>
-                        <label className="input input-bordered flex items-center gap-2">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 16 16"
-                                fill="currentColor"
-                                className="h-4 w-4 opacity-70">
-                                <path
-                                    fillRule="evenodd"
-                                    d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                                    clipRule="evenodd" />
-                            </svg>
-                            <input type="password"
-                                className="grow"
-                                placeholder="Password"
-                                id="password"
-                                value={data.password}
-                                onChange={handleInputChange} />
-                        </label>
-                        <div className="card-actions justify-center">
-                            <button className="btn btn-primary">SingUp Now</button>
-                        </div>
-                    </div>
-                </div>
+    try {
+      await axios.post(`${apiBaseUrl}/api/v1/auth/register`, {
+        username: data.username.trim(),
+        email: data.email.trim(),
+        password: data.password,
+      });
 
+      navigate("/login", { replace: true });
+    } catch (err) {
+      setError(errorMessageFromAxios(err));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="flex justify-center items-center">
+        <div className="card bg-base-100 w-96 shadow-xl">
+          <form className="card-body" onSubmit={onSubmit}>
+            <h2 className="card-title justify-center">SingUp</h2>
+            {error && <p className="text-center text-red-500">{error}</p>}
+            <label className="input input-bordered flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="h-4 w-4 opacity-70"
+              >
+                <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
+                <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
+              </svg>
+              <input
+                type="text"
+                className="grow"
+                placeholder="Email"
+                id="email"
+                autoComplete="email"
+                value={data.email}
+                onChange={(e) =>
+                  setData((prev) => ({ ...prev, email: e.target.value }))
+                }
+                onBlur={() => setTouched((p) => ({ ...p, email: true }))}
+              />
+            </label>
+            {touched.email && fieldErrors.email && (
+              <p className="text-sm text-red-500">{fieldErrors.email}</p>
+            )}
+            <label className="input input-bordered flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="h-4 w-4 opacity-70"
+              >
+                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
+              </svg>
+              <input
+                type="text"
+                className="grow"
+                placeholder="Username"
+                id="username"
+                autoComplete="username"
+                value={data.username}
+                onChange={(e) =>
+                  setData((prev) => ({ ...prev, username: e.target.value }))
+                }
+                onBlur={() => setTouched((p) => ({ ...p, username: true }))}
+              />
+            </label>
+            <p className="text-xs opacity-70">
+              A felhasználónév nem lehet email cím.
+            </p>
+            {touched.username && fieldErrors.username && (
+              <p className="text-sm text-red-500">{fieldErrors.username}</p>
+            )}
+            <label className="input input-bordered flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="h-4 w-4 opacity-70"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <input
+                type="password"
+                className="grow"
+                placeholder="Password"
+                id="password"
+                autoComplete="new-password"
+                value={data.password}
+                onChange={(e) =>
+                  setData((prev) => ({ ...prev, password: e.target.value }))
+                }
+                onBlur={() => setTouched((p) => ({ ...p, password: true }))}
+              />
+            </label>
+            <p className="text-xs opacity-70">
+              Min. {MIN_PASSWORD_LENGTH} karakter, legyen benne kisbetű,
+              nagybetű és szám.
+            </p>
+            {touched.password && fieldErrors.password && (
+              <p className="text-sm text-red-500">{fieldErrors.password}</p>
+            )}
+            <div className="card-actions justify-center">
+              <button
+                className="btn btn-primary"
+                type="submit"
+                disabled={isSubmitting || hasErrors}
+              >
+                {isSubmitting ? "Signing up..." : "SingUp Now"}
+              </button>
             </div>
-        </>
-    );
-}
+            <p className="text-center text-sm">
+              Van már fiókod?{" "}
+              <Link className="link link-primary" to="/login">
+                Bejelentkezés
+              </Link>
+            </p>
+          </form>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default SingUp;
