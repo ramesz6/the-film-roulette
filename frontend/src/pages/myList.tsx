@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiClient } from "../api/client";
+import { Link, useNavigate } from "react-router";
+import { clearAuthToken } from "../LocalStorage";
 
-type ListStatus = "WATCH_LATER" | "SEEN";
+type ListStatus = "WATCH_LATER" | "SEEN" | "DISLIKED";
 
 type ListEntry = {
   tmdbId: number;
@@ -28,6 +30,7 @@ function titleLabel(d: TitleDetails | undefined, entry: ListEntry) {
 }
 
 export default function MyList() {
+  const navigate = useNavigate();
   const [active, setActive] = useState<ListStatus>("WATCH_LATER");
   const [entries, setEntries] = useState<ListEntry[]>([]);
   const [details, setDetails] = useState<
@@ -44,7 +47,9 @@ export default function MyList() {
       const url =
         status === "WATCH_LATER"
           ? "/api/v1/me/list/watch-later"
-          : "/api/v1/me/list/seen";
+          : status === "SEEN"
+            ? "/api/v1/me/list/seen"
+            : "/api/v1/me/list/disliked";
       const res = await apiClient.get<ListEntry[]>(url);
       setEntries(res.data);
 
@@ -85,90 +90,141 @@ export default function MyList() {
     const url =
       status === "WATCH_LATER"
         ? "/api/v1/me/list/watch-later"
-        : "/api/v1/me/list/seen";
+        : status === "SEEN"
+          ? "/api/v1/me/list/seen"
+          : "/api/v1/me/list/disliked";
     await apiClient.put(url, { tmdbId: e.tmdbId, mediaType: e.mediaType });
     await load(active);
   };
 
-  return (
-    <div className="max-w-3xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">My List</h1>
+  const logout = () => {
+    clearAuthToken();
+    navigate("/login", { replace: true });
+  };
 
-      <div role="tablist" className="tabs tabs-boxed mb-4">
-        <button
-          role="tab"
-          className={`tab ${active === "WATCH_LATER" ? "tab-active" : ""}`}
-          onClick={() => setActive("WATCH_LATER")}
-        >
-          Watch later
-        </button>
-        <button
-          role="tab"
-          className={`tab ${active === "SEEN" ? "tab-active" : ""}`}
-          onClick={() => setActive("SEEN")}
-        >
-          Seen
-        </button>
+  return (
+    <>
+      <div className="navbar bg-base-100 shadow mb-4">
+        <div className="flex-1">
+          <Link className="btn btn-ghost text-xl" to="/">
+            Roulette
+          </Link>
+        </div>
+        <div className="flex-none gap-2">
+          <Link className="btn btn-sm" to="/">
+            Roulette
+          </Link>
+          <Link className="btn btn-sm" to="/profile">
+            My Profile
+          </Link>
+          <button className="btn btn-sm btn-outline" onClick={logout}>
+            Logout
+          </button>
+        </div>
       </div>
 
-      {error && <p className="text-red-500 mb-3">{error}</p>}
+      <div className="max-w-3xl mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">My List</h1>
 
-      {loading ? (
-        <p>
-          Betöltés <span className="loading loading-infinity loading-md"></span>
-        </p>
-      ) : visible.length === 0 ? (
-        <p className="opacity-70">Üres</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-3">
-          {visible.map((e) => {
-            const key = `${e.mediaType}:${e.tmdbId}`;
-            const d = details[key];
-            return (
-              <div key={key} className="card bg-base-100 shadow">
-                <div className="card-body">
-                  <div className="flex justify-between gap-3 items-start">
-                    <div>
-                      <h2 className="card-title">{titleLabel(d, e)}</h2>
-                      {d?.overview && (
-                        <p className="text-sm opacity-80 line-clamp-3">
-                          {d.overview}
+        <div role="tablist" className="tabs tabs-boxed mb-4">
+          <button
+            role="tab"
+            className={`tab ${active === "WATCH_LATER" ? "tab-active" : ""}`}
+            onClick={() => setActive("WATCH_LATER")}
+          >
+            Like
+          </button>
+          <button
+            role="tab"
+            className={`tab ${active === "SEEN" ? "tab-active" : ""}`}
+            onClick={() => setActive("SEEN")}
+          >
+            Watched
+          </button>
+          <button
+            role="tab"
+            className={`tab ${active === "DISLIKED" ? "tab-active" : ""}`}
+            onClick={() => setActive("DISLIKED")}
+          >
+            Disliked
+          </button>
+        </div>
+
+        {error && <p className="text-red-500 mb-3">{error}</p>}
+
+        {loading ? (
+          <p>
+            Betöltés{" "}
+            <span className="loading loading-infinity loading-md"></span>
+          </p>
+        ) : visible.length === 0 ? (
+          <p className="opacity-70">Üres</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-3">
+            {visible.map((e) => {
+              const key = `${e.mediaType}:${e.tmdbId}`;
+              const d = details[key];
+              return (
+                <div key={key} className="card bg-base-100 shadow">
+                  <div className="card-body">
+                    <div className="flex justify-between gap-3 items-start">
+                      <div>
+                        <h2 className="card-title">{titleLabel(d, e)}</h2>
+                        {d?.overview && (
+                          <p className="text-sm opacity-80 line-clamp-3">
+                            {d.overview}
+                          </p>
+                        )}
+                        <p className="text-xs opacity-60 mt-1">
+                          {e.mediaType.toUpperCase()} • TMDB #{e.tmdbId}
                         </p>
-                      )}
-                      <p className="text-xs opacity-60 mt-1">
-                        {e.mediaType.toUpperCase()} • TMDB #{e.tmdbId}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      {active === "WATCH_LATER" ? (
+                      </div>
+                      <div className="flex gap-2">
+                        {active === "WATCH_LATER" ? (
+                          <button
+                            className="btn btn-sm"
+                            onClick={() => moveTo(e, "SEEN")}
+                          >
+                            Mark as watched
+                          </button>
+                        ) : active === "SEEN" ? (
+                          <button
+                            className="btn btn-sm"
+                            onClick={() => moveTo(e, "WATCH_LATER")}
+                          >
+                            Like
+                          </button>
+                        ) : (
+                          <>
+                            <button
+                              className="btn btn-sm"
+                              onClick={() => moveTo(e, "WATCH_LATER")}
+                            >
+                              Like
+                            </button>
+                            <button
+                              className="btn btn-sm"
+                              onClick={() => moveTo(e, "SEEN")}
+                            >
+                              Mark as watched
+                            </button>
+                          </>
+                        )}
                         <button
-                          className="btn btn-sm"
-                          onClick={() => moveTo(e, "SEEN")}
+                          className="btn btn-sm btn-outline"
+                          onClick={() => remove(e)}
                         >
-                          Mark as seen
+                          Remove
                         </button>
-                      ) : (
-                        <button
-                          className="btn btn-sm"
-                          onClick={() => moveTo(e, "WATCH_LATER")}
-                        >
-                          Watch later
-                        </button>
-                      )}
-                      <button
-                        className="btn btn-sm btn-outline"
-                        onClick={() => remove(e)}
-                      >
-                        Remove
-                      </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </>
   );
 }

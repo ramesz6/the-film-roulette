@@ -2,10 +2,12 @@ package com.gyt.thefilmroulette.services.api;
 
 import com.gyt.thefilmroulette.configurations.RetrofitConfig;
 import com.gyt.thefilmroulette.dtos.DiscoveryResponse;
+import com.gyt.thefilmroulette.dtos.DiscoveryTitlesResponse;
 import com.gyt.thefilmroulette.dtos.GenreListResponse;
 import com.gyt.thefilmroulette.dtos.GenresResponse;
 import com.gyt.thefilmroulette.dtos.TitleDetails;
 import com.gyt.thefilmroulette.exceptions.MovieApiException;
+import java.util.Map;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
@@ -126,6 +128,36 @@ public class MovieApiServiceImpl implements MovieApiService {
       throw e;
     } catch (Exception e) {
       throw new MovieApiException("Error occurred while fetching details from TMDB API");
+    }
+  }
+
+  @Override
+  public DiscoveryTitlesResponse discover(String mediaType, Map<String, String> query) {
+    Objects.requireNonNull(mediaType, "mediaType");
+    Objects.requireNonNull(query, "query");
+
+    String normalized = mediaType.trim().toLowerCase();
+    try {
+      var call = switch (normalized) {
+        case "movie" -> tmdbApi.discoverMovie(query);
+        case "tv", "series" -> tmdbApi.discoverTv(query);
+        default -> throw new IllegalArgumentException("Unsupported mediaType: " + mediaType);
+      };
+
+      var response = call.execute();
+      if (!response.isSuccessful()) {
+        throw new MovieApiException("API Request failed with status code: " + response.code());
+      }
+
+      DiscoveryTitlesResponse body = response.body();
+      if (body == null) {
+        throw new MovieApiException("API Request returned empty body");
+      }
+      return body;
+    } catch (IllegalArgumentException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new MovieApiException("Error occurred while fetching discovery data from TMDB API");
     }
   }
 }

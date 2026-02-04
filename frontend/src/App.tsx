@@ -2,10 +2,11 @@ import "./App.css";
 import LogIn from "./pages/logIn";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { isLoggedIn } from "./LocalStorage";
-import MainPage from "./pages/mainPage";
+import RoulettePage from "./pages/roulette";
 import SingUp from "./pages/singUp";
 import MyProfile from "./pages/myProfile";
 import MyList from "./pages/myList";
+import RequireProfile from "./components/RequireProfile";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   if (!isLoggedIn()) {
@@ -22,7 +23,19 @@ function App() {
           path="/"
           element={
             <RequireAuth>
-              <MainPage />
+              <RequireProfile>
+                <RoulettePage />
+              </RequireProfile>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/roulette"
+          element={
+            <RequireAuth>
+              <RequireProfile>
+                <RoulettePage />
+              </RequireProfile>
             </RequireAuth>
           }
         />

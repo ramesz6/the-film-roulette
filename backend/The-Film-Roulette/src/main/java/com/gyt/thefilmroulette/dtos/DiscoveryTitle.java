@@ -4,16 +4,16 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Minimal title details DTO for both TMDB movie and TV endpoints.
- * Gson will ignore unknown fields.
+ * Minimal discovery result item that works for both TMDB movie and TV discover
+ * endpoints.
  */
-public record TitleDetails(
+public record DiscoveryTitle(
     int id,
+    @SerializedName("genre_ids") List<Integer> genreIds,
     String title,
     String name,
     String overview,
     @SerializedName("poster_path") String posterPath,
     @SerializedName("release_date") String releaseDate,
-    @SerializedName("first_air_date") String firstAirDate,
-    @SerializedName("genre_ids") List<Integer> genreIds) {
+    @SerializedName("first_air_date") String firstAirDate) {
 }
