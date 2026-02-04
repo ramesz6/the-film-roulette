@@ -1,3 +1,6 @@
+/**
+ * Builds a random recommendation based on user preferences and excludes titles already acted on.
+ */
 package com.gyt.thefilmroulette.services.recommendation;
 
 import com.gyt.thefilmroulette.dtos.DiscoveryTitle;
@@ -59,7 +62,9 @@ public class RecommendationService {
 
       int totalPages = 1;
       try {
-        DiscoveryTitlesResponse first = movieApiService.discover(mediaType, withPage(typedQuery, 1));
+        DiscoveryTitlesResponse first = movieApiService.discover(
+            mediaType,
+            withPage(typedQuery, 1));
         totalPages = Math.max(1, Math.min(MAX_TOTAL_PAGES, first.totalPages()));
       } catch (Exception ignored) {
         continue;
@@ -73,7 +78,10 @@ public class RecommendationService {
         continue;
       }
 
-      List<DiscoveryTitle> candidates = (resp.results() == null ? List.<DiscoveryTitle>of() : resp.results()).stream()
+        List<DiscoveryTitle> candidates = (resp.results() == null
+          ? List.<DiscoveryTitle>of()
+          : resp.results())
+          .stream()
           .filter(item -> item != null)
           .filter(item -> !exclude.contains(key(mediaType, item.id())))
           .toList();
@@ -83,7 +91,9 @@ public class RecommendationService {
       }
 
       DiscoveryTitle picked = candidates.get(random.nextInt(candidates.size()));
-      String title = picked.title() != null && !picked.title().isBlank() ? picked.title() : picked.name();
+        String title = picked.title() != null && !picked.title().isBlank()
+          ? picked.title()
+          : picked.name();
       String date = picked.releaseDate() != null && !picked.releaseDate().isBlank()
           ? picked.releaseDate()
           : picked.firstAirDate();

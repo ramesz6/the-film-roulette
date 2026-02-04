@@ -1,3 +1,6 @@
+/**
+ * Endpoints for the authenticated user's profile, lists, and roulette recommendations.
+ */
 package com.gyt.thefilmroulette.controller;
 
 import com.gyt.thefilmroulette.dtos.profile.ListEntryRequest;

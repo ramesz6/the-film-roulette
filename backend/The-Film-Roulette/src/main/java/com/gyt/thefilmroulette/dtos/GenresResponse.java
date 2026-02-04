@@ -1,3 +1,6 @@
+/**
+ * DTO that groups movie and TV genres.
+ */
 package com.gyt.thefilmroulette.dtos;
 
 import java.util.List;

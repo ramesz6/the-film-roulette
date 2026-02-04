@@ -1,3 +1,6 @@
+/**
+ * Repository for accessing per-user list entries (watch later / seen / disliked).
+ */
 package com.gyt.thefilmroulette.repositories;
 
 import com.gyt.thefilmroulette.models.ListStatus;
@@ -10,5 +13,8 @@ public interface UserListEntryRepository extends JpaRepository<UserListEntry, Lo
 
   List<UserListEntry> findByUserIdAndStatus(Long userId, ListStatus status);
 
-  Optional<UserListEntry> findByUserIdAndMediaTypeAndTmdbId(Long userId, String mediaType, int tmdbId);
+  Optional<UserListEntry> findByUserIdAndMediaTypeAndTmdbId(
+      Long userId,
+      String mediaType,
+      int tmdbId);
 }

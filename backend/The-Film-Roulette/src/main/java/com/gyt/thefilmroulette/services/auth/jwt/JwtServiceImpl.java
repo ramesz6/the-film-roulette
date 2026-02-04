@@ -75,9 +75,8 @@ public class JwtServiceImpl implements JwtService {
    * @return The signing key used to sign the JWT.
    */
   private Key getSignInKey() {
-    byte[] keyBytes = Decoders.BASE64.decode(jwtConfiguration.jwtSecret); // Decode the base64 secret key
-
-    return Keys.hmacShaKeyFor(keyBytes); // Generate HMAC SHA key from the decoded bytes
+    byte[] keyBytes = Decoders.BASE64.decode(jwtConfiguration.jwtSecret);
+    return Keys.hmacShaKeyFor(keyBytes);
   }
 
   /**

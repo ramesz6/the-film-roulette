@@ -1,3 +1,6 @@
+/**
+ * Tests for the movie API controller endpoints.
+ */
 package com.gyt.thefilmroulette.controller;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;

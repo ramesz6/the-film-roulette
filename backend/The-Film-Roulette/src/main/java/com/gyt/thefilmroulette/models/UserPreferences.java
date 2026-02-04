@@ -1,3 +1,6 @@
+/**
+ * Entity storing per-user preference settings used by the roulette.
+ */
 package com.gyt.thefilmroulette.models;
 
 import jakarta.persistence.ElementCollection;

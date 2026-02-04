@@ -1,3 +1,6 @@
+/**
+ * Repository for accessing user preference entities.
+ */
 package com.gyt.thefilmroulette.repositories;
 
 import com.gyt.thefilmroulette.models.UserPreferences;

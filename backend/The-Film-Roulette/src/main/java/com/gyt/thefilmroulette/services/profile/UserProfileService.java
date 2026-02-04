@@ -1,3 +1,6 @@
+/**
+ * Manages per-user profile preferences and per-user lists (watch later / seen / disliked).
+ */
 package com.gyt.thefilmroulette.services.profile;
 
 import com.gyt.thefilmroulette.dtos.profile.ListEntryRequest;
@@ -70,7 +73,9 @@ public class UserProfileService {
     Objects.requireNonNull(user, "user");
     Objects.requireNonNull(request, "request");
 
-    if (request.yearFrom() != null && request.yearTo() != null && request.yearFrom() > request.yearTo()) {
+    if (request.yearFrom() != null
+        && request.yearTo() != null
+        && request.yearFrom() > request.yearTo()) {
       throw new IllegalArgumentException("yearFrom must be <= yearTo");
     }
 
@@ -80,7 +85,9 @@ public class UserProfileService {
     }
 
     prefs.setLikedGenreIds(
-        request.likedGenreIds() == null ? new ArrayList<>() : new ArrayList<>(request.likedGenreIds()));
+      request.likedGenreIds() == null
+        ? new ArrayList<>()
+        : new ArrayList<>(request.likedGenreIds()));
     prefs.setYearFrom(request.yearFrom());
     prefs.setYearTo(request.yearTo());
     prefs.setIncludeMovies(request.includeMovies());
@@ -100,8 +107,13 @@ public class UserProfileService {
     Objects.requireNonNull(user, "user");
     Objects.requireNonNull(status, "status");
 
-    return userListEntryRepository.findByUserIdAndStatus(user.getId(), status).stream()
-        .map(entry -> new ListEntryResponse(entry.getTmdbId(), entry.getMediaType(), entry.getStatus()))
+    return userListEntryRepository
+      .findByUserIdAndStatus(user.getId(), status)
+      .stream()
+      .map(entry -> new ListEntryResponse(
+        entry.getTmdbId(),
+        entry.getMediaType(),
+        entry.getStatus()))
         .toList();
   }
 
@@ -110,7 +122,8 @@ public class UserProfileService {
     Objects.requireNonNull(status, "status");
 
     Set<String> result = new HashSet<>();
-    for (UserListEntry entry : userListEntryRepository.findByUserIdAndStatus(user.getId(), status)) {
+    for (UserListEntry entry : userListEntryRepository
+        .findByUserIdAndStatus(user.getId(), status)) {
       if (entry == null) {
         continue;
       }

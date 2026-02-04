@@ -1,3 +1,6 @@
+/**
+ * Response DTO for user preferences.
+ */
 package com.gyt.thefilmroulette.dtos.profile;
 
 import java.util.List;
