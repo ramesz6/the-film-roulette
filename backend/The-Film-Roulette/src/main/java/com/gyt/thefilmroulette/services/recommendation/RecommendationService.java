@@ -44,7 +44,6 @@ public class RecommendationService {
    *
    * @param user        authenticated user
    * @param excludeKeys client-provided exclude keys
-   *
    * @return a recommended title
    */
   public RecommendationResponse next(User user, List<String> excludeKeys) {
