@@ -38,9 +38,7 @@ public class RecommendationService {
   /**
    * Returns the next roulette recommendation.
    *
-   * <p>
-   * Client-provided excludes are merged with server-side excludes (seen and
-   * disliked).
+   * <p>Client-provided excludes are merged with server-side excludes (seen and disliked).
    *
    * @param user        authenticated user
    * @param excludeKeys client-provided exclude keys
