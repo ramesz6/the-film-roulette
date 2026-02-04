@@ -20,11 +20,15 @@ import lombok.NoArgsConstructor;
  * Entity representing a title in a user's list (watch later / seen / disliked).
  */
 @Entity
-@Table(name = "user_list_entry", uniqueConstraints = @UniqueConstraint(name = "uk_user_media_tmdb", columnNames = {
-    "user_id",
-    "media_type",
-    "tmdb_id"
-}))
+@Table(
+    name = "user_list_entry",
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_user_media_tmdb",
+        columnNames = {
+          "user_id",
+          "media_type",
+          "tmdb_id"
+        }))
 @Data
 @Builder
 @NoArgsConstructor
