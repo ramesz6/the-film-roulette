@@ -1,6 +1,3 @@
-/**
- * Manages per-user profile preferences and per-user lists (watch later / seen / disliked).
- */
 package com.gyt.thefilmroulette.services.profile;
 
 import com.gyt.thefilmroulette.dtos.profile.ListEntryRequest;
@@ -22,6 +19,10 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Manages per-user profile preferences and per-user lists (watch later / seen /
+ * disliked).
+ */
 @Service
 @RequiredArgsConstructor
 public class UserProfileService {
@@ -31,6 +32,13 @@ public class UserProfileService {
   private final UserPreferencesRepository userPreferencesRepository;
   private final UserListEntryRepository userListEntryRepository;
 
+  /**
+   * Returns the user's saved preferences, creating defaults if missing.
+   *
+   * @param user authenticated user
+   *
+   * @return preference settings
+   */
   public PreferencesResponse getPreferences(User user) {
     Objects.requireNonNull(user, "user");
 
@@ -69,6 +77,14 @@ public class UserProfileService {
         prefs.isIncludeSeries());
   }
 
+  /**
+   * Updates the user's preference settings.
+   *
+   * @param user    authenticated user
+   * @param request new preference values
+   *
+   * @return updated preferences
+   */
   public PreferencesResponse updatePreferences(User user, PreferencesRequest request) {
     Objects.requireNonNull(user, "user");
     Objects.requireNonNull(request, "request");
@@ -103,6 +119,14 @@ public class UserProfileService {
         saved.isIncludeSeries());
   }
 
+  /**
+   * Returns entries from one of the user's lists.
+   *
+   * @param user   authenticated user
+   * @param status list status to query
+   *
+   * @return list entries
+   */
   public List<ListEntryResponse> getList(User user, ListStatus status) {
     Objects.requireNonNull(user, "user");
     Objects.requireNonNull(status, "status");
@@ -117,6 +141,14 @@ public class UserProfileService {
         .toList();
   }
 
+  /**
+   * Returns normalized exclude keys for one of the user's lists.
+   *
+   * @param user   authenticated user
+   * @param status list status to query
+   *
+   * @return exclude keys in the form "mediaType:tmdbId"
+   */
   public Set<String> getListKeys(User user, ListStatus status) {
     Objects.requireNonNull(user, "user");
     Objects.requireNonNull(status, "status");
@@ -136,6 +168,13 @@ public class UserProfileService {
     return result;
   }
 
+  /**
+   * Adds or updates a title entry with the given status.
+   *
+   * @param user    authenticated user
+   * @param status  list status to set
+   * @param request title details
+   */
   public void setListStatus(User user, ListStatus status, ListEntryRequest request) {
     Objects.requireNonNull(user, "user");
     Objects.requireNonNull(status, "status");
@@ -155,6 +194,13 @@ public class UserProfileService {
     userListEntryRepository.save(entry);
   }
 
+  /**
+   * Removes a title from all of the user's lists.
+   *
+   * @param user      authenticated user
+   * @param mediaType media type (movie or tv)
+   * @param tmdbId    TMDB id
+   */
   public void removeFromList(User user, String mediaType, int tmdbId) {
     Objects.requireNonNull(user, "user");
     mediaType = normalizeMediaType(mediaType);

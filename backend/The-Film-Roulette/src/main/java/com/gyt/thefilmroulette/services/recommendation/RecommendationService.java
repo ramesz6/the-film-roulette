@@ -1,6 +1,3 @@
-/**
- * Builds a random recommendation based on user preferences and excludes titles already acted on.
- */
 package com.gyt.thefilmroulette.services.recommendation;
 
 import com.gyt.thefilmroulette.dtos.DiscoveryTitle;
@@ -24,6 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+/**
+ * Builds roulette recommendations based on a user's preferences.
+ */
 @Service
 @RequiredArgsConstructor
 public class RecommendationService {
@@ -35,6 +35,18 @@ public class RecommendationService {
   private final MovieApiService movieApiService;
   private final UserProfileService userProfileService;
 
+  /**
+   * Returns the next roulette recommendation.
+   *
+   * <p>
+   * Client-provided excludes are merged with server-side excludes (seen and
+   * disliked).
+   *
+   * @param user        authenticated user
+   * @param excludeKeys client-provided exclude keys
+   *
+   * @return a recommended title
+   */
   public RecommendationResponse next(User user, List<String> excludeKeys) {
     Objects.requireNonNull(user, "user");
 

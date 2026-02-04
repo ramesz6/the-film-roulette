@@ -1,6 +1,3 @@
-/**
- * Repository for accessing per-user list entries (watch later / seen / disliked).
- */
 package com.gyt.thefilmroulette.repositories;
 
 import com.gyt.thefilmroulette.models.ListStatus;
@@ -9,6 +6,10 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+/**
+ * Repository for accessing per-user list entries (watch later / seen /
+ * disliked).
+ */
 public interface UserListEntryRepository extends JpaRepository<UserListEntry, Long> {
 
   List<UserListEntry> findByUserIdAndStatus(Long userId, ListStatus status);

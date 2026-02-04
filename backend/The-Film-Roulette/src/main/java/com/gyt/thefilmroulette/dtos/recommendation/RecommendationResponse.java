@@ -1,10 +1,10 @@
-/**
- * Response DTO representing a single roulette recommendation.
- */
 package com.gyt.thefilmroulette.dtos.recommendation;
 
 import java.util.List;
 
+/**
+ * Response DTO representing a single roulette recommendation.
+ */
 public record RecommendationResponse(
     String mediaType,
     int tmdbId,

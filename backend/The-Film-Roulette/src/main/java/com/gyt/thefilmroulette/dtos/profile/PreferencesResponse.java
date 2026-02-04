@@ -1,10 +1,10 @@
-/**
- * Response DTO for user preferences.
- */
 package com.gyt.thefilmroulette.dtos.profile;
 
 import java.util.List;
 
+/**
+ * Response DTO for user preferences.
+ */
 public record PreferencesResponse(
     List<Integer> likedGenreIds,
     Integer yearFrom,

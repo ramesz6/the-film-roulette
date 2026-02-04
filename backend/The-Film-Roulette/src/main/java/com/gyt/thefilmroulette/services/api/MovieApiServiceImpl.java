@@ -7,23 +7,16 @@ import com.gyt.thefilmroulette.dtos.GenreListResponse;
 import com.gyt.thefilmroulette.dtos.GenresResponse;
 import com.gyt.thefilmroulette.dtos.TitleDetails;
 import com.gyt.thefilmroulette.exceptions.MovieApiException;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
 import retrofit2.Retrofit;
 
 /**
- * Service implementation for fetching movie discovery results from the TMDB
- * API.
- * Uses Retrofit to communicate with the API and retrieve movie data.
- *
- * <p>
- * This service class handles the interaction with the TMDB API to retrieve
- * movie discovery results.
- * It initializes the Retrofit client and calls the TMDB API endpoint to get the
- * movie data.
- * If the API call is unsuccessful, a {@link MovieApiException} is thrown.
+ * Service implementation for fetching data from the TMDB API.
+ * Uses Retrofit to communicate with the API and retrieve discovery, genre, and
+ * detail data.
  */
 @Service
 public class MovieApiServiceImpl implements MovieApiService {
@@ -32,15 +25,11 @@ public class MovieApiServiceImpl implements MovieApiService {
   private MovieDbApi tmdbApi;
 
   /**
-   * Constructs a new MovieApiServiceImpl with the provided RetrofitConfig.
-   * Initializes the Retrofit client and TMDB API interface.
+   * Constructs a new instance backed by the provided Retrofit configuration.
    *
-   * @param retrofitConfig the configuration object containing the Retrofit client
-   *                       setup
+   * @param retrofitConfig configuration object containing the Retrofit client
    *
-   * 
-   * @throws IllegalArgumentException if the retrofitConfig or Retrofit object is
-   *                                  null
+   * @throws IllegalArgumentException if the config or Retrofit object is null
    */
   public MovieApiServiceImpl(RetrofitConfig retrofitConfig) {
     if (retrofitConfig != null) {
@@ -58,12 +47,7 @@ public class MovieApiServiceImpl implements MovieApiService {
   /**
    * Retrieves movie discovery results from the TMDB API.
    * 
-   * <p>
-   * Executes the TMDB API call and returns the {@link DiscoveryResponse} if
-   * successful.
-   *
    * @return the discovery results as a {@link DiscoveryResponse}
-   * 
    *
    * @throws MovieApiException if the API request fails or if any error occurs
    *                           during the request

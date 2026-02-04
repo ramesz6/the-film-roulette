@@ -1,6 +1,3 @@
-/**
- * Entity storing per-user preference settings used by the roulette.
- */
 package com.gyt.thefilmroulette.models;
 
 import jakarta.persistence.ElementCollection;
@@ -17,6 +14,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entity storing per-user preference settings used by the roulette.
+ */
 @Entity(name = "user_preferences")
 @Data
 @Builder
