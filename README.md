@@ -77,6 +77,20 @@ cp .env.sample .env
 docker compose -f docker-compose.yaml up --build
 ```
 
+### Docker Compose (recommended)
+
+This repo supports two modes:
+
+- Dev (hot reload, no manual rebuilds):
+	- `make compose-dev`
+	- Frontend: `http://localhost:5174` (override with `FRONTEND_DEV_PORT=5174`)
+	- Backend: `http://localhost:8080`
+
+- Prod-like (build frontend and serve via nginx):
+	- `make compose-prod`
+	- Frontend: `http://localhost:5173`
+	- Backend: `http://localhost:8080`
+
 ### 2. Run the Frontend
 ```sh
 cd frontend
