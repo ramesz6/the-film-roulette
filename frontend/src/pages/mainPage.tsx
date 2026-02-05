@@ -136,7 +136,24 @@ const MainPage = () => {
             : "/api/v1/me/list/disliked";
       await apiClient.put(url, { tmdbId, mediaType });
       return true;
-    } catch {
+    } catch (err: unknown) {
+      const statusCode = (() => {
+        if (typeof err !== "object" || err === null) return undefined;
+        if (!("response" in err)) return undefined;
+        const response = (err as { response?: unknown }).response;
+        if (typeof response !== "object" || response === null) return undefined;
+        if (!("status" in response)) return undefined;
+        const value = (response as { status?: unknown }).status;
+        return typeof value === "number" ? value : undefined;
+      })();
+
+      if (statusCode === 401 || statusCode === 403) {
+        clearAuthToken();
+        clearCurrentRecommendation();
+        navigate("/login", { replace: true });
+        return false;
+      }
+
       setError("Nem sikerült hozzáadni a listához");
       return false;
     }
@@ -178,6 +195,12 @@ const MainPage = () => {
           const value = (response as { status?: unknown }).status;
           return typeof value === "number" ? value : undefined;
         })();
+        if (status === 401 || status === 403) {
+          clearAuthToken();
+          clearCurrentRecommendation();
+          navigate("/login", { replace: true });
+          return;
+        }
         if (status === 428) {
           clearCurrentRecommendation();
           navigate("/profile/preferences", { replace: true });
