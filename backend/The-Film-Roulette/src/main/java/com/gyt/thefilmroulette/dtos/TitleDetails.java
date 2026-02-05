@@ -1,19 +1,38 @@
 package com.gyt.thefilmroulette.dtos;
 
-import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Minimal title details DTO for both TMDB movie and TV endpoints.
- * Gson will ignore unknown fields.
+ * API response model for title details used by the frontend list views.
+ * This is a normalized shape for both TMDB movie and TV data.
  */
 public record TitleDetails(
     int id,
     String title,
     String name,
     String overview,
-    @SerializedName("poster_path") String posterPath,
-    @SerializedName("release_date") String releaseDate,
-    @SerializedName("first_air_date") String firstAirDate,
-    @SerializedName("genre_ids") List<Integer> genreIds) {
+    String posterPath,
+    String releaseDate,
+    String firstAirDate,
+    List<Integer> genreIds,
+    List<String> genres,
+    Double userScore,
+    Integer voteCount,
+    Integer runtimeMinutes,
+    Integer numberOfSeasons,
+    Integer numberOfEpisodes,
+    String trailerUrl,
+    OttOffer ottOffer) {
+
+  /** Normalized watch-provider offers for a single region. */
+  public record OttOffer(
+      String region,
+      String link,
+      List<OttProvider> flatrate,
+      List<OttProvider> rent,
+      List<OttProvider> buy) {
+  }
+
+  /** Single watch provider (display name + optional logo URL). */
+  public record OttProvider(String name, String logoUrl) {}
 }

@@ -23,20 +23,20 @@ const buildMissingProfileMessage = (prefs: PreferencesResponse): string => {
   const missing: string[] = [];
 
   if (!Array.isArray(prefs.likedGenreIds) || prefs.likedGenreIds.length === 0) {
-    missing.push("válassz legalább 1 zsánert");
+    missing.push("select at least 1 genre");
   }
   if (typeof prefs.yearFrom !== "number" || typeof prefs.yearTo !== "number") {
-    missing.push("állíts be évszám tartományt");
+    missing.push("set a year range");
   }
   if (!prefs.includeMovies && !prefs.includeSeries) {
-    missing.push("jelöld be a Film vagy Sorozat opciót");
+    missing.push("select Movies or Series");
   }
 
   if (missing.length === 0) {
-    return "A ROULETTE használatához töltsd ki a profilt.";
+    return "To use ROULETTE, please complete your profile.";
   }
 
-  return `A ROULETTE használatához töltsd ki a profilt: ${missing.join(", ")}.`;
+  return `To use ROULETTE, please complete your profile: ${missing.join(", ")}.`;
 };
 
 export default function RequireProfile({
@@ -78,7 +78,7 @@ export default function RequireProfile({
           replace: true,
           state: {
             from: location.pathname,
-            message: "Nem sikerült ellenőrizni a profilt. Próbáld újra.",
+            message: "Failed to verify profile. Please try again.",
           },
         });
       });
@@ -103,7 +103,7 @@ export default function RequireProfile({
         replace
         state={{
           from: location.pathname,
-          message: "A ROULETTE használatához töltsd ki a profilt.",
+          message: "To use ROULETTE, please complete your profile.",
         }}
       />
     );

@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
-        "custom-bg": "url('/background2.webp')",
+        "custom-bg": "url('/background.webp')",
       },
     },
   },

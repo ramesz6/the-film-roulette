@@ -13,6 +13,7 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
 
   jpa:
+    defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
     show-sql: false

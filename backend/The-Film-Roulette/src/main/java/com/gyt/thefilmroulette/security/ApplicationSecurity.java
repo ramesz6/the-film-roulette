@@ -38,7 +38,7 @@ public class ApplicationSecurity {
   /**
    * A list of allowed paths that do not require authentication.
    */
-  private static String[] ALLOW_LIST = { "/api/v1/auth/**", "/api/v1/movie/**", "/error" };
+  private static String[] ALLOW_LIST = { "/api/v1/auth/**", "/api/v1/movie/**" };
 
   /**
    * Configures the security filter chain for HTTP requests.

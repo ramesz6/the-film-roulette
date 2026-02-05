@@ -67,7 +67,7 @@ export default function ProfilePreferences() {
           yearTo: p.yearTo ?? MAX_YEAR,
         });
       } catch {
-        setError("Nem sikerült betölteni a profil beállításokat");
+        setError("Failed to load profile preferences");
       }
     };
 
@@ -91,7 +91,7 @@ export default function ProfilePreferences() {
       navigate("/", { replace: true });
       return;
     } catch {
-      setError("Mentés sikertelen");
+      setError("Save failed");
     } finally {
       setIsSaving(false);
     }
@@ -101,7 +101,8 @@ export default function ProfilePreferences() {
     return (
       <div className="flex justify-center items-center">
         <p>
-          Betöltés <span className="loading loading-infinity loading-md"></span>
+          Loading...{" "}
+          <span className="loading loading-infinity loading-md"></span>
         </p>
       </div>
     );
@@ -123,16 +124,14 @@ export default function ProfilePreferences() {
           <div className="font-semibold mb-2">Liked genres</div>
           <div className="dropdown">
             <div tabIndex={0} role="button" className="btn">
-              Zsánerek kiválasztása ({prefs.likedGenreIds.length})
+              Select genres ({prefs.likedGenreIds.length})
             </div>
             <div
               tabIndex={0}
               className="dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-80 max-h-80 overflow-auto"
             >
               {genres.length === 0 ? (
-                <p className="p-2 text-sm opacity-70">
-                  Nincs elérhető genre lista
-                </p>
+                <p className="p-2 text-sm opacity-70">No genres available</p>
               ) : (
                 <ul className="menu">
                   {genres.map((g) => (
@@ -156,9 +155,75 @@ export default function ProfilePreferences() {
 
         <div>
           <div className="font-semibold mb-2">Year range</div>
-          <div className="text-sm opacity-70 mb-2 flex justify-between">
-            <span>From: {yearFrom}</span>
-            <span>To: {yearTo}</span>
+          <div className="flex items-end gap-3 mb-3 flex-wrap">
+            <label className="form-control">
+              <div className="label py-0">
+                <span className="label-text text-sm">From</span>
+              </div>
+              <input
+                type="number"
+                className="input input-bordered input-sm w-28"
+                min={MIN_YEAR}
+                max={MAX_YEAR}
+                value={yearFrom}
+                placeholder={`${MIN_YEAR}`}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  const parsed = raw === "" ? MIN_YEAR : Number(raw);
+                  if (!Number.isFinite(parsed)) return;
+                  const nextValue = Math.max(
+                    MIN_YEAR,
+                    Math.min(MAX_YEAR, Math.trunc(parsed)),
+                  );
+
+                  setPrefs((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          yearFrom: nextValue,
+                          yearTo: Math.max(prev.yearTo ?? MAX_YEAR, nextValue),
+                        }
+                      : prev,
+                  );
+                }}
+              />
+            </label>
+
+            <label className="form-control">
+              <div className="label py-0">
+                <span className="label-text text-sm">To</span>
+              </div>
+              <input
+                type="number"
+                className="input input-bordered input-sm w-28"
+                min={MIN_YEAR}
+                max={MAX_YEAR}
+                value={yearTo}
+                placeholder={`${MAX_YEAR}`}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  const parsed = raw === "" ? MAX_YEAR : Number(raw);
+                  if (!Number.isFinite(parsed)) return;
+                  const nextValue = Math.max(
+                    MIN_YEAR,
+                    Math.min(MAX_YEAR, Math.trunc(parsed)),
+                  );
+
+                  setPrefs((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          yearTo: nextValue,
+                          yearFrom: Math.min(
+                            prev.yearFrom ?? MIN_YEAR,
+                            nextValue,
+                          ),
+                        }
+                      : prev,
+                  );
+                }}
+              />
+            </label>
           </div>
 
           <div className="relative h-6">
@@ -215,7 +280,7 @@ export default function ProfilePreferences() {
 
         <div>
           <div className="font-semibold mb-2">Media types</div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-row flex-wrap gap-6">
             <label className="label cursor-pointer justify-start gap-3">
               <input
                 type="checkbox"
