@@ -135,8 +135,10 @@ const MainPage = () => {
             ? "/api/v1/me/list/seen"
             : "/api/v1/me/list/disliked";
       await apiClient.put(url, { tmdbId, mediaType });
+      return true;
     } catch {
       setError("Nem sikerült hozzáadni a listához");
+      return false;
     }
   };
 
@@ -212,27 +214,46 @@ const MainPage = () => {
 
   const dislike = async () => {
     if (!current) return;
+
+    const saved = await addToList("disliked", current.mediaType, current.tmdbId);
+    if (!saved) {
+      return;
+    }
+
     const existing = loadDisliked();
     const key = `${current.mediaType}:${current.tmdbId}`;
     if (!existing.includes(key)) {
       saveDisliked([...existing, key]);
     }
 
-    await addToList("disliked", current.mediaType, current.tmdbId);
     clearCurrentRecommendation();
     await loadNext();
   };
 
   const seen = async () => {
     if (!current) return;
-    await addToList("seen", current.mediaType, current.tmdbId);
+
+    const saved = await addToList("seen", current.mediaType, current.tmdbId);
+    if (!saved) {
+      return;
+    }
+
     clearCurrentRecommendation();
     await loadNext();
   };
 
   const watchLater = async () => {
     if (!current) return;
-    await addToList("watch-later", current.mediaType, current.tmdbId);
+
+    const saved = await addToList(
+      "watch-later",
+      current.mediaType,
+      current.tmdbId,
+    );
+    if (!saved) {
+      return;
+    }
+
     clearCurrentRecommendation();
     await loadNext();
   };
@@ -275,31 +296,33 @@ const MainPage = () => {
       ) : (
         <div className="flex flex-col items-center justify-center gap-4 px-4">
           {current ? (
-            <div className="card w-full max-w-md bg-base-100 shadow-xl">
-              <figure className="bg-base-200">
+            <div className="card w-full max-w-[26rem] bg-base-100 shadow-xl">
+              <figure className="bg-base-200 p-2 flex items-center justify-center">
                 {posterUrl(current.posterPath) ? (
                   <img
                     src={posterUrl(current.posterPath) ?? undefined}
                     alt={current.title}
-                    className="w-full"
+                    className="w-full h-auto max-h-80 object-contain"
                   />
                 ) : (
-                  <div className="w-full h-64 flex items-center justify-center">
+                  <div className="w-full h-56 flex items-center justify-center">
                     <span className="opacity-60">Nincs borítókép</span>
                   </div>
                 )}
               </figure>
-              <div className="card-body">
+              <div className="card-body p-6">
                 <div className="flex items-baseline justify-between gap-3">
-                  <h2 className="card-title break-words">{current.title}</h2>
+                  <h2 className="card-title text-lg break-words">{current.title}</h2>
                   {current.releaseDate ? (
-                    <span className="badge badge-outline">
+                    <span className="badge badge-outline badge-sm">
                       {current.releaseDate.slice(0, 4)}
                     </span>
                   ) : null}
                 </div>
                 {current.overview ? (
-                  <p className="text-sm opacity-80">{current.overview}</p>
+                  <p className="text-sm opacity-80 line-clamp-4">
+                    {current.overview}
+                  </p>
                 ) : null}
 
                 <div className="card-actions justify-center gap-2 pt-2">
@@ -312,10 +335,10 @@ const MainPage = () => {
                 </div>
 
                 <div className="card-actions justify-center gap-2">
-                  <button className="btn btn-primary" onClick={seen}>
+                  <button className="btn btn-primary btn-sm" onClick={seen}>
                     LÁTTAM
                   </button>
-                  <button className="btn" onClick={watchLater}>
+                  <button className="btn btn-sm" onClick={watchLater}>
                     MEGNÉZEM KÉSŐBB
                   </button>
                 </div>
