@@ -79,8 +79,13 @@ export default function ProfileList() {
   const visible = useMemo(() => entries, [entries]);
 
   const remove = async (e: ListEntry) => {
-    await apiClient.delete(`/api/v1/me/list/${e.mediaType}/${e.tmdbId}`);
-    await load(active);
+    setError(null);
+    try {
+      await apiClient.delete(`/api/v1/me/list/${e.mediaType}/${e.tmdbId}`);
+      await load(active);
+    } catch {
+      setError("Nem sikerült törölni a listából");
+    }
   };
 
   const moveTo = async (e: ListEntry, status: ListStatus) => {
@@ -90,8 +95,13 @@ export default function ProfileList() {
         : status === "SEEN"
           ? "/api/v1/me/list/seen"
           : "/api/v1/me/list/disliked";
-    await apiClient.put(url, { tmdbId: e.tmdbId, mediaType: e.mediaType });
-    await load(active);
+    setError(null);
+    try {
+      await apiClient.put(url, { tmdbId: e.tmdbId, mediaType: e.mediaType });
+      await load(active);
+    } catch {
+      setError("Nem sikerült frissíteni a státuszt");
+    }
   };
 
   return (
@@ -152,39 +162,25 @@ export default function ProfileList() {
                           {e.mediaType.toUpperCase()} • TMDB #{e.tmdbId}
                         </p>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-col gap-2 items-stretch">
                         {active === "WATCH_LATER" ? (
                           <button
-                            className="btn btn-sm"
+                            className="btn btn-sm w-full"
                             onClick={() => moveTo(e, "SEEN")}
                           >
                             Mark as watched
                           </button>
                         ) : active === "SEEN" ? (
                           <button
-                            className="btn btn-sm"
+                            className="btn btn-sm w-full"
                             onClick={() => moveTo(e, "WATCH_LATER")}
                           >
                             Like
                           </button>
-                        ) : (
-                          <>
-                            <button
-                              className="btn btn-sm"
-                              onClick={() => moveTo(e, "WATCH_LATER")}
-                            >
-                              Like
-                            </button>
-                            <button
-                              className="btn btn-sm"
-                              onClick={() => moveTo(e, "SEEN")}
-                            >
-                              Mark as watched
-                            </button>
-                          </>
-                        )}
+                        ) : null}
+
                         <button
-                          className="btn btn-sm btn-outline"
+                          className="btn btn-sm btn-outline w-full"
                           onClick={() => remove(e)}
                         >
                           Remove
