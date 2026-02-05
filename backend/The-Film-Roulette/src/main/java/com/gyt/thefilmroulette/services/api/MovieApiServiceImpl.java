@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import retrofit2.Retrofit;
 
 /**
@@ -57,7 +57,7 @@ public class MovieApiServiceImpl implements MovieApiService {
 
   /**
    * Retrieves movie discovery results from the TMDB API.
-   * 
+    *
    * @return the discovery results as a {@link DiscoveryResponse}
    *
    * @throws MovieApiException if the API request fails or if any error occurs
@@ -123,7 +123,8 @@ public class MovieApiServiceImpl implements MovieApiService {
         throw new MovieApiException("API Request returned empty body");
       }
 
-      List<TmdbTitleDetails.TmdbGenre> rawGenres = body.genres() == null ? List.of() : body.genres();
+        List<TmdbTitleDetails.TmdbGenre> rawGenres =
+          body.genres() == null ? List.of() : body.genres();
       List<Integer> genreIds = rawGenres.stream().map(TmdbTitleDetails.TmdbGenre::id).toList();
       List<String> genres = rawGenres.stream().map(TmdbTitleDetails.TmdbGenre::name).toList();
 
@@ -154,24 +155,38 @@ public class MovieApiServiceImpl implements MovieApiService {
     }
   }
 
-  private String pickTrailerUrl(String normalizedMediaType, int id, TmdbTitleDetails.TmdbVideos videos) {
-    if (videos == null || videos.results() == null) return null;
+  private String pickTrailerUrl(
+      String normalizedMediaType,
+      int id,
+      TmdbTitleDetails.TmdbVideos videos) {
+    if (videos == null || videos.results() == null) {
+      return null;
+    }
+
+    Comparator<TmdbTitleDetails.TmdbVideo> officialFirst =
+        Comparator.comparing(
+                (TmdbTitleDetails.TmdbVideo v) -> Boolean.TRUE.equals(v.official()))
+            .reversed();
 
     Optional<TmdbTitleDetails.TmdbVideo> candidate = videos.results().stream()
-        .filter(v -> v != null)
+        .filter(Objects::nonNull)
         .filter(v -> v.key() != null && !v.key().isBlank())
         .filter(v -> "YouTube".equalsIgnoreCase(v.site()))
         .filter(v -> "Trailer".equalsIgnoreCase(v.type()))
-        .sorted(Comparator.comparing((TmdbTitleDetails.TmdbVideo v) -> Boolean.TRUE.equals(v.official()))
-            .reversed())
+        .sorted(officialFirst)
         .findFirst();
 
     String webType = "tv".equalsIgnoreCase(normalizedMediaType) ? "tv" : "movie";
-    return candidate.map(v -> TMDB_WEB_BASE + "/" + webType + "/" + id + "#play=" + v.key()).orElse(null);
+    return candidate
+        .map(v -> TMDB_WEB_BASE + "/" + webType + "/" + id + "#play=" + v.key())
+        .orElse(null);
   }
 
-  private TitleDetails.OttOffer extractOttOffer(TmdbTitleDetails.TmdbWatchProviders watchProviders) {
-    if (watchProviders == null || watchProviders.results() == null || watchProviders.results().isEmpty()) {
+  private TitleDetails.OttOffer extractOttOffer(
+      TmdbTitleDetails.TmdbWatchProviders watchProviders) {
+    if (watchProviders == null
+        || watchProviders.results() == null
+        || watchProviders.results().isEmpty()) {
       return null;
     }
 
@@ -195,7 +210,9 @@ public class MovieApiServiceImpl implements MovieApiService {
       }
     }
 
-    if (region == null) return null;
+    if (region == null) {
+      return null;
+    }
 
     return new TitleDetails.OttOffer(
         regionKey,
@@ -205,13 +222,17 @@ public class MovieApiServiceImpl implements MovieApiService {
         mapProviders(region.buy()));
   }
 
-  private List<TitleDetails.OttProvider> mapProviders(List<TmdbTitleDetails.TmdbProvider> providers) {
-    if (providers == null || providers.isEmpty()) return List.of();
+  private List<TitleDetails.OttProvider> mapProviders(
+      List<TmdbTitleDetails.TmdbProvider> providers) {
+    if (providers == null || providers.isEmpty()) {
+      return List.of();
+    }
     return providers.stream()
-        .filter(p -> p != null)
-        .map(p -> new TitleDetails.OttProvider(
-            p.providerName(),
-            p.logoPath() == null ? null : TMDB_IMAGE_BASE_W45 + p.logoPath()))
+      .filter(Objects::nonNull)
+      .map(
+        p -> new TitleDetails.OttProvider(
+          p.providerName(),
+          p.logoPath() == null ? null : TMDB_IMAGE_BASE_W45 + p.logoPath()))
         .toList();
   }
 
