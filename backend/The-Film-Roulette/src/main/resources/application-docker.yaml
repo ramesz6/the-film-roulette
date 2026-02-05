@@ -3,6 +3,10 @@ spring:
     activate:
       on-profile: docker
 
+  sql:
+    init:
+      mode: always
+
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db:5432/postgres}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}

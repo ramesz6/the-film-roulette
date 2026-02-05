@@ -21,4 +21,4 @@ tmdb:
     key: ${TMDB_API_KEY}
 
 cors:
-  urls: ${CORS_URLS:http://localhost:5173,http://localhost:5174}
+  urls: ${CORS_URLS:http://localhost:5173}

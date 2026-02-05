@@ -1,11 +1,13 @@
 package com.gyt.thefilmroulette.security;
 
 import com.gyt.thefilmroulette.configurations.CorsConfig;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,7 +38,7 @@ public class ApplicationSecurity {
   /**
    * A list of allowed paths that do not require authentication.
    */
-  private static String[] ALLOW_LIST = { "/api/v1/auth/**", "/api/v1/movie/**" };
+  private static String[] ALLOW_LIST = { "/api/v1/auth/**", "/api/v1/movie/**", "/error" };
 
   /**
    * Configures the security filter chain for HTTP requests.
@@ -54,7 +56,11 @@ public class ApplicationSecurity {
         .cors(Customizer.withDefaults())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+      .exceptionHandling(ex -> ex
+        .authenticationEntryPoint((request, response, authException) -> response
+          .sendError(HttpServletResponse.SC_UNAUTHORIZED)))
         .authorizeHttpRequests(req -> req
+        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers(ALLOW_LIST).permitAll()
             .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -78,9 +84,7 @@ public class ApplicationSecurity {
     if (allowedOrigins.isEmpty()) {
       allowedOrigins = List.of(
           "http://localhost:5173",
-          "http://localhost:5174",
-          "http://127.0.0.1:5173",
-          "http://127.0.0.1:5174");
+          "http://127.0.0.1:5173");
     }
 
     configuration.setAllowedOrigins(allowedOrigins);

@@ -1,5 +1,1 @@
-services:
-  # Production-like frontend: nginx serves the built Vite bundle
-  frontend:
-    ports:
-      - "5173:80"
+services: {}

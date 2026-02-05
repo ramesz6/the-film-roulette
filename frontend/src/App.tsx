@@ -5,8 +5,9 @@ import { isLoggedIn } from "./LocalStorage";
 import RoulettePage from "./pages/roulette";
 import SingUp from "./pages/singUp";
 import MyProfile from "./pages/myProfile";
-import MyList from "./pages/myList";
 import RequireProfile from "./components/RequireProfile";
+import ProfilePreferences from "./pages/profilePreferences";
+import ProfileList from "./pages/profileList";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   if (!isLoggedIn()) {
@@ -54,14 +55,15 @@ function App() {
               <MyProfile />
             </RequireAuth>
           }
-        />
+        >
+          <Route index element={<Navigate to="list" replace />} />
+          <Route path="preferences" element={<ProfilePreferences />} />
+          <Route path="list" element={<ProfileList />} />
+        </Route>
+
         <Route
           path="/my-list"
-          element={
-            <RequireAuth>
-              <MyList />
-            </RequireAuth>
-          }
+          element={<Navigate to="/profile/list" replace />}
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

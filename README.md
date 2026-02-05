@@ -28,10 +28,12 @@ The Film Roulette is a full-stack application built with a **React (Vite, TypeSc
 ## Installation and Setup
 
 ### Prerequisites:
-- Node.js (for frontend development)
-- Java 21+ (for backend development)
-- Docker & Docker Compose (for running services locally)
-- PostgreSQL (if running without Docker)
+- Docker & Docker Compose
+
+Optional (only if you want to run services outside Docker):
+- Node.js (frontend)
+- Java 21+ (backend)
+- PostgreSQL
 
 ### Environment Variables
 To keep sensitive data secure, environment variables should be stored in `.env` files (and **must not** be committed).
@@ -41,62 +43,42 @@ Create a local `.env` from the sample file:
 cp .env.sample .env
 ```
 
-By default the backend uses Spring profiles:
-- `dev` for running locally on your machine
-- `docker` when running via Docker Compose
-- `prod` for production-like settings (safer defaults)
-
 #### **Frontend `.env` Example:**
 ```
-VITE_API_BASE_URL=http://localhost:8080/api
-VITE_PUBLIC_MOVIE_API_KEY=your_public_api_key_here
+VITE_API_BASE_URL=http://localhost:8080
 ```
 
 #### **Backend `.env` Example:**
 ```
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/filmroulette
-SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=<your-password>
 POSTGRES_PASSWORD=<your-password>
 JWT_SECRET=your_jwt_secret_key_here
-EXTERNAL_MOVIE_API_KEY=your_movie_api_key_here
+TMDB_API_KEY=your_tmdb_api_key_here
+
+# Optional
+# CORS_URLS=http://localhost:5173
+# FRONTEND_PORT=5173
 ```
 
 ---
 
 ## Running the Project
 
-### 1. Run the Backend
-```sh
-cd backend
-./mvnw spring-boot:run
-```
-OR with Docker:
-```sh
-cp .env.sample .env
-docker compose -f docker-compose.yaml up --build
-```
-
 ### Docker Compose (recommended)
 
-This repo supports two modes:
-
-- Dev (hot reload, no manual rebuilds):
-	- `make compose-dev`
-	- Frontend: `http://localhost:5174` (override with `FRONTEND_DEV_PORT=5174`)
-	- Backend: `http://localhost:8080`
-
-- Prod-like (build frontend and serve via nginx):
-	- `make compose-prod`
-	- Frontend: `http://localhost:5173`
-	- Backend: `http://localhost:8080`
-
-### 2. Run the Frontend
+Start everything (frontend + backend + db):
 ```sh
-cd frontend
-npm install
-npm run dev
+cp .env.sample .env
+make compose
 ```
+
+Stop everything:
+```sh
+make compose-down
+```
+
+URLs:
+- Frontend: `http://localhost:5173` (override with `FRONTEND_PORT=5173`)
+- Backend: `http://localhost:8080`
 
 ---
 
@@ -109,10 +91,11 @@ The backend provides a Swagger UI for API documentation and testing.
 ## Endpoints
 | Method | Endpoint             | Description                          |
 | ------ | -------------------- | ------------------------------------ |
-| `GET`  | `/api/movies`        | Fetch all available movies           |
-| `GET`  | `/api/movies/{id}`   | Get details of a specific movie      |
-| `POST` | `/api/auth/login`    | Authenticate a user and return a JWT |
-| `POST` | `/api/auth/register` | Register a new user                  |
+| `GET`  | `/api/v1/movie/discover` | Discover movies via TMDB         |
+| `GET`  | `/api/v1/movie/genres`   | Fetch TMDB genres                |
+| `GET`  | `/api/v1/movie/details/{mediaType}/{id}` | Details for a title |
+| `POST` | `/api/v1/auth/login`     | Authenticate and return a JWT    |
+| `POST` | `/api/v1/auth/register`  | Register a new user              |
 
 ---
 

@@ -62,7 +62,7 @@ export default function RequireProfile({
         }
         setAllowed(false);
         setLoading(false);
-        navigate("/profile", {
+        navigate("/profile/preferences", {
           replace: true,
           state: {
             from: location.pathname,
@@ -74,7 +74,7 @@ export default function RequireProfile({
         if (!active) return;
         setAllowed(false);
         setLoading(false);
-        navigate("/profile", {
+        navigate("/profile/preferences", {
           replace: true,
           state: {
             from: location.pathname,
@@ -99,7 +99,7 @@ export default function RequireProfile({
   if (!allowed) {
     return (
       <Navigate
-        to="/profile"
+        to="/profile/preferences"
         replace
         state={{
           from: location.pathname,
