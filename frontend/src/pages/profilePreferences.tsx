@@ -67,7 +67,7 @@ export default function ProfilePreferences() {
           yearTo: p.yearTo ?? MAX_YEAR,
         });
       } catch {
-        setError("Nem sikerült betölteni a profil beállításokat");
+        setError("Failed to load profile preferences");
       }
     };
 
@@ -91,7 +91,7 @@ export default function ProfilePreferences() {
       navigate("/", { replace: true });
       return;
     } catch {
-      setError("Mentés sikertelen");
+      setError("Save failed");
     } finally {
       setIsSaving(false);
     }
@@ -101,7 +101,8 @@ export default function ProfilePreferences() {
     return (
       <div className="flex justify-center items-center">
         <p>
-          Betöltés <span className="loading loading-infinity loading-md"></span>
+          Loading...{" "}
+          <span className="loading loading-infinity loading-md"></span>
         </p>
       </div>
     );
@@ -123,16 +124,14 @@ export default function ProfilePreferences() {
           <div className="font-semibold mb-2">Liked genres</div>
           <div className="dropdown">
             <div tabIndex={0} role="button" className="btn">
-              Zsánerek kiválasztása ({prefs.likedGenreIds.length})
+              Select genres ({prefs.likedGenreIds.length})
             </div>
             <div
               tabIndex={0}
               className="dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-80 max-h-80 overflow-auto"
             >
               {genres.length === 0 ? (
-                <p className="p-2 text-sm opacity-70">
-                  Nincs elérhető genre lista
-                </p>
+                <p className="p-2 text-sm opacity-70">No genres available</p>
               ) : (
                 <ul className="menu">
                   {genres.map((g) => (

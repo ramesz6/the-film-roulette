@@ -41,7 +41,7 @@ const LogIn = () => {
       <div className="flex justify-center items-center">
         <div className="card bg-base-100 w-96 shadow-xl">
           <div className="card-body">
-            <h2 className="card-title justify-center">LogIn</h2>
+            <h2 className="card-title justify-center">Login</h2>
             {error && <p className="text-center text-red-500">{error}</p>}
             <label className="input input-bordered flex items-center gap-2">
               <svg
@@ -88,13 +88,13 @@ const LogIn = () => {
                 onClick={onSubmit}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Logging in..." : "LogIn Now"}
+                {isSubmitting ? "Logging in..." : "Log in"}
               </button>
             </div>
             <p className="text-center text-sm">
-              Nincs fiókod?{" "}
+              Don't have an account?{" "}
               <Link className="link link-primary" to="/singup">
-                Regisztráció
+                Sign up
               </Link>
             </p>
           </div>

@@ -23,31 +23,31 @@ const validate = (data: UserModel): FieldErrors => {
   const password = data.password;
 
   if (!EMAIL_REGEX.test(email)) {
-    errors.email = "Érvénytelen email formátum";
+    errors.email = "Invalid email format";
   }
 
   if (username.length === 0) {
-    errors.username = "A felhasználónév kötelező";
+    errors.username = "Username is required";
   } else if (EMAIL_REGEX.test(username) || username.includes("@")) {
-    errors.username = "A felhasználónév nem lehet email cím";
+    errors.username = "Username cannot be an email address";
   }
 
   const missing: string[] = [];
   if (password.length < MIN_PASSWORD_LENGTH)
-    missing.push(`legalább ${MIN_PASSWORD_LENGTH} karakter`);
-  if (!/[a-z]/.test(password)) missing.push("kisbetű");
-  if (!/[A-Z]/.test(password)) missing.push("nagybetű");
-  if (!/[0-9]/.test(password)) missing.push("szám");
+    missing.push(`at least ${MIN_PASSWORD_LENGTH} characters`);
+  if (!/[a-z]/.test(password)) missing.push("lowercase letter");
+  if (!/[A-Z]/.test(password)) missing.push("uppercase letter");
+  if (!/[0-9]/.test(password)) missing.push("number");
 
   if (missing.length > 0) {
-    errors.password = `Jelszó követelmények: ${missing.join(", ")}`;
+    errors.password = `Password requirements: ${missing.join(", ")}`;
   }
 
   return errors;
 };
 
 const errorMessageFromAxios = (err: unknown): string => {
-  if (!axios.isAxiosError(err)) return "A regisztráció sikertelen";
+  if (!axios.isAxiosError(err)) return "Sign up failed";
 
   const axiosErr = err as AxiosError;
   const status = axiosErr.response?.status;
@@ -56,21 +56,21 @@ const errorMessageFromAxios = (err: unknown): string => {
   if (status === 400) {
     if (typeof data === "string") {
       if (data.toLowerCase().includes("already exists")) {
-        return "Az email már használatban van";
+        return "Email is already in use";
       }
       if (data.toLowerCase().includes("invalid")) {
-        return "Érvénytelen adatok";
+        return "Invalid data";
       }
       return data;
     }
-    return "Érvénytelen adatok";
+    return "Invalid data";
   }
 
-  if (status === 0 || status === undefined) return "A szerver nem elérhető";
-  if (status === 401 || status === 403) return "Nincs jogosultság";
-  if (status >= 500) return "Szerver hiba";
+  if (status === 0 || status === undefined) return "Server is unavailable";
+  if (status === 401 || status === 403) return "Not authorized";
+  if (status >= 500) return "Server error";
 
-  return "A regisztráció sikertelen";
+  return "Sign up failed";
 };
 
 const SingUp = () => {
@@ -123,7 +123,7 @@ const SingUp = () => {
       <div className="flex justify-center items-center">
         <div className="card bg-base-100 w-96 shadow-xl">
           <form className="card-body" onSubmit={onSubmit}>
-            <h2 className="card-title justify-center">SingUp</h2>
+            <h2 className="card-title justify-center">Sign Up</h2>
             {error && <p className="text-center text-red-500">{error}</p>}
             <label className="input input-bordered flex items-center gap-2">
               <svg
@@ -174,7 +174,7 @@ const SingUp = () => {
               />
             </label>
             <p className="text-xs opacity-70">
-              A felhasználónév nem lehet email cím.
+              Username cannot be an email address.
             </p>
             {touched.username && fieldErrors.username && (
               <p className="text-sm text-red-500">{fieldErrors.username}</p>
@@ -206,8 +206,8 @@ const SingUp = () => {
               />
             </label>
             <p className="text-xs opacity-70">
-              Min. {MIN_PASSWORD_LENGTH} karakter, legyen benne kisbetű,
-              nagybetű és szám.
+              Min. {MIN_PASSWORD_LENGTH} characters, include a lowercase letter,
+              an uppercase letter and a number.
             </p>
             {touched.password && fieldErrors.password && (
               <p className="text-sm text-red-500">{fieldErrors.password}</p>
@@ -218,13 +218,13 @@ const SingUp = () => {
                 type="submit"
                 disabled={isSubmitting || hasErrors}
               >
-                {isSubmitting ? "Signing up..." : "SingUp Now"}
+                {isSubmitting ? "Signing up..." : "Sign up"}
               </button>
             </div>
             <p className="text-center text-sm">
-              Van már fiókod?{" "}
+              Already have an account?{" "}
               <Link className="link link-primary" to="/login">
-                Bejelentkezés
+                Login
               </Link>
             </p>
           </form>

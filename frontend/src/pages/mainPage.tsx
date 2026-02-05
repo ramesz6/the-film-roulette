@@ -3,6 +3,7 @@ import "../App.css";
 import { Link, useNavigate } from "react-router";
 import { clearAuthToken } from "../LocalStorage";
 import { apiClient } from "../api/client";
+import { getHttpStatus } from "../utils/getHttpStatus";
 
 type Recommendation = {
   mediaType: "movie" | "tv";
@@ -137,15 +138,7 @@ const MainPage = () => {
       await apiClient.put(url, { tmdbId, mediaType });
       return true;
     } catch (err: unknown) {
-      const statusCode = (() => {
-        if (typeof err !== "object" || err === null) return undefined;
-        if (!("response" in err)) return undefined;
-        const response = (err as { response?: unknown }).response;
-        if (typeof response !== "object" || response === null) return undefined;
-        if (!("status" in response)) return undefined;
-        const value = (response as { status?: unknown }).status;
-        return typeof value === "number" ? value : undefined;
-      })();
+      const statusCode = getHttpStatus(err);
 
       if (statusCode === 401 || statusCode === 403) {
         clearAuthToken();
@@ -154,7 +147,7 @@ const MainPage = () => {
         return false;
       }
 
-      setError("Nem sikerült hozzáadni a listához");
+      setError("Failed to add to list");
       return false;
     }
   };
@@ -185,16 +178,7 @@ const MainPage = () => {
           return;
         }
       } catch (err: unknown) {
-        const status = (() => {
-          if (typeof err !== "object" || err === null) return undefined;
-          if (!("response" in err)) return undefined;
-          const response = (err as { response?: unknown }).response;
-          if (typeof response !== "object" || response === null)
-            return undefined;
-          if (!("status" in response)) return undefined;
-          const value = (response as { status?: unknown }).status;
-          return typeof value === "number" ? value : undefined;
-        })();
+        const status = getHttpStatus(err);
         if (status === 401 || status === 403) {
           clearAuthToken();
           clearCurrentRecommendation();
@@ -208,20 +192,20 @@ const MainPage = () => {
         }
         if (status === 404) {
           setError(
-            "Nem találtam a profilodhoz illő filmet/sorozatot. Próbáld bővíteni a preferenciákat.",
+            "No matching movies/series found for your profile. Try expanding your preferences.",
           );
           setCurrent(null);
           clearCurrentRecommendation();
           setWaitingForData(false);
           return;
         }
-        setError("A szerver nem elérhető");
+        setError("Server is unavailable");
         setWaitingForData(false);
         return;
       }
     }
 
-    setError("Nem sikerült új ajánlást találni");
+    setError("Failed to find a new recommendation");
     setWaitingForData(false);
   }, [navigate]);
 
@@ -314,7 +298,7 @@ const MainPage = () => {
       )}
       {waitingForData ? (
         <p className="flex justify-center items-center text-center">
-          Adatok betöltése
+          Loading
           <span className="loading loading-infinity loading-lg"></span>
         </p>
       ) : (
@@ -330,7 +314,7 @@ const MainPage = () => {
                   />
                 ) : (
                   <div className="w-full h-56 flex items-center justify-center">
-                    <span className="opacity-60">Nincs borítókép</span>
+                    <span className="opacity-60">No cover image</span>
                   </div>
                 )}
               </figure>
@@ -353,27 +337,25 @@ const MainPage = () => {
 
                 <div className="card-actions justify-center gap-2 pt-2">
                   <button className="btn btn-success" onClick={watchNow}>
-                    MEGNÉZEM MOST
+                    Watch now
                   </button>
                   <button className="btn btn-error" onClick={dislike}>
-                    NEM TETSZIK
+                    Dislike
                   </button>
                 </div>
 
                 <div className="card-actions justify-center gap-2">
                   <button className="btn btn-primary btn-sm" onClick={seen}>
-                    LÁTTAM
+                    Watched
                   </button>
                   <button className="btn btn-sm" onClick={watchLater}>
-                    MEGNÉZEM KÉSŐBB
+                    Watch later
                   </button>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="text-center opacity-80">
-              Nincs megjeleníthető cím.
-            </div>
+            <div className="text-center opacity-80">Nothing to show.</div>
           )}
         </div>
       )}

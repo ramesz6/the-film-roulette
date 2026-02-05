@@ -56,7 +56,7 @@ function App() {
             </RequireAuth>
           }
         >
-          <Route index element={<Navigate to="list" replace />} />
+          <Route index element={<Navigate to="preferences" replace />} />
           <Route path="preferences" element={<ProfilePreferences />} />
           <Route path="list" element={<ProfileList />} />
         </Route>

@@ -69,7 +69,7 @@ export default function MyList() {
       );
       setDetails(nextDetails);
     } catch {
-      setError("Nem sikerült betölteni a listát");
+      setError("Failed to load list");
     } finally {
       setLoading(false);
     }
@@ -154,11 +154,11 @@ export default function MyList() {
 
         {loading ? (
           <p>
-            Betöltés{" "}
+            Loading{" "}
             <span className="loading loading-infinity loading-md"></span>
           </p>
         ) : visible.length === 0 ? (
-          <p className="opacity-70">Üres</p>
+          <p className="opacity-70">Empty</p>
         ) : (
           <div className="grid grid-cols-1 gap-3">
             {visible.map((e) => {

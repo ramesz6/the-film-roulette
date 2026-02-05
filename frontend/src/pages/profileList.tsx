@@ -66,7 +66,7 @@ export default function ProfileList() {
       );
       setDetails(nextDetails);
     } catch {
-      setError("Nem sikerült betölteni a listát");
+      setError("Failed to load list");
     } finally {
       setLoading(false);
     }
@@ -84,7 +84,7 @@ export default function ProfileList() {
       await apiClient.delete(`/api/v1/me/list/${e.mediaType}/${e.tmdbId}`);
       await load(active);
     } catch {
-      setError("Nem sikerült törölni a listából");
+      setError("Failed to remove from list");
     }
   };
 
@@ -100,7 +100,7 @@ export default function ProfileList() {
       await apiClient.put(url, { tmdbId: e.tmdbId, mediaType: e.mediaType });
       await load(active);
     } catch {
-      setError("Nem sikerült frissíteni a státuszt");
+      setError("Failed to update status");
     }
   };
 
@@ -137,11 +137,11 @@ export default function ProfileList() {
 
         {loading ? (
           <p>
-            Betöltés{" "}
+            Loading{" "}
             <span className="loading loading-infinity loading-md"></span>
           </p>
         ) : visible.length === 0 ? (
-          <p className="opacity-70">Üres</p>
+          <p className="opacity-70">Empty</p>
         ) : (
           <div className="grid grid-cols-1 gap-3">
             {visible.map((e) => {
