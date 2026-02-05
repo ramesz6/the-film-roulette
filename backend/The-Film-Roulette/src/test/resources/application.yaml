@@ -2,6 +2,10 @@ spring:
   application:
     name: The-Film-Roulette
 
+  sql:
+    init:
+      mode: never
+
   datasource:
     url: jdbc:h2:mem:mydb
     username: sa
@@ -10,6 +14,8 @@ spring:
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
 
 jwt:
   secret: somestupidvaluenotrealyoloagainsomestupidvaluenotrealyolo
