@@ -9,7 +9,7 @@ export default function MyProfile() {
 
   const logout = () => {
     clearAuthToken();
-    navigate("/login", { replace: true });
+    navigate("/", { replace: true });
   };
 
   useEffect(() => {

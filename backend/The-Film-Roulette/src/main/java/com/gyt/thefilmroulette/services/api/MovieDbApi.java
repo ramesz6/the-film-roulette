@@ -3,11 +3,12 @@ package com.gyt.thefilmroulette.services.api;
 import com.gyt.thefilmroulette.dtos.DiscoveryResponse;
 import com.gyt.thefilmroulette.dtos.DiscoveryTitlesResponse;
 import com.gyt.thefilmroulette.dtos.GenreListResponse;
-import com.gyt.thefilmroulette.dtos.TitleDetails;
+import com.gyt.thefilmroulette.dtos.tmdb.TmdbTitleDetails;
 import java.util.Map;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
 /**
@@ -34,9 +35,13 @@ public interface MovieDbApi {
   public Call<GenreListResponse> getTvGenres();
 
   @GET("movie/{id}")
-  public Call<TitleDetails> getMovieDetails(@Path("id") int id);
+  public Call<TmdbTitleDetails> getMovieDetails(
+      @Path("id") int id,
+      @Query(value = "append_to_response", encoded = true) String appendToResponse);
 
   @GET("tv/{id}")
-  public Call<TitleDetails> getTvDetails(@Path("id") int id);
+  public Call<TmdbTitleDetails> getTvDetails(
+      @Path("id") int id,
+      @Query(value = "append_to_response", encoded = true) String appendToResponse);
 
 }

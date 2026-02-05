@@ -18,6 +18,17 @@ type TitleDetails = {
   releaseDate?: string;
   firstAirDate?: string;
   genreIds?: number[];
+  genres?: string[];
+  userScore?: number;
+  voteCount?: number;
+  runtimeMinutes?: number;
+  numberOfSeasons?: number;
+  numberOfEpisodes?: number;
+  trailerUrl?: string;
+  ottOffer?: {
+    region?: string;
+    link?: string;
+  };
 };
 
 const posterUrl = (posterPath: string | undefined): string | null => {
@@ -27,6 +38,25 @@ const posterUrl = (posterPath: string | undefined): string | null => {
   }
   return `https://image.tmdb.org/t/p/w185${posterPath}`;
 };
+
+const formatRuntime = (minutes: number): string => {
+  if (!Number.isFinite(minutes) || minutes <= 0) return "";
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+};
+
+const formatGenresLine = (genres: string[] | undefined): string | null => {
+  if (!genres || genres.length === 0) return null;
+  if (genres.length === 1) return genres[0] ?? null;
+  if (genres.length === 2) return `${genres[0]} and ${genres[1]}`;
+  const head = genres.slice(0, -1).join(", ");
+  const last = genres[genres.length - 1];
+  return `${head}, and ${last}`;
+};
+
+const tmdbTitleUrl = (mediaType: ListEntry["mediaType"], tmdbId: number) =>
+  `https://www.themoviedb.org/${mediaType === "tv" ? "tv" : "movie"}/${tmdbId}`;
 
 function titleLabel(d: TitleDetails | undefined, entry: ListEntry) {
   if (!d) return `${entry.mediaType.toUpperCase()} #${entry.tmdbId}`;
@@ -156,6 +186,24 @@ export default function ProfileList() {
               const key = `${e.mediaType}:${e.tmdbId}`;
               const d = details[key];
               const poster = posterUrl(d?.posterPath);
+              const tmdbUrl = tmdbTitleUrl(e.mediaType, e.tmdbId);
+              const genresLine = formatGenresLine(d?.genres);
+              const runtimeLine =
+                typeof d?.runtimeMinutes === "number" && d.runtimeMinutes > 0
+                  ? formatRuntime(d.runtimeMinutes)
+                  : typeof d?.numberOfSeasons === "number" &&
+                      d.numberOfSeasons > 0
+                    ? `${d.numberOfSeasons} seasons${
+                        typeof d.numberOfEpisodes === "number" &&
+                        d.numberOfEpisodes > 0
+                          ? ` • ${d.numberOfEpisodes} episodes`
+                          : ""
+                      }`
+                    : null;
+              const metaLine =
+                genresLine && runtimeLine
+                  ? `${genresLine} · ${runtimeLine}`
+                  : (genresLine ?? runtimeLine);
               return (
                 <div key={key} className="card bg-base-100 shadow">
                   <div className="card-body">
@@ -175,14 +223,35 @@ export default function ProfileList() {
                         </div>
 
                         <div className="min-w-0">
-                          <h3 className="card-title">{titleLabel(d, e)}</h3>
+                          <div className="flex items-baseline gap-2 min-w-0">
+                            <h3 className="card-title min-w-0">
+                              {titleLabel(d, e)}
+                            </h3>
+                            {typeof d?.userScore === "number" ? (
+                              <span className="badge badge-outline badge-sm shrink-0">
+                                {d.userScore.toFixed(1)}
+                              </span>
+                            ) : null}
+                          </div>
+
+                          {metaLine ? (
+                            <p className="text-sm opacity-80">{metaLine}</p>
+                          ) : null}
                           {d?.overview && (
                             <p className="text-sm opacity-80 line-clamp-3">
                               {d.overview}
                             </p>
                           )}
                           <p className="text-xs opacity-60 mt-1">
-                            {e.mediaType.toUpperCase()} • TMDB #{e.tmdbId}
+                            {e.mediaType.toUpperCase()} •{" "}
+                            <a
+                              href={tmdbUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="link"
+                            >
+                              TMDB #{e.tmdbId}
+                            </a>
                           </p>
                         </div>
                       </div>

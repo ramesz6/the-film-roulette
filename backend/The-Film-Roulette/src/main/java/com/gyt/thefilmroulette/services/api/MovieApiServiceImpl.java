@@ -6,11 +6,15 @@ import com.gyt.thefilmroulette.dtos.DiscoveryTitlesResponse;
 import com.gyt.thefilmroulette.dtos.GenreListResponse;
 import com.gyt.thefilmroulette.dtos.GenresResponse;
 import com.gyt.thefilmroulette.dtos.TitleDetails;
+import com.gyt.thefilmroulette.dtos.tmdb.TmdbTitleDetails;
 import com.gyt.thefilmroulette.exceptions.MovieApiException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 import retrofit2.Retrofit;
 
 /**
@@ -21,8 +25,15 @@ import retrofit2.Retrofit;
 @Service
 public class MovieApiServiceImpl implements MovieApiService {
 
+  private static final String APPEND_DETAILS = "videos,watch/providers";
+  private static final String TMDB_IMAGE_BASE_W45 = "https://image.tmdb.org/t/p/w45";
+  private static final String TMDB_WEB_BASE = "https://www.themoviedb.org";
+
   private Retrofit retrofit;
   private MovieDbApi tmdbApi;
+
+  @Value("${tmdb.watch.region:HU}")
+  private String watchRegion;
 
   /**
    * Constructs a new instance backed by the provided Retrofit configuration.
@@ -98,8 +109,8 @@ public class MovieApiServiceImpl implements MovieApiService {
     String normalized = mediaType.trim().toLowerCase();
     try {
       var call = switch (normalized) {
-        case "movie" -> tmdbApi.getMovieDetails(id);
-        case "tv", "series" -> tmdbApi.getTvDetails(id);
+        case "movie" -> tmdbApi.getMovieDetails(id, APPEND_DETAILS);
+        case "tv", "series" -> tmdbApi.getTvDetails(id, APPEND_DETAILS);
         default -> throw new IllegalArgumentException("Unsupported mediaType: " + mediaType);
       };
 
@@ -107,12 +118,101 @@ public class MovieApiServiceImpl implements MovieApiService {
       if (!response.isSuccessful()) {
         throw new MovieApiException("API Request failed with status code: " + response.code());
       }
-      return response.body();
+      TmdbTitleDetails body = response.body();
+      if (body == null) {
+        throw new MovieApiException("API Request returned empty body");
+      }
+
+      List<TmdbTitleDetails.TmdbGenre> rawGenres = body.genres() == null ? List.of() : body.genres();
+      List<Integer> genreIds = rawGenres.stream().map(TmdbTitleDetails.TmdbGenre::id).toList();
+      List<String> genres = rawGenres.stream().map(TmdbTitleDetails.TmdbGenre::name).toList();
+
+      String trailerUrl = pickTrailerUrl(normalized, body.id(), body.videos());
+      TitleDetails.OttOffer ottOffer = extractOttOffer(body.watchProviders());
+
+      return new TitleDetails(
+          body.id(),
+          body.title(),
+          body.name(),
+          body.overview(),
+          body.posterPath(),
+          body.releaseDate(),
+          body.firstAirDate(),
+          genreIds,
+          genres,
+          body.voteAverage(),
+          body.voteCount(),
+          body.runtime(),
+          body.numberOfSeasons(),
+          body.numberOfEpisodes(),
+          trailerUrl,
+          ottOffer);
     } catch (IllegalArgumentException e) {
       throw e;
     } catch (Exception e) {
       throw new MovieApiException("Error occurred while fetching details from TMDB API");
     }
+  }
+
+  private String pickTrailerUrl(String normalizedMediaType, int id, TmdbTitleDetails.TmdbVideos videos) {
+    if (videos == null || videos.results() == null) return null;
+
+    Optional<TmdbTitleDetails.TmdbVideo> candidate = videos.results().stream()
+        .filter(v -> v != null)
+        .filter(v -> v.key() != null && !v.key().isBlank())
+        .filter(v -> "YouTube".equalsIgnoreCase(v.site()))
+        .filter(v -> "Trailer".equalsIgnoreCase(v.type()))
+        .sorted(Comparator.comparing((TmdbTitleDetails.TmdbVideo v) -> Boolean.TRUE.equals(v.official()))
+            .reversed())
+        .findFirst();
+
+    String webType = "tv".equalsIgnoreCase(normalizedMediaType) ? "tv" : "movie";
+    return candidate.map(v -> TMDB_WEB_BASE + "/" + webType + "/" + id + "#play=" + v.key()).orElse(null);
+  }
+
+  private TitleDetails.OttOffer extractOttOffer(TmdbTitleDetails.TmdbWatchProviders watchProviders) {
+    if (watchProviders == null || watchProviders.results() == null || watchProviders.results().isEmpty()) {
+      return null;
+    }
+
+    Map<String, TmdbTitleDetails.TmdbWatchRegion> results = watchProviders.results();
+    String preferred = watchRegion == null ? "" : watchRegion.trim().toUpperCase();
+
+    TmdbTitleDetails.TmdbWatchRegion region = null;
+    String regionKey = null;
+
+    if (!preferred.isBlank() && results.containsKey(preferred)) {
+      regionKey = preferred;
+      region = results.get(preferred);
+    } else if (results.containsKey("US")) {
+      regionKey = "US";
+      region = results.get("US");
+    } else {
+      var first = results.entrySet().stream().findFirst();
+      if (first.isPresent()) {
+        regionKey = first.get().getKey();
+        region = first.get().getValue();
+      }
+    }
+
+    if (region == null) return null;
+
+    return new TitleDetails.OttOffer(
+        regionKey,
+        region.link(),
+        mapProviders(region.flatrate()),
+        mapProviders(region.rent()),
+        mapProviders(region.buy()));
+  }
+
+  private List<TitleDetails.OttProvider> mapProviders(List<TmdbTitleDetails.TmdbProvider> providers) {
+    if (providers == null || providers.isEmpty()) return List.of();
+    return providers.stream()
+        .filter(p -> p != null)
+        .map(p -> new TitleDetails.OttProvider(
+            p.providerName(),
+            p.logoPath() == null ? null : TMDB_IMAGE_BASE_W45 + p.logoPath()))
+        .toList();
   }
 
   @Override

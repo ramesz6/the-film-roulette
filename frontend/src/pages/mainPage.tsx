@@ -15,6 +15,31 @@ type Recommendation = {
   genreIds: number[];
 };
 
+type TitleDetails = {
+  id: number;
+  title?: string;
+  name?: string;
+  overview?: string;
+  posterPath?: string;
+  releaseDate?: string;
+  firstAirDate?: string;
+  genreIds?: number[];
+  genres?: string[];
+  userScore?: number;
+  voteCount?: number;
+  runtimeMinutes?: number;
+  numberOfSeasons?: number;
+  numberOfEpisodes?: number;
+  trailerUrl?: string;
+  ottOffer?: {
+    region?: string;
+    link?: string;
+    flatrate?: { name?: string; logoUrl?: string | null }[];
+    rent?: { name?: string; logoUrl?: string | null }[];
+    buy?: { name?: string; logoUrl?: string | null }[];
+  };
+};
+
 const posterUrl = (posterPath: string | null): string | null => {
   if (!posterPath) return null;
   if (posterPath.startsWith("http://") || posterPath.startsWith("https://")) {
@@ -27,6 +52,53 @@ const tmdbUrl = (mediaType: "movie" | "tv", id: number): string => {
   return mediaType === "movie"
     ? `https://www.themoviedb.org/movie/${id}`
     : `https://www.themoviedb.org/tv/${id}`;
+};
+
+const formatGenresLine = (genres: string[] | undefined): string | null => {
+  if (!genres || genres.length === 0) return null;
+  if (genres.length === 1) return genres[0] ?? null;
+  if (genres.length === 2) return `${genres[0]} and ${genres[1]}`;
+  const head = genres.slice(0, -1).join(", ");
+  const last = genres[genres.length - 1];
+  return `${head}, and ${last}`;
+};
+
+const formatRuntime = (minutes: number): string => {
+  if (!Number.isFinite(minutes) || minutes <= 0) return "";
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+};
+
+const youtubeTrailerSearchUrl = (query: string) =>
+  `https://www.youtube.com/results?search_query=${encodeURIComponent(
+    `${query} trailer`,
+  )}`;
+
+const extractYouTubeKey = (url: string | undefined | null): string | null => {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+
+  const playIdx = trimmed.indexOf("#play=");
+  if (playIdx >= 0) {
+    const key = trimmed.slice(playIdx + "#play=".length).split(/[&?#]/)[0];
+    return key ? key : null;
+  }
+
+  try {
+    const u = new URL(trimmed);
+    const v = u.searchParams.get("v");
+    if (v) return v;
+    if (u.hostname === "youtu.be") {
+      const key = u.pathname.replace(/^\//, "").split("/")[0];
+      return key ? key : null;
+    }
+  } catch {
+    // ignore
+  }
+
+  return null;
 };
 
 const DISLIKED_KEY = "dislikedTitles";
@@ -116,11 +188,21 @@ const MainPage = () => {
   const [error, setError] = useState("");
   const [waitingForData, setWaitingForData] = useState(true);
   const [current, setCurrent] = useState<Recommendation | null>(null);
+  const [currentDetails, setCurrentDetails] = useState<TitleDetails | null>(
+    null,
+  );
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [detailsError, setDetailsError] = useState<string | null>(null);
+  const [detailsVersion, setDetailsVersion] = useState(0);
+  const [trailerModal, setTrailerModal] = useState<{
+    title: string;
+    youTubeKey: string;
+  } | null>(null);
 
   const logout = () => {
     clearAuthToken();
     clearCurrentRecommendation();
-    navigate("/login", { replace: true });
+    navigate("/", { replace: true });
   };
 
   const addToList = async (
@@ -143,7 +225,7 @@ const MainPage = () => {
       if (statusCode === 401 || statusCode === 403) {
         clearAuthToken();
         clearCurrentRecommendation();
-        navigate("/login", { replace: true });
+        navigate("/", { replace: true });
         return false;
       }
 
@@ -182,7 +264,7 @@ const MainPage = () => {
         if (status === 401 || status === 403) {
           clearAuthToken();
           clearCurrentRecommendation();
-          navigate("/login", { replace: true });
+          navigate("/", { replace: true });
           return;
         }
         if (status === 428) {
@@ -218,6 +300,46 @@ const MainPage = () => {
     }
     loadNext();
   }, [loadNext]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const run = async () => {
+      if (!current) {
+        setCurrentDetails(null);
+        setDetailsError(null);
+        return;
+      }
+
+      setDetailsLoading(true);
+      setDetailsError(null);
+      try {
+        const res = await apiClient.get<TitleDetails>(
+          `/api/v1/movie/details/${current.mediaType}/${current.tmdbId}`,
+        );
+        if (!cancelled) setCurrentDetails(res.data);
+      } catch (err: unknown) {
+        const status = getHttpStatus(err);
+        if (status === 401 || status === 403) {
+          clearAuthToken();
+          clearCurrentRecommendation();
+          navigate("/", { replace: true });
+          return;
+        }
+        if (!cancelled) {
+          setCurrentDetails(null);
+          setDetailsError("Failed to load details");
+        }
+      } finally {
+        if (!cancelled) setDetailsLoading(false);
+      }
+    };
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [current, detailsVersion, navigate]);
 
   const dislike = async () => {
     if (!current) return;
@@ -276,6 +398,22 @@ const MainPage = () => {
     await loadNext();
   };
 
+  const playTrailer = () => {
+    if (!current) return;
+    const key = extractYouTubeKey(currentDetails?.trailerUrl);
+    if (key) {
+      setTrailerModal({ title: current.title, youTubeKey: key });
+      return;
+    }
+
+    // fallback: open TMDB trailer page if available, otherwise YouTube search
+    if (currentDetails?.trailerUrl) {
+      window.open(currentDetails.trailerUrl, "_blank");
+      return;
+    }
+    window.open(youtubeTrailerSearchUrl(current.title), "_blank");
+  };
+
   return (
     <>
       <div className="navbar bg-base-100 shadow mb-4">
@@ -310,7 +448,7 @@ const MainPage = () => {
                   <img
                     src={posterUrl(current.posterPath) ?? undefined}
                     alt={current.title}
-                    className="w-full h-auto max-h-80 object-contain"
+                    className="w-full h-auto max-h-72 object-contain"
                   />
                 ) : (
                   <div className="w-full h-56 flex items-center justify-center">
@@ -320,19 +458,119 @@ const MainPage = () => {
               </figure>
               <div className="card-body p-6">
                 <div className="flex items-baseline justify-between gap-3">
-                  <h2 className="card-title text-lg break-words">
-                    {current.title}
-                  </h2>
+                  <div className="min-w-0 flex items-baseline gap-2">
+                    <h2 className="card-title text-lg break-words">
+                      {current.title}
+                    </h2>
+                    {typeof currentDetails?.userScore === "number" ? (
+                      <span className="badge badge-outline badge-sm shrink-0">
+                        {currentDetails.userScore.toFixed(1)}
+                        {typeof currentDetails.voteCount === "number" ? (
+                          <span className="opacity-60">
+                            &nbsp;({currentDetails.voteCount})
+                          </span>
+                        ) : null}
+                      </span>
+                    ) : null}
+                  </div>
+
                   {current.releaseDate ? (
                     <span className="badge badge-outline badge-sm">
                       {current.releaseDate.slice(0, 4)}
                     </span>
                   ) : null}
                 </div>
+
+                {(() => {
+                  const genresLine = formatGenresLine(currentDetails?.genres);
+                  const runtimeLine =
+                    typeof currentDetails?.runtimeMinutes === "number" &&
+                    currentDetails.runtimeMinutes > 0
+                      ? formatRuntime(currentDetails.runtimeMinutes)
+                      : typeof currentDetails?.numberOfSeasons === "number" &&
+                          currentDetails.numberOfSeasons > 0
+                        ? `${currentDetails.numberOfSeasons} seasons${
+                            typeof currentDetails.numberOfEpisodes ===
+                              "number" && currentDetails.numberOfEpisodes > 0
+                              ? ` • ${currentDetails.numberOfEpisodes} episodes`
+                              : ""
+                          }`
+                        : null;
+
+                  const line =
+                    genresLine && runtimeLine
+                      ? `${genresLine} · ${runtimeLine}`
+                      : (genresLine ?? runtimeLine);
+
+                  return line ? (
+                    <p className="text-sm opacity-80">{line}</p>
+                  ) : null;
+                })()}
+
+                <div className="mt-1">
+                  {detailsLoading ? (
+                    <span className="badge badge-ghost badge-sm">
+                      Loading details…
+                    </span>
+                  ) : detailsError ? (
+                    <div className="flex items-center gap-2">
+                      <span className="badge badge-warning badge-sm">
+                        Details unavailable
+                      </span>
+                      <button
+                        className="btn btn-xs"
+                        onClick={() => setDetailsVersion((v) => v + 1)}
+                      >
+                        Retry
+                      </button>
+                    </div>
+                  ) : null}
+
+                  <div className="mt-2 flex flex-wrap gap-2 items-center" />
+                </div>
+
                 {current.overview ? (
                   <p className="text-sm opacity-80 line-clamp-4">
                     {current.overview}
                   </p>
+                ) : null}
+
+                <div className="card-actions justify-center gap-2 pt-2">
+                  <button className="btn btn-sm" onClick={playTrailer}>
+                    Play trailer
+                  </button>
+                </div>
+
+                {currentDetails?.ottOffer ? (
+                  <div className="mt-2">
+                    <p className="text-xs opacity-70">
+                      Watch providers
+                      {currentDetails.ottOffer.region
+                        ? ` (${currentDetails.ottOffer.region})`
+                        : ""}
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2 items-center">
+                      {(currentDetails.ottOffer.flatrate ?? [])
+                        .slice(0, 8)
+                        .map((p) => (
+                          <span
+                            key={`f:${p.name}`}
+                            className="badge badge-ghost badge-sm gap-1"
+                            title={p.name}
+                          >
+                            {p.logoUrl ? (
+                              <img
+                                src={p.logoUrl ?? undefined}
+                                alt={p.name ?? "Provider"}
+                                className="w-4 h-4 rounded"
+                                loading="lazy"
+                              />
+                            ) : null}
+                            {p.name}
+                          </span>
+                        ))}
+                    </div>
+                  </div>
                 ) : null}
 
                 <div className="card-actions justify-center gap-2 pt-2">
@@ -359,6 +597,36 @@ const MainPage = () => {
           )}
         </div>
       )}
+
+      {trailerModal ? (
+        <div className="modal modal-open" role="dialog">
+          <div className="modal-box w-11/12 max-w-4xl">
+            <h3 className="font-bold text-lg">{trailerModal.title}</h3>
+            <div className="mt-3 aspect-video w-full overflow-hidden rounded bg-black">
+              <iframe
+                className="w-full h-full"
+                src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(
+                  trailerModal.youTubeKey,
+                )}?autoplay=1`}
+                title="Trailer"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+
+            <div className="modal-action">
+              <button className="btn" onClick={() => setTrailerModal(null)}>
+                Close
+              </button>
+            </div>
+          </div>
+
+          <div className="modal-backdrop">
+            <button onClick={() => setTrailerModal(null)}>close</button>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 };

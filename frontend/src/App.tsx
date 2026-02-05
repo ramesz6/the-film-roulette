@@ -11,25 +11,28 @@ import ProfileList from "./pages/profileList";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   if (!isLoggedIn()) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
   return children;
+}
+
+function Home() {
+  if (!isLoggedIn()) {
+    return <LogIn />;
+  }
+
+  return (
+    <RequireProfile>
+      <RoulettePage />
+    </RequireProfile>
+  );
 }
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <RequireAuth>
-              <RequireProfile>
-                <RoulettePage />
-              </RequireProfile>
-            </RequireAuth>
-          }
-        />
+        <Route path="/" element={<Home />} />
         <Route
           path="/roulette"
           element={
