@@ -52,14 +52,6 @@ export default function MyProfile() {
         <div role="tablist" className="tabs tabs-boxed mb-4">
           <NavLink
             role="tab"
-            to="preferences"
-            end
-            className={({ isActive }) => `tab ${isActive ? "tab-active" : ""}`}
-          >
-            My Preferences
-          </NavLink>
-          <NavLink
-            role="tab"
             to="list"
             className={({ isActive }) => `tab ${isActive ? "tab-active" : ""}`}
           >

@@ -302,9 +302,6 @@ const MainPage = () => {
           <Link className="btn btn-sm" to="/profile">
             My Profile
           </Link>
-          <Link className="btn btn-sm" to="/profile/list">
-            My List
-          </Link>
           <button className="btn btn-sm btn-outline" onClick={logout}>
             Logout
           </button>
