@@ -215,7 +215,11 @@ const MainPage = () => {
   const dislike = async () => {
     if (!current) return;
 
-    const saved = await addToList("disliked", current.mediaType, current.tmdbId);
+    const saved = await addToList(
+      "disliked",
+      current.mediaType,
+      current.tmdbId,
+    );
     if (!saved) {
       return;
     }
@@ -312,7 +316,9 @@ const MainPage = () => {
               </figure>
               <div className="card-body p-6">
                 <div className="flex items-baseline justify-between gap-3">
-                  <h2 className="card-title text-lg break-words">{current.title}</h2>
+                  <h2 className="card-title text-lg break-words">
+                    {current.title}
+                  </h2>
                   {current.releaseDate ? (
                     <span className="badge badge-outline badge-sm">
                       {current.releaseDate.slice(0, 4)}
