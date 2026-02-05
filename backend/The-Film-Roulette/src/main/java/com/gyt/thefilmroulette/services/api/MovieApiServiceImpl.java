@@ -123,7 +123,7 @@ public class MovieApiServiceImpl implements MovieApiService {
         throw new MovieApiException("API Request returned empty body");
       }
 
-        List<TmdbTitleDetails.TmdbGenre> rawGenres =
+      List<TmdbTitleDetails.TmdbGenre> rawGenres =
           body.genres() == null ? List.of() : body.genres();
       List<Integer> genreIds = rawGenres.stream().map(TmdbTitleDetails.TmdbGenre::id).toList();
       List<String> genres = rawGenres.stream().map(TmdbTitleDetails.TmdbGenre::name).toList();

@@ -28,10 +28,13 @@ public record TmdbTitleDetails(
     @SerializedName("videos") TmdbVideos videos,
     @SerializedName("watch/providers") TmdbWatchProviders watchProviders) {
 
+  /** TMDB genre item. */
   public record TmdbGenre(int id, String name) {}
 
+  /** Embedded videos response. */
   public record TmdbVideos(@SerializedName("results") List<TmdbVideo> results) {}
 
+  /** TMDB video (trailer/teaser/etc). */
   public record TmdbVideo(
       String id,
       String key,
@@ -40,14 +43,18 @@ public record TmdbTitleDetails(
       String type,
       Boolean official) {}
 
-  public record TmdbWatchProviders(@SerializedName("results") Map<String, TmdbWatchRegion> results) {}
+  /** Embedded watch providers response, keyed by region (e.g. HU, US). */
+  public record TmdbWatchProviders(
+      @SerializedName("results") Map<String, TmdbWatchRegion> results) {}
 
+  /** Watch providers for a single region. */
   public record TmdbWatchRegion(
       String link,
       List<TmdbProvider> flatrate,
       List<TmdbProvider> rent,
       List<TmdbProvider> buy) {}
 
+  /** Single provider entry (name + logo path). */
   public record TmdbProvider(
       @SerializedName("provider_name") String providerName,
       @SerializedName("logo_path") String logoPath) {}

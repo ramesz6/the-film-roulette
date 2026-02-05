@@ -24,6 +24,7 @@ public record TitleDetails(
     String trailerUrl,
     OttOffer ottOffer) {
 
+  /** Normalized watch-provider offers for a single region. */
   public record OttOffer(
       String region,
       String link,
@@ -32,5 +33,6 @@ public record TitleDetails(
       List<OttProvider> buy) {
   }
 
+  /** Single watch provider (display name + optional logo URL). */
   public record OttProvider(String name, String logoUrl) {}
 }
