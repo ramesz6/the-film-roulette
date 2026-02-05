@@ -20,6 +20,14 @@ type TitleDetails = {
   genreIds?: number[];
 };
 
+const posterUrl = (posterPath: string | undefined): string | null => {
+  if (!posterPath) return null;
+  if (posterPath.startsWith("http://") || posterPath.startsWith("https://")) {
+    return posterPath;
+  }
+  return `https://image.tmdb.org/t/p/w185${posterPath}`;
+};
+
 function titleLabel(d: TitleDetails | undefined, entry: ListEntry) {
   if (!d) return `${entry.mediaType.toUpperCase()} #${entry.tmdbId}`;
   return (
@@ -147,20 +155,36 @@ export default function ProfileList() {
             {visible.map((e) => {
               const key = `${e.mediaType}:${e.tmdbId}`;
               const d = details[key];
+              const poster = posterUrl(d?.posterPath);
               return (
                 <div key={key} className="card bg-base-100 shadow">
                   <div className="card-body">
-                    <div className="flex justify-between gap-3 items-start">
-                      <div>
-                        <h3 className="card-title">{titleLabel(d, e)}</h3>
-                        {d?.overview && (
-                          <p className="text-sm opacity-80 line-clamp-3">
-                            {d.overview}
+                    <div className="flex justify-between gap-4 items-start">
+                      <div className="flex gap-4 items-start min-w-0">
+                        <div className="w-16 shrink-0">
+                          {poster ? (
+                            <img
+                              src={poster}
+                              alt={titleLabel(d, e)}
+                              className="w-16 h-24 object-cover rounded"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="w-16 h-24 rounded bg-base-200" />
+                          )}
+                        </div>
+
+                        <div className="min-w-0">
+                          <h3 className="card-title">{titleLabel(d, e)}</h3>
+                          {d?.overview && (
+                            <p className="text-sm opacity-80 line-clamp-3">
+                              {d.overview}
+                            </p>
+                          )}
+                          <p className="text-xs opacity-60 mt-1">
+                            {e.mediaType.toUpperCase()} • TMDB #{e.tmdbId}
                           </p>
-                        )}
-                        <p className="text-xs opacity-60 mt-1">
-                          {e.mediaType.toUpperCase()} • TMDB #{e.tmdbId}
-                        </p>
+                        </div>
                       </div>
                       <div className="flex flex-col gap-2 items-stretch">
                         {active === "WATCH_LATER" ? (
