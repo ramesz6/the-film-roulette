@@ -165,11 +165,20 @@ const MainPage = () => {
           setWaitingForData(false);
           return;
         }
-      } catch (e: any) {
-        const status = e?.response?.status;
+      } catch (err: unknown) {
+        const status = (() => {
+          if (typeof err !== "object" || err === null) return undefined;
+          if (!("response" in err)) return undefined;
+          const response = (err as { response?: unknown }).response;
+          if (typeof response !== "object" || response === null)
+            return undefined;
+          if (!("status" in response)) return undefined;
+          const value = (response as { status?: unknown }).status;
+          return typeof value === "number" ? value : undefined;
+        })();
         if (status === 428) {
           clearCurrentRecommendation();
-          navigate("/profile", { replace: true });
+          navigate("/profile/preferences", { replace: true });
           return;
         }
         if (status === 404) {
@@ -245,7 +254,7 @@ const MainPage = () => {
           <Link className="btn btn-sm" to="/profile">
             My Profile
           </Link>
-          <Link className="btn btn-sm" to="/my-list">
+          <Link className="btn btn-sm" to="/profile/list">
             My List
           </Link>
           <button className="btn btn-sm btn-outline" onClick={logout}>

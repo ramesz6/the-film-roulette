@@ -32,6 +32,59 @@ video {
 }
 /* --- Reset --- */
 
+/* --- Dual range slider (two thumbs) --- */
+.dual-range {
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  background: transparent;
+  height: 100%;
+  margin: 0;
+}
+
+.dual-range:focus {
+  outline: none;
+}
+
+.dual-range::-webkit-slider-runnable-track {
+  height: 100%;
+  background: transparent;
+}
+
+.dual-range::-moz-range-track {
+  height: 100%;
+  background: transparent;
+}
+
+.dual-range::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: hsl(var(--b1));
+  border: 2px solid hsl(var(--p));
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  margin-top: 0;
+}
+
+.dual-range::-moz-range-thumb {
+  pointer-events: auto;
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: hsl(var(--b1));
+  border: 2px solid hsl(var(--p));
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.dual-range::-ms-thumb {
+  pointer-events: auto;
+}
+/* --- Dual range slider (two thumbs) --- */
+
 /* --- Variables --- */
 :root {
   --bg-img-layer: -10;
