@@ -31,9 +31,6 @@ export default function MyProfile() {
           <Link className="btn btn-sm" to="/">
             Roulette
           </Link>
-          <Link className="btn btn-sm" to="/profile/list">
-            My List
-          </Link>
           <button className="btn btn-sm btn-outline" onClick={logout}>
             Logout
           </button>
@@ -52,10 +49,18 @@ export default function MyProfile() {
         <div role="tablist" className="tabs tabs-boxed mb-4">
           <NavLink
             role="tab"
+            to="preferences"
+            end
+            className={({ isActive }) => `tab ${isActive ? "tab-active" : ""}`}
+          >
+            Preferences
+          </NavLink>
+          <NavLink
+            role="tab"
             to="list"
             className={({ isActive }) => `tab ${isActive ? "tab-active" : ""}`}
           >
-            My List
+            Lists
           </NavLink>
         </div>
 
