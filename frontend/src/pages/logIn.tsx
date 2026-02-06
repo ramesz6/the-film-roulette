@@ -12,7 +12,7 @@ const LogIn = () => {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = async () => {
+  const handleSubmit = async () => {
     setError(null);
     setIsSubmitting(true);
     try {
@@ -36,11 +36,17 @@ const LogIn = () => {
     }
   };
 
+  const onFormSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+    void handleSubmit();
+  };
+
   return (
     <>
       <div className="flex justify-center items-center">
         <div className="card bg-base-100 w-96 shadow-xl">
-          <div className="card-body">
+          <form className="card-body" onSubmit={onFormSubmit}>
             <h2 className="card-title justify-center">Login</h2>
             {error && <p className="text-center text-red-500">{error}</p>}
             <label className="input input-bordered flex items-center gap-2">
@@ -54,11 +60,12 @@ const LogIn = () => {
                 <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
               </svg>
               <input
-                type="text"
+                type="email"
                 className="grow"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
               />
             </label>
             <label className="input input-bordered flex items-center gap-2">
@@ -80,12 +87,13 @@ const LogIn = () => {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
               />
             </label>
             <div className="card-actions justify-center">
               <button
                 className="btn btn-primary"
-                onClick={onSubmit}
+                type="submit"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Logging in..." : "Log in"}
@@ -97,7 +105,7 @@ const LogIn = () => {
                 Sign up
               </Link>
             </p>
-          </div>
+          </form>
         </div>
       </div>
     </>
