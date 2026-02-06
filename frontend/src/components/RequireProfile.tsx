@@ -3,111 +3,111 @@ import { Navigate, useLocation, useNavigate } from "react-router";
 import { apiClient } from "../api/client";
 
 type PreferencesResponse = {
-  likedGenreIds: number[];
-  yearFrom: number | null;
-  yearTo: number | null;
-  includeMovies: boolean;
-  includeSeries: boolean;
+	likedGenreIds: number[];
+	yearFrom: number | null;
+	yearTo: number | null;
+	includeMovies: boolean;
+	includeSeries: boolean;
 };
 
 const isConfigured = (prefs: PreferencesResponse): boolean => {
-  const hasGenres =
-    Array.isArray(prefs.likedGenreIds) && prefs.likedGenreIds.length > 0;
-  const hasYearRange =
-    typeof prefs.yearFrom === "number" && typeof prefs.yearTo === "number";
-  const hasType = prefs.includeMovies || prefs.includeSeries;
-  return hasGenres && hasYearRange && hasType;
+	const hasGenres =
+		Array.isArray(prefs.likedGenreIds) && prefs.likedGenreIds.length > 0;
+	const hasYearRange =
+		typeof prefs.yearFrom === "number" && typeof prefs.yearTo === "number";
+	const hasType = prefs.includeMovies || prefs.includeSeries;
+	return hasGenres && hasYearRange && hasType;
 };
 
 const buildMissingProfileMessage = (prefs: PreferencesResponse): string => {
-  const missing: string[] = [];
+	const missing: string[] = [];
 
-  if (!Array.isArray(prefs.likedGenreIds) || prefs.likedGenreIds.length === 0) {
-    missing.push("select at least 1 genre");
-  }
-  if (typeof prefs.yearFrom !== "number" || typeof prefs.yearTo !== "number") {
-    missing.push("set a year range");
-  }
-  if (!prefs.includeMovies && !prefs.includeSeries) {
-    missing.push("select Movies or Series");
-  }
+	if (!Array.isArray(prefs.likedGenreIds) || prefs.likedGenreIds.length === 0) {
+		missing.push("select at least 1 genre");
+	}
+	if (typeof prefs.yearFrom !== "number" || typeof prefs.yearTo !== "number") {
+		missing.push("set a year range");
+	}
+	if (!prefs.includeMovies && !prefs.includeSeries) {
+		missing.push("select Movies or Series");
+	}
 
-  if (missing.length === 0) {
-    return "To use ROULETTE, please complete your profile.";
-  }
+	if (missing.length === 0) {
+		return "To use ROULETTE, please complete your profile.";
+	}
 
-  return `To use ROULETTE, please complete your profile: ${missing.join(", ")}.`;
+	return `To use ROULETTE, please complete your profile: ${missing.join(", ")}.`;
 };
 
 export default function RequireProfile({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  const [loading, setLoading] = useState(true);
-  const [allowed, setAllowed] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
+	const [loading, setLoading] = useState(true);
+	const [allowed, setAllowed] = useState(false);
+	const navigate = useNavigate();
+	const location = useLocation();
 
-  useEffect(() => {
-    let active = true;
-    apiClient
-      .get<PreferencesResponse>("/api/v1/me/preferences")
-      .then((res) => {
-        if (!active) return;
-        if (isConfigured(res.data)) {
-          setAllowed(true);
-          setLoading(false);
-          return;
-        }
-        setAllowed(false);
-        setLoading(false);
-        navigate("/profile/preferences", {
-          replace: true,
-          state: {
-            from: location.pathname,
-            message: buildMissingProfileMessage(res.data),
-          },
-        });
-      })
-      .catch(() => {
-        if (!active) return;
-        setAllowed(false);
-        setLoading(false);
-        navigate("/profile/preferences", {
-          replace: true,
-          state: {
-            from: location.pathname,
-            message: "Failed to verify profile. Please try again.",
-          },
-        });
-      });
+	useEffect(() => {
+		let active = true;
+		apiClient
+			.get<PreferencesResponse>("/api/v1/me/preferences")
+			.then((res) => {
+				if (!active) return;
+				if (isConfigured(res.data)) {
+					setAllowed(true);
+					setLoading(false);
+					return;
+				}
+				setAllowed(false);
+				setLoading(false);
+				navigate("/profile/preferences", {
+					replace: true,
+					state: {
+						from: location.pathname,
+						message: buildMissingProfileMessage(res.data),
+					},
+				});
+			})
+			.catch(() => {
+				if (!active) return;
+				setAllowed(false);
+				setLoading(false);
+				navigate("/profile/preferences", {
+					replace: true,
+					state: {
+						from: location.pathname,
+						message: "Failed to verify profile. Please try again.",
+					},
+				});
+			});
 
-    return () => {
-      active = false;
-    };
-  }, [location.pathname, navigate]);
+		return () => {
+			active = false;
+		};
+	}, [location.pathname, navigate]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <span className="loading loading-infinity loading-lg"></span>
-      </div>
-    );
-  }
+	if (loading) {
+		return (
+			<div className="flex justify-center items-center min-h-[50vh]">
+				<span className="loading loading-infinity loading-lg"></span>
+			</div>
+		);
+	}
 
-  if (!allowed) {
-    return (
-      <Navigate
-        to="/profile/preferences"
-        replace
-        state={{
-          from: location.pathname,
-          message: "To use ROULETTE, please complete your profile.",
-        }}
-      />
-    );
-  }
+	if (!allowed) {
+		return (
+			<Navigate
+				to="/profile/preferences"
+				replace
+				state={{
+					from: location.pathname,
+					message: "To use ROULETTE, please complete your profile.",
+				}}
+			/>
+		);
+	}
 
-  return children;
+	return children;
 }

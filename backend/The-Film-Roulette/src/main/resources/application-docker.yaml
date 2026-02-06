@@ -5,7 +5,10 @@ spring:
 
   sql:
     init:
-      mode: always
+      # Disable schema.sql execution in docker.
+      # The legacy ListStatus constraint patch is applied deterministically at startup
+      # (after JPA schema creation) by a Java patcher that can safely handle missing tables.
+      mode: never
 
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db:5432/postgres}
