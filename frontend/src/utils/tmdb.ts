@@ -1,4 +1,4 @@
-export type MediaType = "movie" | "tv";
+import type { MediaType } from "../types/tmdb";
 
 export type PosterSize = "w185" | "w500";
 
@@ -14,7 +14,7 @@ export const posterUrl = (
 };
 
 export const formatGenresLine = (
-	genres: string[] | undefined,
+	genres: string[] | null | undefined,
 ): string | null => {
 	if (!genres || genres.length === 0) return null;
 	if (genres.length === 1) return genres[0] ?? null;
@@ -24,8 +24,8 @@ export const formatGenresLine = (
 	return `${head}, and ${last}`;
 };
 
-export const formatRuntime = (minutes: number): string => {
-	if (!Number.isFinite(minutes) || minutes <= 0) return "";
+export const formatRuntime = (minutes: number | null | undefined): string => {
+	if (minutes == null || !Number.isFinite(minutes) || minutes <= 0) return "";
 	const h = Math.floor(minutes / 60);
 	const m = minutes % 60;
 	return h > 0 ? `${h}h ${m}m` : `${m}m`;

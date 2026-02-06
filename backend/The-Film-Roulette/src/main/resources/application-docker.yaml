@@ -6,9 +6,6 @@ spring:
   sql:
     init:
       mode: always
-      # schema.sql includes a backward-compatibility patch that may no-op on fresh databases.
-      # If init order changes and the table doesn't exist yet, don't fail startup.
-      continue-on-error: true
 
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db:5432/postgres}

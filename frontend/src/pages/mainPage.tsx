@@ -505,7 +505,7 @@ const MainPage = () => {
 									<button
 										className="btn btn-sm"
 										onClick={playTrailer}
-										disabled={!current || detailsLoading}
+										disabled={detailsLoading}
 									>
 										{trailerButtonLabel}
 									</button>
@@ -526,7 +526,7 @@ const MainPage = () => {
 													<span
 														key={`f:${index}:${p.name ?? "unknown"}`}
 														className="badge badge-ghost badge-sm gap-1"
-														title={p.name}
+														title={p.name ?? undefined}
 													>
 														{p.logoUrl ? (
 															<img
