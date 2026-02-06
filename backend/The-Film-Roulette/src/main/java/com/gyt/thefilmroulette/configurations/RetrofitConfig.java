@@ -1,5 +1,6 @@
 package com.gyt.thefilmroulette.configurations;
 
+import java.time.Duration;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -39,6 +40,10 @@ public class RetrofitConfig {
   public Retrofit retrofit() {
     OkHttpClient client = new OkHttpClient.Builder()
         .addInterceptor(interceptor) // Add the custom interceptor
+        .connectTimeout(Duration.ofSeconds(5))
+        .readTimeout(Duration.ofSeconds(10))
+        .writeTimeout(Duration.ofSeconds(10))
+        .callTimeout(Duration.ofSeconds(15))
         .build();
 
     return new Retrofit.Builder()

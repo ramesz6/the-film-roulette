@@ -69,31 +69,40 @@ public class RecommendationService {
       String mediaType = mediaTypes.get(random.nextInt(mediaTypes.size()));
       Map<String, String> typedQuery = withDateRange(baseQuery, mediaType, from, to);
 
+      // Call TMDB once per attempt on the happy path: use page 1 results directly when possible.
       int totalPages = 1;
+      DiscoveryTitlesResponse first;
       try {
-        DiscoveryTitlesResponse first = movieApiService.discover(
-            mediaType,
-            withPage(typedQuery, 1));
+        first = movieApiService.discover(mediaType, withPage(typedQuery, 1));
         totalPages = Math.max(1, Math.min(MAX_TOTAL_PAGES, first.totalPages()));
       } catch (Exception ignored) {
         continue;
       }
 
-      int page = 1 + random.nextInt(totalPages);
-      DiscoveryTitlesResponse resp;
-      try {
-        resp = movieApiService.discover(mediaType, withPage(typedQuery, page));
-      } catch (Exception ignored) {
-        continue;
-      }
-
-      List<DiscoveryTitle> candidates = (resp.results() == null
+      List<DiscoveryTitle> candidates = (first.results() == null
           ? List.<DiscoveryTitle>of()
-          : resp.results())
+          : first.results())
           .stream()
           .filter(item -> item != null)
           .filter(item -> !exclude.contains(key(mediaType, item.id())))
           .toList();
+
+      if (candidates.isEmpty() && totalPages > 1) {
+        // Fallback: sample a different page to avoid always returning the top-popularity bucket.
+        int page = 2 + random.nextInt(totalPages - 1);
+        try {
+          DiscoveryTitlesResponse resp = movieApiService.discover(mediaType, withPage(typedQuery, page));
+          candidates = (resp.results() == null
+              ? List.<DiscoveryTitle>of()
+              : resp.results())
+              .stream()
+              .filter(item -> item != null)
+              .filter(item -> !exclude.contains(key(mediaType, item.id())))
+              .toList();
+        } catch (Exception ignored) {
+          continue;
+        }
+      }
 
       if (candidates.isEmpty()) {
         continue;

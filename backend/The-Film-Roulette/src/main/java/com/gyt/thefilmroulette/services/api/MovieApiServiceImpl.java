@@ -74,7 +74,7 @@ public class MovieApiServiceImpl implements MovieApiService {
 
       return response.body();
     } catch (Exception e) {
-      throw new MovieApiException("Error occurred while fetching data from TMDB API");
+      throw new MovieApiException("Error occurred while fetching data from TMDB API", e);
     }
   }
 
@@ -98,7 +98,7 @@ public class MovieApiServiceImpl implements MovieApiService {
           movieGenres.genres() == null ? List.of() : movieGenres.genres(),
           tvGenres.genres() == null ? List.of() : tvGenres.genres());
     } catch (Exception e) {
-      throw new MovieApiException("Error occurred while fetching genres from TMDB API");
+      throw new MovieApiException("Error occurred while fetching genres from TMDB API", e);
     }
   }
 
@@ -151,7 +151,7 @@ public class MovieApiServiceImpl implements MovieApiService {
     } catch (IllegalArgumentException e) {
       throw e;
     } catch (Exception e) {
-      throw new MovieApiException("Error occurred while fetching details from TMDB API");
+      throw new MovieApiException("Error occurred while fetching details from TMDB API", e);
     }
   }
 
@@ -262,7 +262,7 @@ public class MovieApiServiceImpl implements MovieApiService {
     } catch (IllegalArgumentException e) {
       throw e;
     } catch (Exception e) {
-      throw new MovieApiException("Error occurred while fetching discovery data from TMDB API");
+      throw new MovieApiException("Error occurred while fetching discovery data from TMDB API", e);
     }
   }
 }
