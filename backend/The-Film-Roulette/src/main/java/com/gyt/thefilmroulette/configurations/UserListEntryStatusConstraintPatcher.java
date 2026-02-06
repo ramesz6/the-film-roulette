@@ -31,6 +31,10 @@ public class UserListEntryStatusConstraintPatcher implements ApplicationRunner {
   private final JdbcTemplate jdbcTemplate;
   private final TransactionTemplate transactionTemplate;
 
+  /**
+   * Creates a startup patcher that normalizes {@code user_list_entry.status} values and ensures
+   * the corresponding CHECK constraint exists.
+   */
   public UserListEntryStatusConstraintPatcher(
       DataSource dataSource,
       JdbcTemplate jdbcTemplate,

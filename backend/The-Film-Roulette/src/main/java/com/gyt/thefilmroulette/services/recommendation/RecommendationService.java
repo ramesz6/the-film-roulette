@@ -91,8 +91,8 @@ public class RecommendationService {
         // Fallback: sample a different page to avoid always returning the top-popularity bucket.
         int page = 2 + random.nextInt(totalPages - 1);
         try {
-          DiscoveryTitlesResponse resp = movieApiService
-            .discover(mediaType, withPage(typedQuery, page));
+          DiscoveryTitlesResponse resp =
+              movieApiService.discover(mediaType, withPage(typedQuery, page));
           candidates = (resp.results() == null
               ? List.<DiscoveryTitle>of()
               : resp.results())
