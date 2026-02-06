@@ -2,6 +2,7 @@ package com.gyt.thefilmroulette.configurations;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.util.Objects;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,16 +14,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * Backward-compatible DB patch for older Postgres databases created before ListStatus.DISLIKED existed.
+ * Backward-compatible DB patch for older Postgres databases created before
+ * ListStatus.DISLIKED existed.
  *
- * <p>We apply this patch at application startup (after JPA has initialized) instead of using schema.sql,
- * because Spring's SQL initializer can't safely express a "run only if table exists" patch without
- * PL/pgSQL blocks.
+ * <p>We apply this patch at application startup (after JPA has initialized) instead of using
+ * schema.sql, because Spring's SQL initializer can't safely express a "run only if table exists"
+ * patch without PL/pgSQL blocks.
  */
 @Component
 public class UserListEntryStatusConstraintPatcher implements ApplicationRunner {
 
-  private static final Logger log = LoggerFactory.getLogger(UserListEntryStatusConstraintPatcher.class);
+  private static final Logger log =
+      LoggerFactory.getLogger(UserListEntryStatusConstraintPatcher.class);
 
   private final DataSource dataSource;
   private final JdbcTemplate jdbcTemplate;
@@ -34,7 +37,8 @@ public class UserListEntryStatusConstraintPatcher implements ApplicationRunner {
       PlatformTransactionManager transactionManager) {
     this.dataSource = dataSource;
     this.jdbcTemplate = jdbcTemplate;
-    this.transactionTemplate = new TransactionTemplate(transactionManager);
+    this.transactionTemplate =
+        new TransactionTemplate(Objects.requireNonNull(transactionManager, "transactionManager"));
   }
 
   @Override
@@ -71,7 +75,10 @@ public class UserListEntryStatusConstraintPatcher implements ApplicationRunner {
                   """);
 
           jdbcTemplate.execute(
-              "ALTER TABLE public.user_list_entry DROP CONSTRAINT IF EXISTS user_list_entry_status_check");
+              """
+              ALTER TABLE public.user_list_entry
+                DROP CONSTRAINT IF EXISTS user_list_entry_status_check
+              """);
           jdbcTemplate.execute(
               """
               ALTER TABLE public.user_list_entry
