@@ -4,6 +4,13 @@ import { Link, useNavigate } from "react-router";
 import { clearAuthToken } from "../LocalStorage";
 import { apiClient } from "../api/client";
 import { getHttpStatus } from "../utils/getHttpStatus";
+import {
+  formatGenresLine,
+  formatRuntime,
+  posterUrl,
+  tmdbTitleUrl,
+} from "../utils/tmdb";
+import type { TitleDetails } from "../types/tmdb";
 
 type Recommendation = {
   mediaType: "movie" | "tv";
@@ -15,60 +22,7 @@ type Recommendation = {
   genreIds: number[];
 };
 
-type TitleDetails = {
-  id: number;
-  title?: string;
-  name?: string;
-  overview?: string;
-  posterPath?: string;
-  releaseDate?: string;
-  firstAirDate?: string;
-  genreIds?: number[];
-  genres?: string[];
-  userScore?: number;
-  voteCount?: number;
-  runtimeMinutes?: number;
-  numberOfSeasons?: number;
-  numberOfEpisodes?: number;
-  trailerUrl?: string;
-  ottOffer?: {
-    region?: string;
-    link?: string;
-    flatrate?: { name?: string; logoUrl?: string | null }[];
-    rent?: { name?: string; logoUrl?: string | null }[];
-    buy?: { name?: string; logoUrl?: string | null }[];
-  };
-};
-
-const posterUrl = (posterPath: string | null): string | null => {
-  if (!posterPath) return null;
-  if (posterPath.startsWith("http://") || posterPath.startsWith("https://")) {
-    return posterPath;
-  }
-  return `https://image.tmdb.org/t/p/w500${posterPath}`;
-};
-
-const tmdbUrl = (mediaType: "movie" | "tv", id: number): string => {
-  return mediaType === "movie"
-    ? `https://www.themoviedb.org/movie/${id}`
-    : `https://www.themoviedb.org/tv/${id}`;
-};
-
-const formatGenresLine = (genres: string[] | undefined): string | null => {
-  if (!genres || genres.length === 0) return null;
-  if (genres.length === 1) return genres[0] ?? null;
-  if (genres.length === 2) return `${genres[0]} and ${genres[1]}`;
-  const head = genres.slice(0, -1).join(", ");
-  const last = genres[genres.length - 1];
-  return `${head}, and ${last}`;
-};
-
-const formatRuntime = (minutes: number): string => {
-  if (!Number.isFinite(minutes) || minutes <= 0) return "";
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return h > 0 ? `${h}h ${m}m` : `${m}m`;
-};
+// shared TMDB/formatting helpers live in ../utils/tmdb
 
 const youtubeTrailerSearchUrl = (query: string) =>
   `https://www.youtube.com/results?search_query=${encodeURIComponent(
@@ -83,7 +37,7 @@ const extractYouTubeKey = (url: string | undefined | null): string | null => {
   const playIdx = trimmed.indexOf("#play=");
   if (playIdx >= 0) {
     const key = trimmed.slice(playIdx + "#play=".length).split(/[&?#]/)[0];
-    return key ? key : null;
+    return key && key.length > 0 ? key : null;
   }
 
   try {
@@ -92,7 +46,7 @@ const extractYouTubeKey = (url: string | undefined | null): string | null => {
     if (v) return v;
     if (u.hostname === "youtu.be") {
       const key = u.pathname.replace(/^\//, "").split("/")[0];
-      return key ? key : null;
+      return key && key.length > 0 ? key : null;
     }
   } catch {
     // ignore
@@ -393,7 +347,7 @@ const MainPage = () => {
 
   const watchNow = async () => {
     if (!current) return;
-    window.open(tmdbUrl(current.mediaType, current.tmdbId), "_blank");
+    window.open(tmdbTitleUrl(current.mediaType, current.tmdbId), "_blank");
     clearCurrentRecommendation();
     await loadNext();
   };
@@ -413,6 +367,18 @@ const MainPage = () => {
     }
     window.open(youtubeTrailerSearchUrl(current.title), "_blank");
   };
+
+  const trailerButtonLabel = (() => {
+    if (!current) return "Trailer";
+    if (detailsLoading) return "Loading trailer…";
+
+    const key = extractYouTubeKey(currentDetails?.trailerUrl);
+    if (key) return "Play trailer";
+    if (currentDetails?.trailerUrl) return "Open trailer";
+
+    // No known trailer URL; fall back to YouTube search.
+    return "Search trailer";
+  })();
 
   return (
     <>
@@ -536,8 +502,12 @@ const MainPage = () => {
                 ) : null}
 
                 <div className="card-actions justify-center gap-2 pt-2">
-                  <button className="btn btn-sm" onClick={playTrailer}>
-                    Play trailer
+                  <button
+                    className="btn btn-sm"
+                    onClick={playTrailer}
+                    disabled={!current || detailsLoading}
+                  >
+                    {trailerButtonLabel}
                   </button>
                 </div>
 
@@ -552,9 +522,9 @@ const MainPage = () => {
                     <div className="mt-2 flex flex-wrap gap-2 items-center">
                       {(currentDetails.ottOffer.flatrate ?? [])
                         .slice(0, 8)
-                        .map((p) => (
+                        .map((p, index) => (
                           <span
-                            key={`f:${p.name}`}
+                            key={`f:${index}:${p.name ?? "unknown"}`}
                             className="badge badge-ghost badge-sm gap-1"
                             title={p.name}
                           >

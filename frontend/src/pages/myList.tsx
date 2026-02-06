@@ -2,6 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiClient } from "../api/client";
 import { Link, useNavigate } from "react-router";
 import { clearAuthToken } from "../LocalStorage";
+import {
+  formatGenresLine,
+  formatRuntime,
+  posterUrl,
+  tmdbTitleUrl,
+} from "../utils/tmdb";
+import type { TitleDetails } from "../types/tmdb";
 
 type ListStatus = "WATCH_LATER" | "SEEN" | "DISLIKED";
 
@@ -11,54 +18,7 @@ type ListEntry = {
   status: ListStatus;
 };
 
-type TitleDetails = {
-  id: number;
-  title?: string;
-  name?: string;
-  overview?: string;
-  posterPath?: string;
-  releaseDate?: string;
-  firstAirDate?: string;
-  genreIds?: number[];
-  genres?: string[];
-  userScore?: number;
-  voteCount?: number;
-  runtimeMinutes?: number;
-  numberOfSeasons?: number;
-  numberOfEpisodes?: number;
-  trailerUrl?: string;
-  ottOffer?: {
-    region?: string;
-    link?: string;
-  };
-};
-
-const posterUrl = (posterPath: string | undefined): string | null => {
-  if (!posterPath) return null;
-  if (posterPath.startsWith("http://") || posterPath.startsWith("https://")) {
-    return posterPath;
-  }
-  return `https://image.tmdb.org/t/p/w185${posterPath}`;
-};
-
-const formatRuntime = (minutes: number): string => {
-  if (!Number.isFinite(minutes) || minutes <= 0) return "";
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return h > 0 ? `${h}h ${m}m` : `${m}m`;
-};
-
-const formatGenresLine = (genres: string[] | undefined): string | null => {
-  if (!genres || genres.length === 0) return null;
-  if (genres.length === 1) return genres[0] ?? null;
-  if (genres.length === 2) return `${genres[0]} and ${genres[1]}`;
-  const head = genres.slice(0, -1).join(", ");
-  const last = genres[genres.length - 1];
-  return `${head}, and ${last}`;
-};
-
-const tmdbTitleUrl = (mediaType: ListEntry["mediaType"], tmdbId: number) =>
-  `https://www.themoviedb.org/${mediaType === "tv" ? "tv" : "movie"}/${tmdbId}`;
+// shared TMDB/formatting helpers live in ../utils/tmdb
 
 function titleLabel(d: TitleDetails | undefined, entry: ListEntry) {
   if (!d) return `${entry.mediaType.toUpperCase()} #${entry.tmdbId}`;
@@ -202,7 +162,7 @@ export default function MyList() {
             {visible.map((e) => {
               const key = `${e.mediaType}:${e.tmdbId}`;
               const d = details[key];
-              const poster = posterUrl(d?.posterPath);
+              const poster = posterUrl(d?.posterPath, "w185");
               const tmdbUrl = tmdbTitleUrl(e.mediaType, e.tmdbId);
               const genresLine = formatGenresLine(d?.genres);
               const runtimeLine =

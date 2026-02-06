@@ -11,14 +11,14 @@ import ProfileList from "./pages/profileList";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   if (!isLoggedIn()) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
   return children;
 }
 
 function Home() {
   if (!isLoggedIn()) {
-    return <LogIn />;
+    return <Navigate to="/login" replace />;
   }
 
   return (
