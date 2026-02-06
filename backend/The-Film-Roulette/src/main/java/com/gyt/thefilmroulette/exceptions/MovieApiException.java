@@ -15,4 +15,14 @@ public class MovieApiException extends RuntimeException {
   public MovieApiException(String message) {
     super(message);
   }
+
+  /**
+   * Constructs a new MovieApiException with the specified detail message and cause.
+   *
+   * @param message the detail message that explains the cause of the exception
+   * @param cause the underlying cause
+   */
+  public MovieApiException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }
