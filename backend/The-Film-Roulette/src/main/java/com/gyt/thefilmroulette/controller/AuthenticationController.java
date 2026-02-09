@@ -1,10 +1,12 @@
 package com.gyt.thefilmroulette.controller;
 
+import com.gyt.thefilmroulette.dtos.login.GoogleLoginRequest;
 import com.gyt.thefilmroulette.dtos.login.LoginRequest;
 import com.gyt.thefilmroulette.dtos.register.RegisterRequest;
 import com.gyt.thefilmroulette.exceptions.EmailAlreadyTakenException;
 import com.gyt.thefilmroulette.exceptions.InvalidCredentialsException;
 import com.gyt.thefilmroulette.services.auth.AuthService;
+import com.gyt.thefilmroulette.services.auth.GoogleAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
   private final AuthService authService;
+  private final GoogleAuthService googleAuthService;
 
   /**
    * Registers a new user.
@@ -53,6 +56,21 @@ public class AuthenticationController {
       return ResponseEntity.ok(authService.login(loginRequest));
     } catch (InvalidCredentialsException e) {
       return ResponseEntity.badRequest().body("Invalid credentials");
+    }
+  }
+
+  /**
+   * Authenticates a user using a Google ID token and provides an app JWT.
+   *
+   * @param googleLoginRequest Request containing the Google ID token credential.
+   * @return ResponseEntity with a JWT token, or an error if the token is invalid.
+   */
+  @PostMapping("/google")
+  public ResponseEntity<?> google(@RequestBody GoogleLoginRequest googleLoginRequest) {
+    try {
+      return ResponseEntity.ok(googleAuthService.loginWithGoogle(googleLoginRequest.credential()));
+    } catch (RuntimeException e) {
+      return ResponseEntity.badRequest().body("Invalid Google token");
     }
   }
 }

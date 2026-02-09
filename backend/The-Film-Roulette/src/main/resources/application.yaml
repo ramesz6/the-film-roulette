@@ -22,3 +22,7 @@ tmdb:
 
 cors:
   urls: ${CORS_URLS:http://localhost:5173}
+
+google:
+  oauth:
+    client-id: ${GOOGLE_OAUTH_CLIENT_ID:}

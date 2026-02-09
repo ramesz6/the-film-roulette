@@ -46,6 +46,9 @@ cp .env.sample .env
 #### **Frontend `.env` Example:**
 ```
 VITE_API_BASE_URL=http://localhost:8080
+
+# Optional (Google login)
+VITE_GOOGLE_CLIENT_ID=your_google_oauth_web_client_id
 ```
 
 #### **Backend `.env` Example:**
@@ -53,6 +56,9 @@ VITE_API_BASE_URL=http://localhost:8080
 POSTGRES_PASSWORD=<your-password>
 JWT_SECRET=your_jwt_secret_key_here
 TMDB_API_KEY=your_tmdb_api_key_here
+
+# Optional (Google login)
+GOOGLE_OAUTH_CLIENT_ID=your_google_oauth_web_client_id
 
 # Optional
 # CORS_URLS=http://localhost:5173
@@ -96,6 +102,7 @@ The backend provides a Swagger UI for API documentation and testing.
 | `GET`  | `/api/v1/movie/details/{mediaType}/{id}` | Details for a title |
 | `POST` | `/api/v1/auth/login`     | Authenticate and return a JWT    |
 | `POST` | `/api/v1/auth/register`  | Register a new user              |
+| `POST` | `/api/v1/auth/google`    | Login via Google ID token (JWT)  |
 
 ---
 

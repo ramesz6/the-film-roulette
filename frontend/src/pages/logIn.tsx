@@ -1,9 +1,13 @@
 import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { GoogleLogin } from "@react-oauth/google";
 import { setAuthToken } from "../LocalStorage";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as
+	| string
+	| undefined;
 
 const LogIn = () => {
 	const navigate = useNavigate();
@@ -40,6 +44,28 @@ const LogIn = () => {
 		e.preventDefault();
 		if (isSubmitting) return;
 		void handleSubmit();
+	};
+
+	const handleGoogleLogin = async (credential: string) => {
+		setError(null);
+		setIsSubmitting(true);
+		try {
+			const response = await axios.post(`${apiBaseUrl}/api/v1/auth/google`, {
+				credential,
+			});
+			const token = response?.data?.token;
+			if (typeof token !== "string" || token.trim().length === 0) {
+				setError("Google login failed: missing token");
+				return;
+			}
+
+			setAuthToken(token);
+			navigate("/profile", { replace: true });
+		} catch {
+			setError("Google login failed");
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	return (
@@ -99,6 +125,23 @@ const LogIn = () => {
 								{isSubmitting ? "Logging in..." : "Log in"}
 							</button>
 						</div>
+						{typeof googleClientId === "string" &&
+						googleClientId.trim().length > 0 ? (
+							<div className="mt-2 flex justify-center">
+								<GoogleLogin
+									onSuccess={(credentialResponse) => {
+										const cred = credentialResponse.credential;
+										if (isSubmitting) return;
+										if (typeof cred === "string" && cred.trim().length > 0) {
+											void handleGoogleLogin(cred);
+										} else {
+											setError("Google login failed: missing credential");
+										}
+									}}
+									onError={() => setError("Google login failed")}
+								/>
+							</div>
+						) : null}
 						<p className="text-center text-sm">
 							Don't have an account?{" "}
 							<Link className="link link-primary" to="/singup">
