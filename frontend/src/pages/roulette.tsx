@@ -514,7 +514,7 @@ const RoulettePage = () => {
 													currentDetails.numberOfSeasons > 0
 												? `${currentDetails.numberOfSeasons} seasons${
 														typeof currentDetails.numberOfEpisodes ===
-														"number" && currentDetails.numberOfEpisodes > 0
+															"number" && currentDetails.numberOfEpisodes > 0
 															? ` • ${currentDetails.numberOfEpisodes} episodes`
 															: ""
 													}`
@@ -654,7 +654,7 @@ const RoulettePage = () => {
 								className="w-full h-full"
 								src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(
 									trailerModal.youTubeKey,
-											)}?autoplay=1`}
+								)}?autoplay=1`}
 								title="Trailer"
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 								referrerPolicy="strict-origin-when-cross-origin"
