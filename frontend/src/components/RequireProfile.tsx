@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router";
 import { apiClient } from "../api/client";
+import { clearAuthToken } from "../LocalStorage";
+import { getHttpStatus } from "../utils/getHttpStatus";
 
 type PreferencesResponse = {
 	likedGenreIds: number[];
@@ -70,8 +72,22 @@ export default function RequireProfile({
 					},
 				});
 			})
-			.catch(() => {
+			.catch((err: unknown) => {
 				if (!active) return;
+				const status = getHttpStatus(err);
+				if (status === 401 || status === 403) {
+					clearAuthToken();
+					setAllowed(false);
+					setLoading(false);
+					navigate("/login", {
+						replace: true,
+						state: {
+							from: location.pathname,
+							message: "Please log in to continue.",
+						},
+					});
+					return;
+				}
 				setAllowed(false);
 				setLoading(false);
 				navigate("/profile/preferences", {

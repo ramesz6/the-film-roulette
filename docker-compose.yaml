@@ -38,11 +38,20 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
-    command: sh -lc "if [ ! -d node_modules ] || [ -z \"$$(ls -A node_modules 2>/dev/null)\" ]; then npm ci || npm install; fi; npm run dev -- --host 0.0.0.0 --port 5173"
+    command: >
+      sh -lc "
+      DEPS_HASH=\"$$(node -e \"const fs=require('fs');const crypto=require('crypto');const files=['package.json','package-lock.json'];const h=crypto.createHash('sha256');for (const f of files){ if (fs.existsSync(f)) h.update(fs.readFileSync(f)); }process.stdout.write(h.digest('hex'));\")\";
+      if [ ! -d node_modules ] || [ -z \"$$(ls -A node_modules 2>/dev/null)\" ] || [ ! -f node_modules/.deps_hash ] || [ \"$$(cat node_modules/.deps_hash 2>/dev/null)\" != \"$$DEPS_HASH\" ]; then
+        npm install;
+        echo \"$$DEPS_HASH\" > node_modules/.deps_hash;
+      fi;
+      npm run dev -- --host 0.0.0.0 --port 5173
+      "
     ports:
       - "${FRONTEND_PORT:-5173}:5173"
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8080}
+      VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
       CHOKIDAR_USEPOLLING: "true"
       CHOKIDAR_INTERVAL: "300"
     volumes:

@@ -2,12 +2,14 @@ package com.gyt.thefilmroulette;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 /**
  * The entry point for the Spring Boot application.
  * This class runs the application and initializes the Spring context.
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class TheFilmRouletteApplication {
 
   /**

@@ -97,7 +97,7 @@ export default function MyList() {
 
 	const logout = () => {
 		clearAuthToken();
-		navigate("/", { replace: true });
+		navigate("/login", { replace: true });
 	};
 
 	return (
