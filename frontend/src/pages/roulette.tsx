@@ -157,7 +157,7 @@ const RoulettePage = () => {
 	const logout = () => {
 		clearAuthToken();
 		clearCurrentRecommendation();
-		navigate("/", { replace: true });
+		navigate("/login", { replace: true });
 	};
 
 	const addToList = useCallback(
@@ -181,7 +181,7 @@ const RoulettePage = () => {
 				if (statusCode === 401 || statusCode === 403) {
 					clearAuthToken();
 					clearCurrentRecommendation();
-					navigate("/", { replace: true });
+					navigate("/login", { replace: true });
 					return false;
 				}
 
@@ -222,7 +222,7 @@ const RoulettePage = () => {
 				if (status === 401 || status === 403) {
 					clearAuthToken();
 					clearCurrentRecommendation();
-					navigate("/", { replace: true });
+					navigate("/login", { replace: true });
 					return;
 				}
 				if (status === 428) {
