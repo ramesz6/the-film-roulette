@@ -6,7 +6,7 @@ import LogIn from "./pages/logIn";
 import MyProfile from "./pages/myProfile";
 import ProfileList from "./pages/profileList";
 import ProfilePreferences from "./pages/profilePreferences";
-import RoulettePage from "./pages/mainPage";
+import RoulettePage from "./pages/roulette";
 import SingUp from "./pages/singUp";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
