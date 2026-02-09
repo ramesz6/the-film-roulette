@@ -602,19 +602,39 @@ const MainPage = () => {
 
 								<div className="card-actions justify-center gap-2 pt-2">
 									<button className="btn btn-success" onClick={watchNow}>
-										Watch now
+										<span className="inline-flex items-center gap-2">
+											<span className="text-xs opacity-70" aria-hidden="true">
+												←
+											</span>
+											<span>Watch now</span>
+										</span>
 									</button>
 									<button className="btn btn-error" onClick={dislike}>
-										Dislike
+										<span className="inline-flex items-center gap-2">
+											<span>Dislike</span>
+											<span className="text-xs opacity-70" aria-hidden="true">
+												→
+											</span>
+										</span>
 									</button>
 								</div>
 
 								<div className="card-actions justify-center gap-2">
 									<button className="btn btn-primary btn-sm" onClick={seen}>
-										Watched
+										<span className="inline-flex items-center gap-2">
+											<span className="text-xs opacity-70" aria-hidden="true">
+												↑
+											</span>
+											<span>Watched</span>
+										</span>
 									</button>
 									<button className="btn btn-sm" onClick={watchLater}>
-										Watch later
+										<span className="inline-flex items-center gap-2">
+											<span>Watch later</span>
+											<span className="text-xs opacity-70" aria-hidden="true">
+												↓
+											</span>
+										</span>
 									</button>
 								</div>
 							</div>
