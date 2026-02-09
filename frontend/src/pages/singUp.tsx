@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router";
 interface UserModel {
 	email: string;
 	password: string;
+	confirmPassword: string;
 }
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
@@ -19,6 +20,7 @@ const validate = (data: UserModel): FieldErrors => {
 
 	const email = data.email.trim();
 	const password = data.password;
+	const confirmPassword = data.confirmPassword;
 
 	if (!EMAIL_REGEX.test(email)) {
 		errors.email = "Invalid email format";
@@ -33,6 +35,12 @@ const validate = (data: UserModel): FieldErrors => {
 
 	if (missing.length > 0) {
 		errors.password = `Password requirements: ${missing.join(", ")}`;
+	}
+
+	if (confirmPassword.length === 0) {
+		errors.confirmPassword = "Please re-enter your password";
+	} else if (password !== confirmPassword) {
+		errors.confirmPassword = "Passwords do not match";
 	}
 
 	return errors;
@@ -70,11 +78,13 @@ const SingUp = () => {
 	const [data, setData] = useState<UserModel>({
 		email: "",
 		password: "",
+		confirmPassword: "",
 	});
 	const [error, setError] = useState<string | null>(null);
 	const [touched, setTouched] = useState<Record<keyof UserModel, boolean>>({
 		email: false,
 		password: false,
+		confirmPassword: false,
 	});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -85,7 +95,7 @@ const SingUp = () => {
 		event.preventDefault();
 		setError(null);
 
-		setTouched({ email: true, password: true });
+		setTouched({ email: true, password: true, confirmPassword: true });
 		const currentErrors = validate(data);
 		if (Object.keys(currentErrors).length > 0) {
 			return;
@@ -172,6 +182,42 @@ const SingUp = () => {
 						</p>
 						{touched.password && fieldErrors.password && (
 							<p className="text-sm text-red-500">{fieldErrors.password}</p>
+						)}
+						<label className="input input-bordered flex items-center gap-2">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 16 16"
+								fill="currentColor"
+								className="h-4 w-4 opacity-70"
+							>
+								<path
+									fillRule="evenodd"
+									d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
+									clipRule="evenodd"
+								/>
+							</svg>
+							<input
+								type="password"
+								className="grow"
+								placeholder="Re-enter password"
+								id="confirmPassword"
+								autoComplete="new-password"
+								value={data.confirmPassword}
+								onChange={(e) =>
+									setData((prev) => ({
+										...prev,
+										confirmPassword: e.target.value,
+									}))
+								}
+								onBlur={() =>
+									setTouched((p) => ({ ...p, confirmPassword: true }))
+								}
+							/>
+						</label>
+						{touched.confirmPassword && fieldErrors.confirmPassword && (
+							<p className="text-sm text-red-500">
+								{fieldErrors.confirmPassword}
+							</p>
 						)}
 						<div className="card-actions justify-center">
 							<button
