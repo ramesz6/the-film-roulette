@@ -81,12 +81,12 @@ public class GoogleAuthService {
     User user = userRepository.findByEmail(email)
         .orElseGet(() -> {
           User newUser = Objects.requireNonNull(User.builder()
-            .email(email)
-            .username(username)
+              .email(email)
+              .username(username)
               // Store a random password so password login isn't accidentally usable
               // for Google-only accounts.
-            .password(passwordEncoder.encode(UUID.randomUUID().toString()))
-            .build(), "newUser");
+              .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+              .build(), "newUser");
           return userRepository.save(newUser);
         });
 
