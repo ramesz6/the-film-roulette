@@ -13,5 +13,10 @@
     "name": "cors.urls",
     "type": "java.lang.String",
     "description": "A description for 'cors.urls'"
+  },
+  {
+    "name": "google.oauth.client-id",
+    "type": "java.lang.String",
+    "description": "Google OAuth client id used to validate Google ID tokens"
   }
 ]}

@@ -1,6 +1,6 @@
 package com.gyt.thefilmroulette.services.auth;
 
-import com.gyt.thefilmroulette.configurations.GoogleOAuthConfiguration;
+import com.gyt.thefilmroulette.configurations.GoogleOauthConfiguration;
 import com.gyt.thefilmroulette.dtos.login.LoginResponse;
 import com.gyt.thefilmroulette.exceptions.AuthenticationException;
 import com.gyt.thefilmroulette.models.User;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class GoogleAuthService {
 
   private final JwtDecoder googleJwtDecoder;
-  private final GoogleOAuthConfiguration googleOAuthConfiguration;
+  private final GoogleOauthConfiguration googleOauthConfiguration;
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
@@ -38,8 +38,8 @@ public class GoogleAuthService {
   public LoginResponse loginWithGoogle(String credential) {
     Objects.requireNonNull(credential, "credential");
 
-    if (googleOAuthConfiguration.clientId == null
-        || googleOAuthConfiguration.clientId.isBlank()) {
+    if (googleOauthConfiguration.clientId == null
+        || googleOauthConfiguration.clientId.isBlank()) {
       throw new IllegalStateException("Missing google.oauth.client-id configuration");
     }
 
@@ -50,7 +50,8 @@ public class GoogleAuthService {
       throw new AuthenticationException("Invalid Google token");
     }
 
-    if (jwt.getAudience() == null || !jwt.getAudience().contains(googleOAuthConfiguration.clientId)) {
+    if (jwt.getAudience() == null
+        || !jwt.getAudience().contains(googleOauthConfiguration.clientId)) {
       throw new AuthenticationException("Invalid Google token audience");
     }
 
@@ -59,7 +60,8 @@ public class GoogleAuthService {
     }
 
     String issuer = jwt.getIssuer().toString();
-    if (!"https://accounts.google.com".equals(issuer) && !"accounts.google.com".equals(issuer)) {
+    if (!"https://accounts.google.com".equals(issuer)
+        && !"accounts.google.com".equals(issuer)) {
       throw new AuthenticationException("Invalid token issuer");
     }
 
@@ -77,12 +79,16 @@ public class GoogleAuthService {
     String username = normalizeUsername(preferredUsername, name, email);
 
     User user = userRepository.findByEmail(email)
-        .orElseGet(() -> userRepository.save(User.builder()
-            .email(email)
-            .username(username)
-            // Store a random password so password login isn't accidentally usable for Google-only accounts.
-            .password(passwordEncoder.encode(UUID.randomUUID().toString()))
-            .build()));
+      .orElseGet(() -> {
+        User newUser = Objects.requireNonNull(User.builder()
+          .email(email)
+          .username(username)
+          // Store a random password so password login isn't accidentally usable
+          // for Google-only accounts.
+          .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+          .build(), "newUser");
+        return userRepository.save(newUser);
+      });
 
     return new LoginResponse(jwtService.generateToken(user));
   }
@@ -104,8 +110,12 @@ public class GoogleAuthService {
   }
 
   private static String firstNonBlank(String a, String b) {
-    if (a != null && !a.isBlank()) return a;
-    if (b != null && !b.isBlank()) return b;
+    if (a != null && !a.isBlank()) {
+      return a;
+    }
+    if (b != null && !b.isBlank()) {
+      return b;
+    }
     return null;
   }
 }
