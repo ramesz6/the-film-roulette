@@ -43,7 +43,6 @@ public class AuthenticationControllerTest {
   @DisplayName("Should successfully register a new user")
   public void authControllerShouldSuccessfullyRegister() throws Exception {
     RegisterRequest registerRequest = new RegisterRequest(
-        "ramesz",
         "ramesz@email.com",
         "password");
     String stringified = Objects.requireNonNull(
@@ -58,7 +57,6 @@ public class AuthenticationControllerTest {
   @DisplayName("Should not allow duplicate user registration")
   public void authControllerShouldNotRegister() throws Exception {
     RegisterRequest registerRequest = new RegisterRequest(
-        "ramesz",
         "ramesz@email.com",
         "password");
     String stringified = Objects.requireNonNull(
@@ -77,7 +75,6 @@ public class AuthenticationControllerTest {
   @DisplayName("Should successfully login and return JWT token")
   public void authControllerShouldSuccessfullyLoginAndReturnWithToken() throws Exception {
     RegisterRequest registerRequest = new RegisterRequest(
-        "ramesz",
         "ramesz@email.com",
         "password");
     String stringifiedRegister = Objects.requireNonNull(
@@ -122,7 +119,6 @@ public class AuthenticationControllerTest {
   @DisplayName("Should fail login with wrong password")
   public void authControllerShouldFailLoginWithWrongPassword() throws Exception {
     RegisterRequest registerRequest = new RegisterRequest(
-        "testuser",
         "test@email.com",
         "correctpassword");
     String stringifiedRegister = Objects.requireNonNull(
@@ -170,7 +166,6 @@ public class AuthenticationControllerTest {
   @DisplayName("Should handle missing content type")
   public void authControllerShouldHandleMissingContentType() throws Exception {
     RegisterRequest registerRequest = new RegisterRequest(
-        "testuser",
         "test@email.com",
         "password");
     String stringified = Objects.requireNonNull(

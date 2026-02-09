@@ -52,7 +52,6 @@ class AuthServiceImpl implements AuthService {
     }
 
     User newRegisterUser = Objects.requireNonNull(User.builder()
-        .username(registerRequest.username())
         .email(registerRequest.email())
         .password(passwordEncoder.encode(registerRequest.password()))
         .build(), "newRegisterUser");

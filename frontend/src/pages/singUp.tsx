@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 interface UserModel {
-	username: string;
 	email: string;
 	password: string;
 }
@@ -19,17 +18,10 @@ const validate = (data: UserModel): FieldErrors => {
 	const errors: FieldErrors = {};
 
 	const email = data.email.trim();
-	const username = data.username.trim();
 	const password = data.password;
 
 	if (!EMAIL_REGEX.test(email)) {
 		errors.email = "Invalid email format";
-	}
-
-	if (username.length === 0) {
-		errors.username = "Username is required";
-	} else if (EMAIL_REGEX.test(username) || username.includes("@")) {
-		errors.username = "Username cannot be an email address";
 	}
 
 	const missing: string[] = [];
@@ -76,13 +68,11 @@ const errorMessageFromAxios = (err: unknown): string => {
 const SingUp = () => {
 	const navigate = useNavigate();
 	const [data, setData] = useState<UserModel>({
-		username: "",
 		email: "",
 		password: "",
 	});
 	const [error, setError] = useState<string | null>(null);
 	const [touched, setTouched] = useState<Record<keyof UserModel, boolean>>({
-		username: false,
 		email: false,
 		password: false,
 	});
@@ -95,7 +85,7 @@ const SingUp = () => {
 		event.preventDefault();
 		setError(null);
 
-		setTouched({ username: true, email: true, password: true });
+		setTouched({ email: true, password: true });
 		const currentErrors = validate(data);
 		if (Object.keys(currentErrors).length > 0) {
 			return;
@@ -105,7 +95,6 @@ const SingUp = () => {
 
 		try {
 			await axios.post(`${apiBaseUrl}/api/v1/auth/register`, {
-				username: data.username.trim(),
 				email: data.email.trim(),
 				password: data.password,
 			});
@@ -150,34 +139,6 @@ const SingUp = () => {
 						</label>
 						{touched.email && fieldErrors.email && (
 							<p className="text-sm text-red-500">{fieldErrors.email}</p>
-						)}
-						<label className="input input-bordered flex items-center gap-2">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 16 16"
-								fill="currentColor"
-								className="h-4 w-4 opacity-70"
-							>
-								<path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-							</svg>
-							<input
-								type="text"
-								className="grow"
-								placeholder="Username"
-								id="username"
-								autoComplete="username"
-								value={data.username}
-								onChange={(e) =>
-									setData((prev) => ({ ...prev, username: e.target.value }))
-								}
-								onBlur={() => setTouched((p) => ({ ...p, username: true }))}
-							/>
-						</label>
-						<p className="text-xs opacity-70">
-							Username cannot be an email address.
-						</p>
-						{touched.username && fieldErrors.username && (
-							<p className="text-sm text-red-500">{fieldErrors.username}</p>
 						)}
 						<label className="input input-bordered flex items-center gap-2">
 							<svg
