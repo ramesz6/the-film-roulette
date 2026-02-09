@@ -352,6 +352,63 @@ const MainPage = () => {
 		await loadNext();
 	};
 
+	useEffect(() => {
+		const onKeyDown = (e: KeyboardEvent) => {
+			if (e.repeat) return;
+			if (waitingForData) return;
+			if (!current) return;
+			if (trailerModal) return;
+
+			const target = e.target as HTMLElement | null;
+			const tag = target?.tagName?.toLowerCase();
+			if (
+				tag === "input" ||
+				tag === "textarea" ||
+				tag === "select" ||
+				target?.isContentEditable
+			) {
+				return;
+			}
+
+			switch (e.key) {
+				case "ArrowUp": {
+					e.preventDefault();
+					void seen();
+					break;
+				}
+				case "ArrowDown": {
+					e.preventDefault();
+					void watchLater();
+					break;
+				}
+				case "ArrowLeft": {
+					e.preventDefault();
+					void watchNow();
+					break;
+				}
+				case "ArrowRight": {
+					e.preventDefault();
+					void dislike();
+					break;
+				}
+				default:
+			}
+		};
+
+		window.addEventListener("keydown", onKeyDown);
+		return () => {
+			window.removeEventListener("keydown", onKeyDown);
+		};
+	}, [
+		current,
+		dislike,
+		seen,
+		trailerModal,
+		waitingForData,
+		watchLater,
+		watchNow,
+	]);
+
 	const playTrailer = () => {
 		if (!current) return;
 		const key = extractYouTubeKey(currentDetails?.trailerUrl);
