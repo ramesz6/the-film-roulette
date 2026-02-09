@@ -24,6 +24,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4  # Checks out the repository's latest code.
+        with:
+          # Avoid fetching the synthetic refs/pull/*/merge ref (can intermittently 500).
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup Java
         uses: actions/setup-java@v4  # Sets up the Java environment.
