@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "../App.css";
 import { Link, useNavigate } from "react-router";
 import { apiClient } from "../api/client";
@@ -152,6 +152,7 @@ const RoulettePage = () => {
 		title: string;
 		youTubeKey: string;
 	} | null>(null);
+	const cardRef = useRef<HTMLDivElement | null>(null);
 
 	const logout = () => {
 		clearAuthToken();
@@ -159,34 +160,37 @@ const RoulettePage = () => {
 		navigate("/", { replace: true });
 	};
 
-	const addToList = async (
-		status: "watch-later" | "seen" | "disliked",
-		mediaType: "movie" | "tv",
-		tmdbId: number,
-	) => {
-		try {
-			const url =
-				status === "watch-later"
-					? "/api/v1/me/list/watch-later"
-					: status === "seen"
-						? "/api/v1/me/list/seen"
-						: "/api/v1/me/list/disliked";
-			await apiClient.put(url, { tmdbId, mediaType });
-			return true;
-		} catch (err: unknown) {
-			const statusCode = getHttpStatus(err);
+	const addToList = useCallback(
+		async (
+			status: "watch-later" | "seen" | "disliked",
+			mediaType: "movie" | "tv",
+			tmdbId: number,
+		) => {
+			try {
+				const url =
+					status === "watch-later"
+						? "/api/v1/me/list/watch-later"
+						: status === "seen"
+							? "/api/v1/me/list/seen"
+							: "/api/v1/me/list/disliked";
+				await apiClient.put(url, { tmdbId, mediaType });
+				return true;
+			} catch (err: unknown) {
+				const statusCode = getHttpStatus(err);
 
-			if (statusCode === 401 || statusCode === 403) {
-				clearAuthToken();
-				clearCurrentRecommendation();
-				navigate("/", { replace: true });
+				if (statusCode === 401 || statusCode === 403) {
+					clearAuthToken();
+					clearCurrentRecommendation();
+					navigate("/", { replace: true });
+					return false;
+				}
+
+				setError("Failed to add to list");
 				return false;
 			}
-
-			setError("Failed to add to list");
-			return false;
-		}
-	};
+		},
+		[navigate],
+	);
 
 	const loadNext = useCallback(async () => {
 		setWaitingForData(true);
@@ -295,7 +299,7 @@ const RoulettePage = () => {
 		};
 	}, [current, detailsVersion, navigate]);
 
-	const dislike = async () => {
+	const dislike = useCallback(async () => {
 		if (!current) return;
 
 		const saved = await addToList(
@@ -315,9 +319,9 @@ const RoulettePage = () => {
 
 		clearCurrentRecommendation();
 		await loadNext();
-	};
+	}, [addToList, current, loadNext]);
 
-	const seen = async () => {
+	const seen = useCallback(async () => {
 		if (!current) return;
 
 		const saved = await addToList("seen", current.mediaType, current.tmdbId);
@@ -327,9 +331,9 @@ const RoulettePage = () => {
 
 		clearCurrentRecommendation();
 		await loadNext();
-	};
+	}, [addToList, current, loadNext]);
 
-	const watchLater = async () => {
+	const watchLater = useCallback(async () => {
 		if (!current) return;
 
 		const saved = await addToList(
@@ -343,51 +347,66 @@ const RoulettePage = () => {
 
 		clearCurrentRecommendation();
 		await loadNext();
-	};
+	}, [addToList, current, loadNext]);
 
-	const watchNow = async () => {
+	const watchNow = useCallback(async () => {
 		if (!current) return;
 		window.open(tmdbTitleUrl(current.mediaType, current.tmdbId), "_blank");
 		clearCurrentRecommendation();
 		await loadNext();
-	};
+	}, [current, loadNext]);
 
 	useEffect(() => {
 		const onKeyDown = (e: KeyboardEvent) => {
+			if (e.defaultPrevented) return;
+			if (e.metaKey || e.ctrlKey || e.altKey) return;
 			if (e.repeat) return;
 			if (waitingForData) return;
 			if (!current) return;
 			if (trailerModal) return;
 
-			const target = e.target as HTMLElement | null;
-			const tag = target?.tagName?.toLowerCase();
-			if (
-				tag === "input" ||
-				tag === "textarea" ||
-				tag === "select" ||
-				target?.isContentEditable
-			) {
-				return;
-			}
+			const active = document.activeElement;
+			const cardEl = cardRef.current;
+			const focusIsBody =
+				active === document.body || active === document.documentElement;
+			const focusIsWithinCard =
+				!!cardEl && !!active && (active === cardEl || cardEl.contains(active));
+			if (!focusIsBody && !focusIsWithinCard) return;
+
+			const isInteractive = (el: Element | null) => {
+				if (!el) return false;
+				if ((el as HTMLElement).isContentEditable) return true;
+				return !!el.closest(
+					"input, textarea, select, button, a, [role='button'], [role='link'], [contenteditable='true']",
+				);
+			};
+
+			const targetEl = e.target instanceof Element ? e.target : null;
+			if (isInteractive(targetEl) || isInteractive(active)) return;
+
+			// Only override native Arrow-key behavior when the card itself is focused.
+			// When focus is on <body>/<html>, we still allow the shortcut but avoid preventDefault
+			// to not break scrolling or assistive-tech navigation.
+			const shouldOverride = !!cardEl && active === cardEl;
 
 			switch (e.key) {
 				case "ArrowUp": {
-					e.preventDefault();
+					if (shouldOverride) e.preventDefault();
 					void seen();
 					break;
 				}
 				case "ArrowDown": {
-					e.preventDefault();
+					if (shouldOverride) e.preventDefault();
 					void watchLater();
 					break;
 				}
 				case "ArrowLeft": {
-					e.preventDefault();
+					if (shouldOverride) e.preventDefault();
 					void watchNow();
 					break;
 				}
 				case "ArrowRight": {
-					e.preventDefault();
+					if (shouldOverride) e.preventDefault();
 					void dislike();
 					break;
 				}
@@ -465,7 +484,16 @@ const RoulettePage = () => {
 			) : (
 				<div className="flex flex-col items-center justify-center gap-4 px-4">
 					{current ? (
-						<div className="card w-full max-w-[26rem] bg-base-100 shadow-xl">
+						<div
+							className="card w-full max-w-[26rem] bg-base-100 shadow-xl"
+							ref={cardRef}
+							tabIndex={0}
+							onClick={(e) => {
+								const t = e.target instanceof Element ? e.target : null;
+								if (t?.closest("button, a, input, textarea, select")) return;
+								cardRef.current?.focus();
+							}}
+						>
 							<figure className="bg-base-200 p-2 flex items-center justify-center">
 								{posterUrl(current.posterPath) ? (
 									<img
