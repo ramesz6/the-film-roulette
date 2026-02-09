@@ -3,11 +3,13 @@ package com.gyt.thefilmroulette.controller;
 import com.gyt.thefilmroulette.dtos.login.GoogleLoginRequest;
 import com.gyt.thefilmroulette.dtos.login.LoginRequest;
 import com.gyt.thefilmroulette.dtos.register.RegisterRequest;
+import com.gyt.thefilmroulette.exceptions.AuthenticationException;
 import com.gyt.thefilmroulette.exceptions.EmailAlreadyTakenException;
 import com.gyt.thefilmroulette.exceptions.InvalidCredentialsException;
 import com.gyt.thefilmroulette.services.auth.AuthService;
 import com.gyt.thefilmroulette.services.auth.GoogleAuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,8 +71,14 @@ public class AuthenticationController {
   public ResponseEntity<?> google(@RequestBody GoogleLoginRequest googleLoginRequest) {
     try {
       return ResponseEntity.ok(googleAuthService.loginWithGoogle(googleLoginRequest.credential()));
+    } catch (IllegalStateException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Google login is not configured: set GOOGLE_OAUTH_CLIENT_ID");
+    } catch (AuthenticationException e) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     } catch (RuntimeException e) {
-      return ResponseEntity.badRequest().body("Invalid Google token");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Google login failed");
     }
   }
 }

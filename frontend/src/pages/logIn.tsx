@@ -61,7 +61,23 @@ const LogIn = () => {
 
 			setAuthToken(token);
 			navigate("/profile", { replace: true });
-		} catch {
+		} catch (e) {
+			if (axios.isAxiosError(e)) {
+				const status = e.response?.status;
+				const data = e.response?.data;
+				const details =
+					typeof data === "string"
+						? data
+						: typeof data === "object" && data !== null
+							? JSON.stringify(data)
+							: undefined;
+
+				setError(
+					`Google login failed${status ? ` (${status})` : ""}${details ? `: ${details}` : ""}`,
+				);
+				return;
+			}
+
 			setError("Google login failed");
 		} finally {
 			setIsSubmitting(false);

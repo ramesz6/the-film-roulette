@@ -12,5 +12,13 @@ public class GoogleOauthConfiguration {
   /**
    * The Google OAuth client ID used to validate Google ID tokens.
    */
-  public String clientId;
+  private String clientId;
+
+  public String getClientId() {
+    return clientId;
+  }
+
+  public void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
 }

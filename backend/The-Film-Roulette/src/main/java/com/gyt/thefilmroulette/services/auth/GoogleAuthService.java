@@ -36,22 +36,28 @@ public class GoogleAuthService {
    * @return login response containing an application JWT
    */
   public LoginResponse loginWithGoogle(String credential) {
-    Objects.requireNonNull(credential, "credential");
+    if (credential == null || credential.isBlank()) {
+      throw new AuthenticationException("Missing Google credential");
+    }
 
-    if (googleOauthConfiguration.clientId == null
-        || googleOauthConfiguration.clientId.isBlank()) {
+    String trimmedCredential = credential.trim();
+
+    if (googleOauthConfiguration.getClientId() == null
+        || googleOauthConfiguration.getClientId().isBlank()) {
       throw new IllegalStateException("Missing google.oauth.client-id configuration");
     }
 
     final Jwt jwt;
     try {
-      jwt = googleJwtDecoder.decode(credential);
+      jwt = googleJwtDecoder.decode(trimmedCredential);
     } catch (JwtException e) {
       throw new AuthenticationException("Invalid Google token");
+    } catch (IllegalArgumentException e) {
+      throw new AuthenticationException("Invalid Google token format");
     }
 
     if (jwt.getAudience() == null
-        || !jwt.getAudience().contains(googleOauthConfiguration.clientId)) {
+        || !jwt.getAudience().contains(googleOauthConfiguration.getClientId())) {
       throw new AuthenticationException("Invalid Google token audience");
     }
 
