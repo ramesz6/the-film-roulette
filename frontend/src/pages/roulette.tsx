@@ -657,7 +657,7 @@ const RoulettePage = () => {
 									</button>
 									<button className="btn btn-sm" onClick={watchLater}>
 										<span className="inline-flex items-center gap-2">
-											<span>Watch later</span>
+											<span>Skip</span>
 											<span className="text-xs opacity-70" aria-hidden="true">
 												↓
 											</span>
