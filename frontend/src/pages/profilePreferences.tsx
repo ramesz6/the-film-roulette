@@ -32,6 +32,18 @@ export default function ProfilePreferences() {
 
 	const likedSet = useMemo(() => new Set(prefs?.likedGenreIds ?? []), [prefs]);
 
+	const removeGenre = (genreId: number) => {
+		setPrefs((prev) => {
+			if (!prev) return prev;
+			return {
+				...prev,
+				likedGenreIds: (prev.likedGenreIds ?? []).filter(
+					(id) => id !== genreId,
+				),
+			};
+		});
+	};
+
 	const toggleGenre = (genreId: number) => {
 		setPrefs((prev) => {
 			if (!prev) return prev;
@@ -108,17 +120,39 @@ export default function ProfilePreferences() {
 		if (!prefs) return [] as Array<{ id: number; label: string }>;
 
 		if (prefs.includeMovies && prefs.includeSeries) {
-			const combined: Array<{ id: number; label: string }> = [];
-			for (const g of movieGenres)
-				combined.push({
-					id: g.id,
-					label: `${normalizeGenreLabel(g.name)} (Movie)`,
+			const byId = new Map<
+				number,
+				{ name: string; hasMovie: boolean; hasTv: boolean }
+			>();
+			for (const g of movieGenres) {
+				const existing = byId.get(g.id);
+				const name = normalizeGenreLabel(g.name);
+				byId.set(g.id, {
+					name: existing?.name ?? name,
+					hasMovie: true,
+					hasTv: existing?.hasTv ?? false,
 				});
-			for (const g of tvGenres)
-				combined.push({
-					id: g.id,
-					label: `${normalizeGenreLabel(g.name)} (TV)`,
+			}
+			for (const g of tvGenres) {
+				const existing = byId.get(g.id);
+				const name = normalizeGenreLabel(g.name);
+				byId.set(g.id, {
+					name: existing?.name ?? name,
+					hasMovie: existing?.hasMovie ?? false,
+					hasTv: true,
 				});
+			}
+
+			const combined = Array.from(byId.entries()).map(([id, meta]) => {
+				const suffix =
+					meta.hasMovie && meta.hasTv
+						? ""
+						: meta.hasMovie
+							? " (Movie)"
+							: " (TV)";
+				return { id, label: `${meta.name}${suffix}` };
+			});
+
 			return combined.sort((a, b) => a.label.localeCompare(b.label));
 		}
 
@@ -127,6 +161,22 @@ export default function ProfilePreferences() {
 			.map((g) => ({ id: g.id, label: normalizeGenreLabel(g.name) }))
 			.sort((a, b) => a.label.localeCompare(b.label));
 	}, [prefs, movieGenres, tvGenres]);
+
+	const genreLabelById = useMemo(() => {
+		const map = new Map<number, string>();
+		for (const g of visibleGenres) {
+			if (!map.has(g.id)) map.set(g.id, g.label);
+		}
+		return map;
+	}, [visibleGenres]);
+
+	const selectedGenres = useMemo(() => {
+		if (!prefs) return [] as Array<{ id: number; label: string }>;
+		return (prefs.likedGenreIds ?? [])
+			.filter((id) => typeof id === "number" && Number.isFinite(id))
+			.map((id) => ({ id, label: genreLabelById.get(id) ?? `#${id}` }))
+			.sort((a, b) => a.label.localeCompare(b.label));
+	}, [prefs, genreLabelById]);
 
 	const save = async () => {
 		if (!prefs) return;
@@ -235,6 +285,23 @@ export default function ProfilePreferences() {
 
 				<div>
 					<div className="font-semibold mb-2">Liked genres</div>
+					{selectedGenres.length > 0 ? (
+						<div className="flex flex-wrap gap-2 mb-3">
+							{selectedGenres.map((g) => (
+								<span key={g.id} className="badge badge-outline gap-2 py-3">
+									<span className="min-w-0 break-words">{g.label}</span>
+									<button
+										type="button"
+										className="btn btn-ghost btn-xs"
+										aria-label={`Remove ${g.label}`}
+										onClick={() => removeGenre(g.id)}
+									>
+										✕
+									</button>
+								</span>
+							))}
+						</div>
+					) : null}
 					<div className="dropdown">
 						<div tabIndex={0} role="button" className="btn">
 							Select genres ({prefs.likedGenreIds.length})
