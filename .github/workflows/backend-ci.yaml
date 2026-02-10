@@ -13,17 +13,29 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest  # Uses the latest Ubuntu version as the runner.
 
-    defaults:
-      run:
-        working-directory: backend/The-Film-Roulette  # Sets the working directory for commands.
-
     permissions:
       contents: read    # Grants read access to the repository contents.
       statuses: write   # Allows the workflow to update commit statuses.
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4  # Checks out the repository's latest code.
+      - name: Download source (no git)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA="${{ github.event.pull_request.head.sha }}"
+          URL="https://codeload.github.com/${{ github.repository }}/tar.gz/${SHA}"
+
+          echo "Downloading ${URL}"
+          for i in 1 2 3 4 5; do
+            if curl -fsSL "${URL}" -o src.tgz; then
+              break
+            fi
+            echo "Download failed; retrying in $((i * 10))s..."
+            sleep "$((i * 10))"
+          done
+
+          mkdir -p repo
+          tar -xzf src.tgz -C repo --strip-components=1
 
       - name: Setup Java
         uses: actions/setup-java@v4  # Sets up the Java environment.
@@ -32,18 +44,6 @@ jobs:
           java-version: '23'       # Installs Java version 23.
           cache: 'maven'           # Caches Maven dependencies to speed up builds.
 
-      - name: Setup Maven
-        run: mvn clean install -q -DskipTests  # Builds the Maven project and installs dependencies (-q = quiet mode).
-
-      - name: Run Tests
-        run: mvn test -q  # Executes unit tests using Maven.
-
-      - name: Run Checkstyle
-        uses: nikitasavinov/checkstyle-action@master  # Runs Checkstyle for code style validation.
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # Provides GitHub API access for Checkstyle reports.
-          reporter: 'github-check'  # Displays results as GitHub Checks.
-          tool_name: 'Checkstyle'  # Specifies the tool name for reporting.
-          fail_on_error: true  # Fails the build if there are style errors.
-          level: warning,error  # Reports warnings and errors only.
-          workdir: backend  # Runs the Checkstyle validation in the 'backend' directory.
+      - name: Build + test + checkstyle
+        working-directory: repo/backend/The-Film-Roulette
+        run: mvn -q clean verify
