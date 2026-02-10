@@ -25,6 +25,7 @@ export default function ProfilePreferences() {
 	const [movieGenres, setMovieGenres] = useState<Genre[]>([]);
 	const [tvGenres, setTvGenres] = useState<Genre[]>([]);
 	const [prefs, setPrefs] = useState<Preferences | null>(null);
+	const [savedPrefs, setSavedPrefs] = useState<Preferences | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [isSaving, setIsSaving] = useState(false);
 
@@ -53,11 +54,14 @@ export default function ProfilePreferences() {
 				setTvGenres((genresRes.data.tv ?? []).slice());
 
 				const p = prefsRes.data;
-				setPrefs({
+				const normalized: Preferences = {
 					...p,
 					yearFrom: p.yearFrom ?? MIN_YEAR,
 					yearTo: p.yearTo ?? MAX_YEAR,
-				});
+					likedGenreIds: Array.from(new Set(p.likedGenreIds ?? [])),
+				};
+				setPrefs(normalized);
+				setSavedPrefs(normalized);
 			} catch {
 				setError("Failed to load profile preferences");
 			}
@@ -65,6 +69,27 @@ export default function ProfilePreferences() {
 
 		load();
 	}, []);
+
+	const isDirty = useMemo(() => {
+		if (!prefs || !savedPrefs) return false;
+		if (prefs.includeMovies !== savedPrefs.includeMovies) return true;
+		if (prefs.includeSeries !== savedPrefs.includeSeries) return true;
+		if ((prefs.yearFrom ?? MIN_YEAR) !== (savedPrefs.yearFrom ?? MIN_YEAR))
+			return true;
+		if ((prefs.yearTo ?? MAX_YEAR) !== (savedPrefs.yearTo ?? MAX_YEAR))
+			return true;
+		const a = Array.from(new Set(prefs.likedGenreIds ?? [])).sort(
+			(x, y) => x - y,
+		);
+		const b = Array.from(new Set(savedPrefs.likedGenreIds ?? [])).sort(
+			(x, y) => x - y,
+		);
+		if (a.length !== b.length) return true;
+		for (let i = 0; i < a.length; i++) {
+			if (a[i] !== b[i]) return true;
+		}
+		return false;
+	}, [prefs, savedPrefs]);
 
 	const allowedGenreIds = useMemo(() => {
 		const allow = new Set<number>();
@@ -109,7 +134,59 @@ export default function ProfilePreferences() {
 		};
 
 		try {
-			await apiClient.put("/api/v1/me/preferences", filtered);
+			const putRes = await apiClient.put<Preferences>(
+				"/api/v1/me/preferences",
+				filtered,
+			);
+			// Verify persistence (prevents "reroll" if backend silently ignores changes)
+			const verifyRes = await apiClient.get<Preferences>(
+				"/api/v1/me/preferences",
+			);
+			const persisted = verifyRes.data;
+			const persistedNormalized: Preferences = {
+				...persisted,
+				yearFrom: persisted.yearFrom ?? MIN_YEAR,
+				yearTo: persisted.yearTo ?? MAX_YEAR,
+				likedGenreIds: Array.from(new Set(persisted.likedGenreIds ?? [])),
+			};
+
+			// If the server didn't persist what it claimed, don't clear roulette cache / navigate.
+			const claimed = putRes.data;
+			const claimedNormalized: Preferences = {
+				...claimed,
+				yearFrom: claimed.yearFrom ?? MIN_YEAR,
+				yearTo: claimed.yearTo ?? MAX_YEAR,
+				likedGenreIds: Array.from(new Set(claimed.likedGenreIds ?? [])),
+			};
+			const sameYearFrom =
+				(persistedNormalized.yearFrom ?? MIN_YEAR) ===
+				(claimedNormalized.yearFrom ?? MIN_YEAR);
+			const sameYearTo =
+				(persistedNormalized.yearTo ?? MAX_YEAR) ===
+				(claimedNormalized.yearTo ?? MAX_YEAR);
+			const sameMovies =
+				persistedNormalized.includeMovies === claimedNormalized.includeMovies;
+			const sameSeries =
+				persistedNormalized.includeSeries === claimedNormalized.includeSeries;
+			const pa = (persistedNormalized.likedGenreIds ?? [])
+				.slice()
+				.sort((x, y) => x - y);
+			const pb = (claimedNormalized.likedGenreIds ?? [])
+				.slice()
+				.sort((x, y) => x - y);
+			const sameGenres =
+				pa.length === pb.length && pa.every((v, i) => v === pb[i]);
+			if (
+				!(sameYearFrom && sameYearTo && sameMovies && sameSeries && sameGenres)
+			) {
+				setPrefs(persistedNormalized);
+				setSavedPrefs(persistedNormalized);
+				setError("Save did not persist. Please try again.");
+				return;
+			}
+
+			setPrefs(persistedNormalized);
+			setSavedPrefs(persistedNormalized);
 
 			try {
 				localStorage.removeItem("currentRecommendation");
@@ -364,7 +441,7 @@ export default function ProfilePreferences() {
 				<div className="card-actions justify-end">
 					<button
 						className="btn btn-primary"
-						disabled={isSaving}
+						disabled={isSaving || !isDirty}
 						onClick={save}
 					>
 						{isSaving ? "Saving..." : "Save"}
