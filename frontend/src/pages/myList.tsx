@@ -184,7 +184,7 @@ export default function MyList() {
 							return (
 								<div key={key} className="card bg-base-100 shadow">
 									<div className="card-body">
-										<div className="flex justify-between gap-4 items-start">
+										<div className="flex flex-col sm:flex-row sm:justify-between gap-4 items-start">
 											<div className="flex gap-4 items-start min-w-0">
 												<div className="w-16 shrink-0">
 													{poster ? (
@@ -201,7 +201,7 @@ export default function MyList() {
 
 												<div className="min-w-0">
 													<div className="flex items-baseline gap-2 min-w-0">
-														<h2 className="card-title min-w-0">
+														<h2 className="card-title min-w-0 break-words">
 															{titleLabel(d, e)}
 														</h2>
 														{typeof d?.userScore === "number" ? (
@@ -232,7 +232,7 @@ export default function MyList() {
 													</p>
 												</div>
 											</div>
-											<div className="flex flex-col gap-2 items-stretch">
+											<div className="flex flex-col gap-2 items-stretch w-full sm:w-auto">
 												{active === "WATCH_LATER" ? (
 													<button
 														className="btn btn-sm w-full"

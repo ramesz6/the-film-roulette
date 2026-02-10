@@ -119,8 +119,8 @@ const SingUp = () => {
 
 	return (
 		<>
-			<div className="flex justify-center items-center">
-				<div className="card bg-base-100 w-96 shadow-xl">
+			<div className="flex justify-center items-center p-4">
+				<div className="card bg-base-100 w-full max-w-sm shadow-xl">
 					<form className="card-body" onSubmit={onSubmit}>
 						<h2 className="card-title justify-center">Sign Up</h2>
 						{error && <p className="text-center text-red-500">{error}</p>}
