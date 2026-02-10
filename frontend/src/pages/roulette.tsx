@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import "../App.css";
 import { Link, useNavigate } from "react-router";
 import { apiClient } from "../api/client";
 import { clearAuthToken } from "../LocalStorage";

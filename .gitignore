@@ -1,2 +1,7 @@
 .env
 .DS_Store
+
+/docker-compose.override.yml
+/docker-compose.prod.yml
+/backend_db.session.sql
+/package-lock.json
