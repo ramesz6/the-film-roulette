@@ -30,8 +30,17 @@ public class RenderDatabaseUrlEnvironmentPostProcessor
             ConfigurableEnvironment environment,
             SpringApplication application) {
         String existingUrl = environment.getProperty(SPRING_DATASOURCE_URL);
+        // If SPRING_DATASOURCE_URL is already a valid JDBC URL, leave it.
+        // If it is a postgres:// URL (common on Render), convert it.
         if (isUsable(existingUrl)) {
-            return;
+            if (looksLikeJdbcUrl(existingUrl)) {
+                return;
+            }
+
+            if (looksLikePostgresSchemeUrl(existingUrl)) {
+                applyMapping(environment, existingUrl);
+                return;
+            }
         }
 
         String rawDatabaseUrl = environment.getProperty(DATABASE_URL);
@@ -39,36 +48,7 @@ public class RenderDatabaseUrlEnvironmentPostProcessor
             return;
         }
 
-        DatabaseUrlParts parts;
-        try {
-            parts = parseDatabaseUrl(rawDatabaseUrl);
-        } catch (IllegalArgumentException ex) {
-            // If DATABASE_URL is present but not parseable, do not guess.
-            return;
-        }
-
-        Map<String, Object> mapped = new HashMap<>();
-        mapped.put(SPRING_DATASOURCE_URL, parts.jdbcUrl());
-        if (isUsable(environment.getProperty(SPRING_DATASOURCE_USERNAME))
-                || parts.username() == null
-                || parts.username().isBlank()) {
-            // keep existing username
-        } else {
-            mapped.put(SPRING_DATASOURCE_USERNAME, parts.username());
-        }
-
-        if (isUsable(environment.getProperty(SPRING_DATASOURCE_PASSWORD))
-                || parts.password() == null) {
-            // keep existing password
-        } else {
-            mapped.put(SPRING_DATASOURCE_PASSWORD, parts.password());
-        }
-
-        if (!mapped.isEmpty()) {
-            environment
-                    .getPropertySources()
-                    .addFirst(new MapPropertySource("renderDatabaseUrl", mapped));
-        }
+        applyMapping(environment, rawDatabaseUrl);
     }
 
     @Override
@@ -93,6 +73,45 @@ public class RenderDatabaseUrlEnvironmentPostProcessor
         }
 
         return true;
+    }
+
+    private static boolean looksLikeJdbcUrl(String value) {
+        return value != null && value.trim().toLowerCase().startsWith("jdbc:");
+    }
+
+    private static boolean looksLikePostgresSchemeUrl(String value) {
+        if (value == null) {
+            return false;
+        }
+
+        String lower = value.trim().toLowerCase();
+        return lower.startsWith("postgres://") || lower.startsWith("postgresql://");
+    }
+
+    private static void applyMapping(ConfigurableEnvironment environment, String url) {
+        DatabaseUrlParts parts;
+        try {
+            parts = parseDatabaseUrl(url);
+        } catch (IllegalArgumentException ex) {
+            // If present but not parseable, do not guess.
+            return;
+        }
+
+        Map<String, Object> mapped = new HashMap<>();
+        mapped.put(SPRING_DATASOURCE_URL, parts.jdbcUrl());
+
+        if (!isUsable(environment.getProperty(SPRING_DATASOURCE_USERNAME))
+                && parts.username() != null
+                && !parts.username().isBlank()) {
+            mapped.put(SPRING_DATASOURCE_USERNAME, parts.username());
+        }
+
+        if (!isUsable(environment.getProperty(SPRING_DATASOURCE_PASSWORD))
+                && parts.password() != null) {
+            mapped.put(SPRING_DATASOURCE_PASSWORD, parts.password());
+        }
+
+        environment.getPropertySources().addFirst(new MapPropertySource("renderDatabaseUrl", mapped));
     }
 
     private static DatabaseUrlParts parseDatabaseUrl(String raw) {
