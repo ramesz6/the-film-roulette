@@ -22,7 +22,8 @@ const MAX_YEAR = new Date().getFullYear();
 
 export default function ProfilePreferences() {
 	const navigate = useNavigate();
-	const [genres, setGenres] = useState<Genre[]>([]);
+	const [movieGenres, setMovieGenres] = useState<Genre[]>([]);
+	const [tvGenres, setTvGenres] = useState<Genre[]>([]);
 	const [prefs, setPrefs] = useState<Preferences | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [isSaving, setIsSaving] = useState(false);
@@ -48,17 +49,8 @@ export default function ProfilePreferences() {
 					apiClient.get<Preferences>("/api/v1/me/preferences"),
 				]);
 
-				const combined = [
-					...(genresRes.data.movie ?? []),
-					...(genresRes.data.tv ?? []),
-				];
-				const byId = new Map<number, Genre>();
-				for (const g of combined) byId.set(g.id, g);
-				setGenres(
-					Array.from(byId.values()).sort((a, b) =>
-						a.name.localeCompare(b.name),
-					),
-				);
+				setMovieGenres((genresRes.data.movie ?? []).slice());
+				setTvGenres((genresRes.data.tv ?? []).slice());
 
 				const p = prefsRes.data;
 				setPrefs({
@@ -74,13 +66,50 @@ export default function ProfilePreferences() {
 		load();
 	}, []);
 
+	const allowedGenreIds = useMemo(() => {
+		const allow = new Set<number>();
+		if (!prefs) return allow;
+		if (prefs.includeMovies) {
+			for (const g of movieGenres) allow.add(g.id);
+		}
+		if (prefs.includeSeries) {
+			for (const g of tvGenres) allow.add(g.id);
+		}
+		return allow;
+	}, [prefs, movieGenres, tvGenres]);
+
+	const visibleGenres = useMemo(() => {
+		if (!prefs) return [] as Array<{ id: number; label: string }>;
+
+		if (prefs.includeMovies && prefs.includeSeries) {
+			const combined: Array<{ id: number; label: string }> = [];
+			for (const g of movieGenres)
+				combined.push({ id: g.id, label: `${g.name} (Movie)` });
+			for (const g of tvGenres)
+				combined.push({ id: g.id, label: `${g.name} (TV)` });
+			return combined.sort((a, b) => a.label.localeCompare(b.label));
+		}
+
+		const src = prefs.includeSeries ? tvGenres : movieGenres;
+		return src
+			.map((g) => ({ id: g.id, label: g.name }))
+			.sort((a, b) => a.label.localeCompare(b.label));
+	}, [prefs, movieGenres, tvGenres]);
+
 	const save = async () => {
 		if (!prefs) return;
 		setIsSaving(true);
 		setError(null);
 
+		const filtered = {
+			...prefs,
+			likedGenreIds: prefs.likedGenreIds.filter((id) =>
+				allowedGenreIds.has(id),
+			),
+		};
+
 		try {
-			await apiClient.put("/api/v1/me/preferences", prefs);
+			await apiClient.put("/api/v1/me/preferences", filtered);
 
 			try {
 				localStorage.removeItem("currentRecommendation");
@@ -130,11 +159,11 @@ export default function ProfilePreferences() {
 							tabIndex={0}
 							className="dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-80 max-h-80 overflow-auto"
 						>
-							{genres.length === 0 ? (
+							{visibleGenres.length === 0 ? (
 								<p className="p-2 text-sm opacity-70">No genres available</p>
 							) : (
 								<ul className="menu">
-									{genres.map((g) => (
+									{visibleGenres.map((g) => (
 										<li key={g.id}>
 											<label className="label cursor-pointer justify-start gap-3">
 												<input
@@ -143,7 +172,7 @@ export default function ProfilePreferences() {
 													checked={likedSet.has(g.id)}
 													onChange={() => toggleGenre(g.id)}
 												/>
-												<span className="label-text">{g.name}</span>
+												<span className="label-text">{g.label}</span>
 											</label>
 										</li>
 									))}
@@ -286,11 +315,22 @@ export default function ProfilePreferences() {
 								type="checkbox"
 								className="checkbox"
 								checked={prefs.includeMovies}
-								onChange={(e) =>
-									setPrefs((prev) =>
-										prev ? { ...prev, includeMovies: e.target.checked } : prev,
-									)
-								}
+								onChange={(e) => {
+									const checked = e.target.checked;
+									setPrefs((prev) => {
+										if (!prev) return prev;
+										const next = { ...prev, includeMovies: checked };
+										const nextAllowed = new Set<number>();
+										if (next.includeMovies)
+											for (const g of movieGenres) nextAllowed.add(g.id);
+										if (next.includeSeries)
+											for (const g of tvGenres) nextAllowed.add(g.id);
+										next.likedGenreIds = next.likedGenreIds.filter((id) =>
+											nextAllowed.has(id),
+										);
+										return next;
+									});
+								}}
 							/>
 							<span className="label-text">Movies</span>
 						</label>
@@ -299,11 +339,22 @@ export default function ProfilePreferences() {
 								type="checkbox"
 								className="checkbox"
 								checked={prefs.includeSeries}
-								onChange={(e) =>
-									setPrefs((prev) =>
-										prev ? { ...prev, includeSeries: e.target.checked } : prev,
-									)
-								}
+								onChange={(e) => {
+									const checked = e.target.checked;
+									setPrefs((prev) => {
+										if (!prev) return prev;
+										const next = { ...prev, includeSeries: checked };
+										const nextAllowed = new Set<number>();
+										if (next.includeMovies)
+											for (const g of movieGenres) nextAllowed.add(g.id);
+										if (next.includeSeries)
+											for (const g of tvGenres) nextAllowed.add(g.id);
+										next.likedGenreIds = next.likedGenreIds.filter((id) =>
+											nextAllowed.has(id),
+										);
+										return next;
+									});
+								}}
 							/>
 							<span className="label-text">Series</span>
 						</label>

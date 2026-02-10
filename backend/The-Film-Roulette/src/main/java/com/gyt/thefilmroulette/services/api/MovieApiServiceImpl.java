@@ -32,6 +32,10 @@ public class MovieApiServiceImpl implements MovieApiService {
   private Retrofit retrofit;
   private MovieDbApi tmdbApi;
 
+  private static final long GENRES_CACHE_TTL_MILLIS = 6L * 60L * 60L * 1000L;
+  private volatile GenresResponse cachedGenres;
+  private volatile long cachedGenresExpiresAtEpochMs;
+
   @Value("${tmdb.watch.region:HU}")
   private String watchRegion;
 
@@ -80,25 +84,44 @@ public class MovieApiServiceImpl implements MovieApiService {
 
   @Override
   public GenresResponse getGenres() {
-    try {
-      var movieResponse = tmdbApi.getMovieGenres().execute();
-      if (!movieResponse.isSuccessful()) {
-        throw new MovieApiException("API Request failed with status code: " + movieResponse.code());
+    long now = System.currentTimeMillis();
+    GenresResponse snapshot = this.cachedGenres;
+    if (snapshot != null && now < this.cachedGenresExpiresAtEpochMs) {
+      return snapshot;
+    }
+
+    synchronized (this) {
+      now = System.currentTimeMillis();
+      snapshot = this.cachedGenres;
+      if (snapshot != null && now < this.cachedGenresExpiresAtEpochMs) {
+        return snapshot;
       }
 
-      var tvResponse = tmdbApi.getTvGenres().execute();
-      if (!tvResponse.isSuccessful()) {
-        throw new MovieApiException("API Request failed with status code: " + tvResponse.code());
+      try {
+        var movieResponse = tmdbApi.getMovieGenres().execute();
+        if (!movieResponse.isSuccessful()) {
+          throw new MovieApiException(
+              "API Request failed with status code: " + movieResponse.code());
+        }
+
+        var tvResponse = tmdbApi.getTvGenres().execute();
+        if (!tvResponse.isSuccessful()) {
+          throw new MovieApiException("API Request failed with status code: " + tvResponse.code());
+        }
+
+        GenreListResponse movieGenres = Objects.requireNonNull(movieResponse.body(), "movieGenres");
+        GenreListResponse tvGenres = Objects.requireNonNull(tvResponse.body(), "tvGenres");
+
+        GenresResponse fresh = new GenresResponse(
+            movieGenres.genres() == null ? List.of() : movieGenres.genres(),
+            tvGenres.genres() == null ? List.of() : tvGenres.genres());
+
+        this.cachedGenres = fresh;
+        this.cachedGenresExpiresAtEpochMs = now + GENRES_CACHE_TTL_MILLIS;
+        return fresh;
+      } catch (Exception e) {
+        throw new MovieApiException("Error occurred while fetching genres from TMDB API", e);
       }
-
-      GenreListResponse movieGenres = Objects.requireNonNull(movieResponse.body(), "movieGenres");
-      GenreListResponse tvGenres = Objects.requireNonNull(tvResponse.body(), "tvGenres");
-
-      return new GenresResponse(
-          movieGenres.genres() == null ? List.of() : movieGenres.genres(),
-          tvGenres.genres() == null ? List.of() : tvGenres.genres());
-    } catch (Exception e) {
-      throw new MovieApiException("Error occurred while fetching genres from TMDB API", e);
     }
   }
 

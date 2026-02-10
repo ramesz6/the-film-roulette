@@ -2,6 +2,7 @@ package com.gyt.thefilmroulette.services.recommendation;
 
 import com.gyt.thefilmroulette.dtos.DiscoveryTitle;
 import com.gyt.thefilmroulette.dtos.DiscoveryTitlesResponse;
+import com.gyt.thefilmroulette.dtos.GenresResponse;
 import com.gyt.thefilmroulette.dtos.profile.PreferencesResponse;
 import com.gyt.thefilmroulette.dtos.recommendation.RecommendationResponse;
 import com.gyt.thefilmroulette.models.ListStatus;
@@ -67,12 +68,16 @@ public class RecommendationService {
 
     for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
       String mediaType = mediaTypes.get(random.nextInt(mediaTypes.size()));
-      Map<String, String> typedQuery = withDateRange(baseQuery, mediaType, from, to);
 
       // Call TMDB once per attempt on the happy path: use page 1 results directly when possible.
       int totalPages = 1;
       DiscoveryTitlesResponse first;
       try {
+        Map<String, String> typedQuery = withDateRange(
+            withGenreFilter(baseQuery, prefs, mediaType),
+            mediaType,
+            from,
+            to);
         first = movieApiService.discover(mediaType, withPage(typedQuery, 1));
         totalPages = Math.max(1, Math.min(MAX_TOTAL_PAGES, first.totalPages()));
       } catch (Exception ignored) {
@@ -91,6 +96,11 @@ public class RecommendationService {
         // Fallback: sample a different page to avoid always returning the top-popularity bucket.
         int page = 2 + random.nextInt(totalPages - 1);
         try {
+          Map<String, String> typedQuery = withDateRange(
+              withGenreFilter(baseQuery, prefs, mediaType),
+              mediaType,
+              from,
+              to);
           DiscoveryTitlesResponse resp =
               movieApiService.discover(mediaType, withPage(typedQuery, page));
           candidates = (resp.results() == null
@@ -164,17 +174,42 @@ public class RecommendationService {
     query.put("include_adult", "false");
     query.put("sort_by", "popularity.desc");
     query.put("vote_count.gte", "50");
+    return query;
+  }
 
-    String genres = prefs.likedGenreIds().stream()
-        .filter(Objects::nonNull)
-        .distinct()
-        .map(String::valueOf)
-        .collect(Collectors.joining("|"));
-    if (!genres.isBlank()) {
-      query.put("with_genres", genres);
+  private Map<String, String> withGenreFilter(
+      Map<String, String> base,
+      PreferencesResponse prefs,
+      String mediaType) {
+    if (prefs == null || prefs.likedGenreIds() == null || prefs.likedGenreIds().isEmpty()) {
+      return base;
     }
 
-    return query;
+    String mt = Objects.requireNonNull(mediaType, "mediaType").trim().toLowerCase();
+    try {
+      GenresResponse genres = movieApiService.getGenres();
+      Set<Integer> allowed = ("movie".equals(mt)
+          ? (genres.movie() == null ? Set.<Integer>of() : genres.movie().stream().map(g -> g.id()).collect(Collectors.toSet()))
+          : (genres.tv() == null ? Set.<Integer>of() : genres.tv().stream().map(g -> g.id()).collect(Collectors.toSet())));
+
+      String filtered = prefs.likedGenreIds().stream()
+          .filter(Objects::nonNull)
+          .filter(allowed::contains)
+          .distinct()
+          .map(String::valueOf)
+          .collect(Collectors.joining("|"));
+
+      if (filtered.isBlank()) {
+        return base;
+      }
+
+      Map<String, String> query = new HashMap<>(base);
+      query.put("with_genres", filtered);
+      return query;
+    } catch (Exception ignored) {
+      // If genre lookup fails, fall back to base query (no genre filter) rather than failing the roulette.
+      return base;
+    }
   }
 
   private static Map<String, String> withDateRange(
