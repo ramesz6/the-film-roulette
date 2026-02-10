@@ -234,7 +234,7 @@ export default function ProfilePreferences() {
 						</div>
 						<div
 							tabIndex={0}
-							className="dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-80 max-h-80 overflow-auto"
+							className="dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-80 max-w-[calc(100vw-2rem)] max-h-80 overflow-auto"
 						>
 							{visibleGenres.length === 0 ? (
 								<p className="p-2 text-sm opacity-70">No genres available</p>
