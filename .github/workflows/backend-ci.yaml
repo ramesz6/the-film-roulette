@@ -13,10 +13,6 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest  # Uses the latest Ubuntu version as the runner.
 
-    defaults:
-      run:
-        working-directory: repo/backend/The-Film-Roulette  # Sets the working directory for commands.
-
     permissions:
       contents: read    # Grants read access to the repository contents.
       statuses: write   # Allows the workflow to update commit statuses.
@@ -49,9 +45,11 @@ jobs:
           cache: 'maven'           # Caches Maven dependencies to speed up builds.
 
       - name: Setup Maven
+        working-directory: repo/backend/The-Film-Roulette
         run: mvn clean install -q -DskipTests  # Builds the Maven project and installs dependencies (-q = quiet mode).
 
       - name: Run Tests
+        working-directory: repo/backend/The-Film-Roulette
         run: mvn test -q  # Executes unit tests using Maven.
 
       - name: Run Checkstyle
