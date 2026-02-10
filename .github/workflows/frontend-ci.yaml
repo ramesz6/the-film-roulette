@@ -21,12 +21,26 @@ jobs:
     # default values for all the steps
     defaults:
       run:
-        working-directory: frontend
+        working-directory: repo/frontend
     steps:
-      - uses: actions/checkout@v4
-        with:
-          # Avoid fetching the synthetic refs/pull/*/merge ref (can intermittently 500).
-          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Download source (no git)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA="${{ github.event.pull_request.head.sha }}"
+          URL="https://codeload.github.com/${{ github.repository }}/tar.gz/${SHA}"
+
+          echo "Downloading ${URL}"
+          for i in 1 2 3 4 5; do
+            if curl -fsSL "${URL}" -o src.tgz; then
+              break
+            fi
+            echo "Download failed; retrying in $((i * 10))s..."
+            sleep "$((i * 10))"
+          done
+
+          mkdir -p repo
+          tar -xzf src.tgz -C repo --strip-components=1
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:

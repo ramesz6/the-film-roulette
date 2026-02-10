@@ -15,18 +15,31 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend/The-Film-Roulette  # Sets the working directory for commands.
+        working-directory: repo/backend/The-Film-Roulette  # Sets the working directory for commands.
 
     permissions:
       contents: read    # Grants read access to the repository contents.
       statuses: write   # Allows the workflow to update commit statuses.
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4  # Checks out the repository's latest code.
-        with:
-          # Avoid fetching the synthetic refs/pull/*/merge ref (can intermittently 500).
-          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Download source (no git)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA="${{ github.event.pull_request.head.sha }}"
+          URL="https://codeload.github.com/${{ github.repository }}/tar.gz/${SHA}"
+
+          echo "Downloading ${URL}"
+          for i in 1 2 3 4 5; do
+            if curl -fsSL "${URL}" -o src.tgz; then
+              break
+            fi
+            echo "Download failed; retrying in $((i * 10))s..."
+            sleep "$((i * 10))"
+          done
+
+          mkdir -p repo
+          tar -xzf src.tgz -C repo --strip-components=1
 
       - name: Setup Java
         uses: actions/setup-java@v4  # Sets up the Java environment.
@@ -49,4 +62,4 @@ jobs:
           tool_name: 'Checkstyle'  # Specifies the tool name for reporting.
           fail_on_error: true  # Fails the build if there are style errors.
           level: warning,error  # Reports warnings and errors only.
-          workdir: backend  # Runs the Checkstyle validation in the 'backend' directory.
+          workdir: repo/backend  # Runs the Checkstyle validation in the 'backend' directory.
