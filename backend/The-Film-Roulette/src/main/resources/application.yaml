@@ -2,6 +2,9 @@ spring:
   application:
     name: The-Film-Roulette
 
+server:
+  port: ${PORT:8080}
+
   datasource:
     # In Render, you may get DATABASE_URL (postgres://...) instead of SPRING_DATASOURCE_URL.
     # A startup post-processor converts DATABASE_URL to SPRING_DATASOURCE_URL (jdbc:postgresql://...).
