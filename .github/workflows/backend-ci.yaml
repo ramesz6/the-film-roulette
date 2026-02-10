@@ -44,20 +44,6 @@ jobs:
           java-version: '23'       # Installs Java version 23.
           cache: 'maven'           # Caches Maven dependencies to speed up builds.
 
-      - name: Setup Maven
+      - name: Build + test + checkstyle
         working-directory: repo/backend/The-Film-Roulette
-        run: mvn clean install -q -DskipTests  # Builds the Maven project and installs dependencies (-q = quiet mode).
-
-      - name: Run Tests
-        working-directory: repo/backend/The-Film-Roulette
-        run: mvn test -q  # Executes unit tests using Maven.
-
-      - name: Run Checkstyle
-        uses: nikitasavinov/checkstyle-action@master  # Runs Checkstyle for code style validation.
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # Provides GitHub API access for Checkstyle reports.
-          reporter: 'github-check'  # Displays results as GitHub Checks.
-          tool_name: 'Checkstyle'  # Specifies the tool name for reporting.
-          fail_on_error: true  # Fails the build if there are style errors.
-          level: warning,error  # Reports warnings and errors only.
-          workdir: repo/backend  # Runs the Checkstyle validation in the 'backend' directory.
+        run: mvn -q clean verify
