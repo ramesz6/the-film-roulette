@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { apiClient } from "../api/client";
+import { normalizeGenreLabel } from "../utils/tmdb";
 
 type Genre = { id: number; name: string };
 
@@ -109,15 +110,21 @@ export default function ProfilePreferences() {
 		if (prefs.includeMovies && prefs.includeSeries) {
 			const combined: Array<{ id: number; label: string }> = [];
 			for (const g of movieGenres)
-				combined.push({ id: g.id, label: `${g.name} (Movie)` });
+				combined.push({
+					id: g.id,
+					label: `${normalizeGenreLabel(g.name)} (Movie)`,
+				});
 			for (const g of tvGenres)
-				combined.push({ id: g.id, label: `${g.name} (TV)` });
+				combined.push({
+					id: g.id,
+					label: `${normalizeGenreLabel(g.name)} (TV)`,
+				});
 			return combined.sort((a, b) => a.label.localeCompare(b.label));
 		}
 
 		const src = prefs.includeSeries ? tvGenres : movieGenres;
 		return src
-			.map((g) => ({ id: g.id, label: g.name }))
+			.map((g) => ({ id: g.id, label: normalizeGenreLabel(g.name) }))
 			.sort((a, b) => a.label.localeCompare(b.label));
 	}, [prefs, movieGenres, tvGenres]);
 
@@ -249,7 +256,12 @@ export default function ProfilePreferences() {
 													checked={likedSet.has(g.id)}
 													onChange={() => toggleGenre(g.id)}
 												/>
-												<span className="label-text">{g.label}</span>
+												<span className="label-text">
+													{normalizeGenreLabel(g.label).replace(
+														/ & /g,
+														"\u00A0&\u00A0",
+													)}
+												</span>
 											</label>
 										</li>
 									))}

@@ -13,14 +13,22 @@ export const posterUrl = (
 	return `https://image.tmdb.org/t/p/${size}${posterPath}`;
 };
 
+export const normalizeGenreLabel = (label: string): string => {
+	const trimmed = label.trim();
+	// TMDB TV genre 10759 is named "Action & Adventure"; show a consistent label.
+	if (/^Action\s*&\s*Adventure$/i.test(trimmed)) return "Action/Adventure";
+	return label;
+};
+
 export const formatGenresLine = (
 	genres: string[] | null | undefined,
 ): string | null => {
 	if (!genres || genres.length === 0) return null;
-	if (genres.length === 1) return genres[0] ?? null;
-	if (genres.length === 2) return `${genres[0]} and ${genres[1]}`;
-	const head = genres.slice(0, -1).join(", ");
-	const last = genres[genres.length - 1];
+	const normalized = genres.map((g) => (g ? normalizeGenreLabel(g) : g));
+	if (normalized.length === 1) return normalized[0] ?? null;
+	if (normalized.length === 2) return `${normalized[0]} and ${normalized[1]}`;
+	const head = normalized.slice(0, -1).join(", ");
+	const last = normalized[normalized.length - 1];
 	return `${head}, and ${last}`;
 };
 
