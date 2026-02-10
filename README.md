@@ -74,12 +74,12 @@ GOOGLE_OAUTH_CLIENT_ID=your_google_oauth_web_client_id
 Start everything (frontend + backend + db):
 ```sh
 cp .env.sample .env
-make compose
+docker compose up -d --force-recreate --build frontend backend db
 ```
 
 Stop everything:
 ```sh
-make compose-down
+docker compose down --remove-orphans
 ```
 
 URLs:
