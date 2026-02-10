@@ -1,7 +1,8 @@
 import axios, { type AxiosError, type AxiosResponse } from "axios";
 import { z } from "zod";
+import { getApiBaseUrl } from "../runtimeEnv";
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
+const apiBaseUrl = getApiBaseUrl();
 
 const Movie = axios.create({
 	baseURL: apiBaseUrl,

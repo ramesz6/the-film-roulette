@@ -2,10 +2,15 @@ spring:
   application:
     name: The-Film-Roulette
 
+server:
+  port: ${PORT:8080}
+
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    # In Render, you may get DATABASE_URL (postgres://...) instead of SPRING_DATASOURCE_URL.
+    # A startup post-processor converts DATABASE_URL to SPRING_DATASOURCE_URL (jdbc:postgresql://...).
+    url: ${SPRING_DATASOURCE_URL:${DATABASE_URL:}}
+    username: ${SPRING_DATASOURCE_USERNAME:}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
     driver-class-name: org.postgresql.Driver
 
   jpa:

@@ -3,11 +3,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { GoogleLogin } from "@react-oauth/google";
 import { setAuthToken } from "../LocalStorage";
+import { getApiBaseUrl, getGoogleClientId } from "../runtimeEnv";
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as
-	| string
-	| undefined;
+const apiBaseUrl = getApiBaseUrl();
+const googleClientId = getGoogleClientId();
 
 const LogIn = () => {
 	const navigate = useNavigate();
